@@ -1,207 +1,93 @@
-import { useEffect, useState } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
+import React, { useEffect, useRef, useState } from "react";
+import { createChart } from "lightweight-charts";
 
-function App() {
-  const [data, setData] = useState(null);
+export default function App() {
+  const chartContainerRef = useRef();
+  const candleSeriesRef = useRef();
+  const stopLineRef = useRef();
+  const parcialLineRef = useRef();
+  const alvoLineRef = useRef();
+  const vwapLineRef = useRef();
+
+  const [score, setScore] = useState(0);
+  const [reversao, setReversao] = useState("SEM REVERSÃO");
+  const [zonaQuente, setZonaQuente] = useState("SEM ZONA QUENTE");
+  const [exaustao, setExaustao] = useState("SEM EXAUSTÃO");
+  const [tendencia, setTendencia] = useState("MERCADO LATERAL");
+  const [entrada, setEntrada] = useState("AGUARDAR");
+
+  const fetchData = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/data");
+      const data = await res.json();
+
+      setScore(data.forca);
+      setReversao(data.reversao);
+      setZonaQuente(data.zona_quente_absorcao ? "ZONA QUENTE" : "SEM ZONA QUENTE");
+      setExaustao(data.exaustao ? "EXAUSTÃO" : "SEM EXAUSTÃO");
+      setTendencia(data.tendencia);
+      setEntrada(data.entrada);
+
+      // Candles
+      candleSeriesRef.current.setData(data.historico);
+
+      // Linhas de preço
+      stopLineRef.current.setData([{ time: data.historico[data.historico.length-1].time, value: data.stop }]);
+      parcialLineRef.current.setData([{ time: data.historico[data.historico.length-1].time, value: data.parcial }]);
+      alvoLineRef.current.setData([{ time: data.historico[data.historico.length-1].time, value: data.alvo }]);
+      vwapLineRef.current.setData(data.vwap);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
-    const buscar = () => {
-      fetch("http://127.0.0.1:8000/data")
-        .then((r) => r.json())
-        .then(setData);
-    };
+    const chart = createChart(chartContainerRef.current, {
+      width: chartContainerRef.current.clientWidth,
+      height: 400,
+      layout: { backgroundColor: "#0b111f", textColor: "#ffffff" },
+      grid: { vertLines: { color: "#334158" }, horzLines: { color: "#334158" } },
+      rightPriceScale: { borderColor: "#334158" },
+      timeScale: { borderColor: "#334158", timeVisible: true, secondsVisible: true },
+    });
 
-    buscar();
-    const i = setInterval(buscar, 600);
-    return () => clearInterval(i);
+    candleSeriesRef.current = chart.addCandlestickSeries();
+    stopLineRef.current = chart.addLineSeries({ color: "red", lineWidth: 1 });
+    parcialLineRef.current = chart.addLineSeries({ color: "yellow", lineWidth: 1 });
+    alvoLineRef.current = chart.addLineSeries({ color: "green", lineWidth: 1 });
+    vwapLineRef.current = chart.addLineSeries({ color: "blue", lineWidth: 1 });
+
+    fetchData();
+    const interval = setInterval(fetchData, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  const dadosGrafico =
-    data?.historico?.slice(-30).map((v, i) => ({
-      index: i,
-      valor: v,
-    })) || [];
-
-  const cor =
-    data?.sinal === "COMPRA FORTE"
-      ? "#00ff88"
-      : data?.sinal === "VENDA FORTE"
-      ? "#ff3b3b"
-      : data?.sinal === "ATENCAO"
-      ? "#ffd84d"
-      : "#8a8f98";
-
   return (
-    <div
-      style={{
-        background: "radial-gradient(circle at center, #010203, #000)",
-        color: "#fff",
-        minHeight: "100vh",
-        padding: "20px",
-        fontFamily: "Arial",
-      }}
-    >
-      <h1 style={{ letterSpacing: "2px" }}>TRIN FLOW PRO</h1>
-
-      {data && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 2fr 1fr",
-            gap: "15px",
-          }}
-        >
-          {/* BOOK */}
-          <div style={{ background: "#05090f", padding: "10px", borderRadius: "10px" }}>
-            <p>Book</p>
-
-            {[...Array(20)].map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  height: "8px",
-                  marginBottom: "4px",
-                  background:
-                    i % 2 === 0
-                      ? "rgba(0,255,136,0.5)"
-                      : "rgba(255,59,59,0.5)",
-                  width: `${Math.random() * 100}%`,
-                }}
-              />
-            ))}
-          </div>
-
-          {/* CENTRO */}
-          <div style={{ position: "relative", background: "#05090f", borderRadius: "10px", padding: "15px" }}>
-            <p>Fluxo</p>
-
-            <div style={{ height: "350px" }}>
-              <ResponsiveContainer>
-                <LineChart data={dadosGrafico}>
-                  <CartesianGrid stroke="#111" />
-                  <XAxis dataKey="index" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line
-                    dataKey="valor"
-                    stroke={cor}
-                    strokeWidth={4}
-                    dot={false}
-                    style={{
-                      filter: `drop-shadow(0 0 12px ${cor})`,
-                    }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* RADAR PULSANTE */}
-            <div
-              style={{
-                position: "absolute",
-                bottom: "30px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: "140px",
-                height: "140px",
-                borderRadius: "50%",
-                border: `2px solid ${cor}`,
-                boxShadow: `0 0 40px ${cor}`,
-                animation: "pulse 2s infinite",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              TRIN CORE
-            </div>
-
-            {/* BARRA */}
-            <div style={{ marginTop: "15px" }}>
-              <p>Força do Fluxo</p>
-
-              <div style={{ background: "#111", height: "10px", borderRadius: "5px" }}>
-                <div
-                  style={{
-                    width: `${data.score * 10}%`,
-                    background: cor,
-                    height: "100%",
-                    boxShadow: `0 0 15px ${cor}`,
-                    transition: "0.3s",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* LATERAL */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <Card titulo="SINAL" valor={data.sinal} cor={cor} forte />
-            <Card titulo="SCORE" valor={`${data.score}/10`} cor="#00d4ff" />
-            <Card titulo="DIREÇÃO" valor={data.direcao} cor={cor} />
-            <Card titulo="FASE" valor={data.fase} cor="#fff" />
-            <Card titulo="PREÇO" valor={data.preco_atual} cor="#fff" />
-
-            <div style={{ background: "#05090f", padding: "10px", borderRadius: "10px" }}>
-              <p>Pressão</p>
-
-              <div style={{ display: "flex", height: "12px", borderRadius: "5px", overflow: "hidden" }}>
-                <div style={{ width: `${data.pressao_compra}%`, background: "#00ff88" }} />
-                <div style={{ width: `${data.pressao_venda}%`, background: "#ff3b3b" }} />
-              </div>
-
-              <p style={{ fontSize: "12px" }}>
-                Compra {data.pressao_compra}% | Venda {data.pressao_venda}%
-              </p>
-            </div>
-          </div>
+    <div style={{ display: "flex", padding: 10 }}>
+      <div style={{ flex: 1 }}>
+        <div ref={chartContainerRef} />
+      </div>
+      <div style={{ width: 220, marginLeft: 10 }}>
+        <div style={{ backgroundColor: "#1b5e20", color: "white", padding: 8, marginBottom: 5 }}>
+          SCORE INSTITUCIONAL: {score}
         </div>
-      )}
-
-      {/* ANIMAÇÃO */}
-      <style>
-        {`
-        @keyframes pulse {
-          0% { box-shadow: 0 0 10px ${cor}; }
-          50% { box-shadow: 0 0 40px ${cor}; }
-          100% { box-shadow: 0 0 10px ${cor}; }
-        }
-        `}
-      </style>
+        <div style={{ backgroundColor: "#827717", color: "white", padding: 8, marginBottom: 5 }}>
+          {reversao}
+        </div>
+        <div style={{ backgroundColor: "#1a1a2e", color: "white", padding: 8, marginBottom: 5 }}>
+          {zonaQuente}
+        </div>
+        <div style={{ backgroundColor: "#1a1a2e", color: "white", padding: 8, marginBottom: 5 }}>
+          {exaustao}
+        </div>
+        <div style={{ backgroundColor: "#0b3d91", color: "white", padding: 8, marginBottom: 5 }}>
+          TENDÊNCIA: {tendencia}
+        </div>
+        <div style={{ backgroundColor: "#333333", color: "white", padding: 8 }}>
+          ENTRADA: {entrada}
+        </div>
+      </div>
     </div>
   );
 }
-
-function Card({ titulo, valor, cor, forte }) {
-  return (
-    <div
-      style={{
-        border: `1px solid ${cor}`,
-        padding: "10px",
-        borderRadius: "10px",
-        boxShadow: forte ? `0 0 25px ${cor}` : "none",
-      }}
-    >
-      <p>{titulo}</p>
-
-      <h2
-        style={{
-          color: cor,
-          textShadow: `0 0 15px ${cor}`,
-        }}
-      >
-        {valor}
-      </h2>
-    </div>
-  );
-}
-
-export default App;
