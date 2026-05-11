@@ -17,8 +17,6 @@ export default function App() {
   const vwapSuperiorRef = useRef(null);
   const vwapInferiorRef = useRef(null);
 
-  const absorcaoLineRef = useRef(null);
-
   const carregouHistoricoRef = useRef(false);
 
   const [dataInfo, setDataInfo] = useState({});
@@ -27,29 +25,24 @@ export default function App() {
 
     try {
 
-      const res = await fetch(
-        "http://127.0.0.1:8000/data"
-      );
+      const res =
+        await fetch(
+          "http://127.0.0.1:8000/data"
+        );
 
       const data = await res.json();
 
       if (!data.historico?.length) return;
 
       const ultimoCandle =
-        data.historico[data.historico.length - 1];
-
-      const primeiroTime =
-        data.historico[0].time;
-
-      const ultimoTime =
-        ultimoCandle.time;
+        data.historico[
+          data.historico.length - 1
+        ];
 
       setDataInfo({
 
-        score: data.forca,
-
-        explosao:
-          data.tipo_explosao,
+        score:
+          data.forca,
 
         frequencia:
           data.frequencia_mercado,
@@ -72,14 +65,16 @@ export default function App() {
         volume:
           data.volume,
 
-        pressaoCompra:
+        compra:
           data.pressao_compra || 0,
 
-        pressaoVenda:
+        venda:
           data.pressao_venda || 0,
       });
 
-      if (!carregouHistoricoRef.current) {
+      if (
+        !carregouHistoricoRef.current
+      ) {
 
         candleSeriesRef.current.setData(
           data.historico
@@ -108,11 +103,15 @@ export default function App() {
         if (data.vwap?.length > 0) {
 
           vwapLineRef.current.update(
-            data.vwap[data.vwap.length - 1]
+            data.vwap[
+              data.vwap.length - 1
+            ]
           );
         }
 
-        if (data.vwap_superior?.length > 0) {
+        if (
+          data.vwap_superior?.length > 0
+        ) {
 
           vwapSuperiorRef.current.update(
             data.vwap_superior[
@@ -121,7 +120,9 @@ export default function App() {
           );
         }
 
-        if (data.vwap_inferior?.length > 0) {
+        if (
+          data.vwap_inferior?.length > 0
+        ) {
 
           vwapInferiorRef.current.update(
             data.vwap_inferior[
@@ -131,47 +132,6 @@ export default function App() {
         }
       }
 
-      stopLineRef.current.setData([
-        { time: primeiroTime, value: data.stop },
-        { time: ultimoTime, value: data.stop },
-      ]);
-
-      parcialLineRef.current.setData([
-        { time: primeiroTime, value: data.parcial },
-        { time: ultimoTime, value: data.parcial },
-      ]);
-
-      alvoLineRef.current.setData([
-        { time: primeiroTime, value: data.alvo },
-        { time: ultimoTime, value: data.alvo },
-      ]);
-
-      let fundo = "#050915";
-
-      if (data.score_agressao > 15) {
-
-        fundo = "#061b11";
-
-      } else if (
-        data.score_agressao < -15
-      ) {
-
-        fundo = "#1b0909";
-      }
-
-      chartRef.current.applyOptions({
-
-        layout: {
-
-          background: {
-            type: "solid",
-            color: fundo,
-          },
-
-          textColor: "#ffffff",
-        },
-      });
-
     } catch (err) {
 
       console.error(err);
@@ -180,11 +140,13 @@ export default function App() {
 
   useEffect(() => {
 
-    if (!chartContainerRef.current) return;
+    if (!chartContainerRef.current)
+      return;
 
     const chart = createChart(
       chartContainerRef.current,
       {
+
         width:
           chartContainerRef.current.clientWidth,
 
@@ -195,15 +157,21 @@ export default function App() {
 
           background: {
             type: "solid",
-            color: "#050915",
+            color: "#020816",
           },
 
           textColor: "#ffffff",
         },
 
         grid: {
-          vertLines: { color: "#22304a" },
-          horzLines: { color: "#22304a" },
+
+          vertLines: {
+            color: "#1c2f4a",
+          },
+
+          horzLines: {
+            color: "#1c2f4a",
+          },
         },
 
         rightPriceScale: {
@@ -211,8 +179,11 @@ export default function App() {
         },
 
         timeScale: {
+
           borderColor: "#334158",
+
           timeVisible: true,
+
           secondsVisible: true,
         },
       }
@@ -225,36 +196,30 @@ export default function App() {
 
         upColor: "#00ffc8",
 
-        downColor: "#ff3b3b",
+        downColor: "#ff4444",
 
         borderUpColor: "#00ffc8",
 
-        borderDownColor: "#ff3b3b",
+        borderDownColor: "#ff4444",
 
         wickUpColor: "#00ffc8",
 
-        wickDownColor: "#ff3b3b",
+        wickDownColor: "#ff4444",
       });
 
     stopLineRef.current =
       chart.addLineSeries({
         color: "#ff0000",
-        lineWidth: 1,
-        lineStyle: 2,
       });
 
     parcialLineRef.current =
       chart.addLineSeries({
         color: "#ffff00",
-        lineWidth: 1,
-        lineStyle: 2,
       });
 
     alvoLineRef.current =
       chart.addLineSeries({
         color: "#00ff66",
-        lineWidth: 1,
-        lineStyle: 2,
       });
 
     vwapLineRef.current =
@@ -277,13 +242,6 @@ export default function App() {
         lineStyle: 2,
       });
 
-    absorcaoLineRef.current =
-      chart.addLineSeries({
-        color: "#ff9800",
-        lineWidth: 3,
-        lineStyle: 2,
-      });
-
     fetchData();
 
     const interval =
@@ -298,6 +256,18 @@ export default function App() {
 
   }, []);
 
+  const glowRadar =
+
+    dataInfo.scoreAgressao > 15
+
+      ? "#00ff99"
+
+      : dataInfo.scoreAgressao < -15
+
+      ? "#ff3333"
+
+      : "#00d4ff";
+
   return (
 
     <div
@@ -309,24 +279,58 @@ export default function App() {
         padding: 10,
 
         background:
-          "radial-gradient(circle at top, #111a33 0%, #050915 55%, #02040a 100%)",
-
-        boxSizing: "border-box",
+          "radial-gradient(circle at top, #071120 0%, #020816 70%)",
       }}
     >
+
+      <style>
+        {`
+
+        @keyframes pulseRadar {
+
+          0% {
+            transform: scale(0.92);
+            opacity: 0.5;
+          }
+
+          50% {
+            transform: scale(1.08);
+            opacity: 1;
+          }
+
+          100% {
+            transform: scale(0.92);
+            opacity: 0.5;
+          }
+        }
+
+        @keyframes spinScanner {
+
+          from {
+            transform: rotate(0deg);
+          }
+
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+      `}
+      </style>
 
       <div
         style={{
           flex: 1,
 
-          border: "2px solid #1c2f4a",
+          border:
+            "2px solid #18304f",
 
           borderRadius: 8,
 
           overflow: "hidden",
 
           boxShadow:
-            "0 0 30px rgba(0,255,180,0.25)",
+            `0 0 35px ${glowRadar}`,
         }}
       >
 
@@ -344,13 +348,11 @@ export default function App() {
       >
 
         <Titulo>
-          TRIN FLOW PRO 5.3
+          TRIN FLOW PRO 5.4
         </Titulo>
 
         <Radar
-          scoreAgressao={
-            dataInfo.scoreAgressao
-          }
+          cor={glowRadar}
         />
 
         <Box color="#0b5d1e">
@@ -393,11 +395,95 @@ export default function App() {
         </Box>
 
         <PressaoBar
-          compra={dataInfo.pressaoCompra}
-          venda={dataInfo.pressaoVenda}
+          compra={dataInfo.compra}
+          venda={dataInfo.venda}
         />
 
       </div>
+    </div>
+  );
+}
+
+function Radar({ cor }) {
+
+  return (
+
+    <div
+      style={{
+        height: 170,
+
+        background: "#05101d",
+
+        border:
+          `1px solid ${cor}`,
+
+        borderRadius: 12,
+
+        marginBottom: 10,
+
+        position: "relative",
+
+        overflow: "hidden",
+
+        boxShadow:
+          `0 0 30px ${cor}`,
+      }}
+    >
+
+      <div
+        style={{
+          width: 120,
+
+          height: 120,
+
+          borderRadius: "50%",
+
+          border:
+            `2px solid ${cor}`,
+
+          position: "absolute",
+
+          left: "50%",
+
+          top: "50%",
+
+          marginLeft: -60,
+
+          marginTop: -60,
+
+          animation:
+            "pulseRadar 1.4s infinite",
+
+          boxShadow:
+            `0 0 35px ${cor}`,
+        }}
+      />
+
+      <div
+        style={{
+          width: 2,
+
+          height: 75,
+
+          background: cor,
+
+          position: "absolute",
+
+          left: "50%",
+
+          top: "15%",
+
+          transformOrigin:
+            "bottom center",
+
+          animation:
+            "spinScanner 2s linear infinite",
+
+          boxShadow:
+            `0 0 15px ${cor}`,
+        }}
+      />
+
     </div>
   );
 }
@@ -411,20 +497,21 @@ function PressaoBar({
 
     <div
       style={{
-        background: "#121212",
+        background: "#101010",
 
         padding: 10,
 
-        borderRadius: 6,
+        borderRadius: 8,
 
-        marginTop: 8,
+        marginTop: 10,
       }}
     >
 
       <div
         style={{
-          marginBottom: 8,
           fontWeight: "bold",
+
+          marginBottom: 8,
         }}
       >
         PRESSÃO INSTITUCIONAL
@@ -440,7 +527,7 @@ function PressaoBar({
 
           overflow: "hidden",
 
-          marginBottom: 8,
+          marginBottom: 6,
         }}
       >
 
@@ -462,10 +549,12 @@ function PressaoBar({
       <div
         style={{
           color: "#00ffc8",
+
           marginBottom: 10,
         }}
       >
-        COMPRA: {compra}%
+        COMPRA:
+        {compra}%
       </div>
 
       <div
@@ -478,7 +567,7 @@ function PressaoBar({
 
           overflow: "hidden",
 
-          marginBottom: 8,
+          marginBottom: 6,
         }}
       >
 
@@ -499,79 +588,23 @@ function PressaoBar({
 
       <div
         style={{
-          color: "#ff5555",
+          color: "#ff4444",
         }}
       >
-        VENDA: {venda}%
+        VENDA:
+        {venda}%
       </div>
 
     </div>
   );
 }
 
-function Radar({
-  scoreAgressao
+function Titulo({
+  children
 }) {
 
-  let cor = "#00ffc8";
-
-  if (scoreAgressao < -15) {
-    cor = "#ff3333";
-  }
-
   return (
 
-    <div
-      style={{
-        height: 150,
-
-        borderRadius: 12,
-
-        marginBottom: 10,
-
-        background: "#06101f",
-
-        border: `1px solid ${cor}`,
-
-        boxShadow:
-          `0 0 30px ${cor}`,
-
-        position: "relative",
-      }}
-    >
-
-      <div
-        style={{
-          position: "absolute",
-
-          width: 110,
-
-          height: 110,
-
-          borderRadius: "50%",
-
-          border: `2px solid ${cor}`,
-
-          left: "50%",
-
-          top: "50%",
-
-          marginLeft: -55,
-
-          marginTop: -55,
-
-          boxShadow:
-            `0 0 25px ${cor}`,
-        }}
-      />
-
-    </div>
-  );
-}
-
-function Titulo({ children }) {
-
-  return (
     <div
       style={{
         background:
@@ -585,14 +618,14 @@ function Titulo({ children }) {
 
         borderRadius: 6,
 
-        fontSize: 15,
-
         fontWeight: "900",
 
         textAlign: "center",
       }}
     >
+
       {children}
+
     </div>
   );
 }
@@ -603,6 +636,7 @@ function Box({
 }) {
 
   return (
+
     <div
       style={{
         backgroundColor: color,
@@ -615,12 +649,12 @@ function Box({
 
         borderRadius: 5,
 
-        fontSize: 13,
-
         fontWeight: "bold",
       }}
     >
+
       {children}
+
     </div>
   );
 }
