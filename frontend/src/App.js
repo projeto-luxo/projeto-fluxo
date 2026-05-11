@@ -72,40 +72,17 @@ export default function App() {
         volume:
           data.volume,
 
-        pressao:
-          `${data.pressao_compra}% x ${data.pressao_venda}%`,
+        pressaoCompra:
+          data.pressao_compra || 0,
+
+        pressaoVenda:
+          data.pressao_venda || 0,
       });
-
-      const historicoComGlow =
-        data.historico.map((candle) => {
-
-          if (candle.explosao_detectada) {
-
-            return {
-              ...candle,
-              color: "#ffffff",
-              borderColor: "#00ffcc",
-              wickColor: "#00ffcc",
-            };
-          }
-
-          if (candle.reversao_detectada) {
-
-            return {
-              ...candle,
-              color: "#ffff00",
-              borderColor: "#ffff00",
-              wickColor: "#ffff00",
-            };
-          }
-
-          return candle;
-        });
 
       if (!carregouHistoricoRef.current) {
 
         candleSeriesRef.current.setData(
-          historicoComGlow
+          data.historico
         );
 
         vwapLineRef.current.setData(
@@ -125,9 +102,7 @@ export default function App() {
       } else {
 
         candleSeriesRef.current.update(
-          historicoComGlow[
-            historicoComGlow.length - 1
-          ]
+          ultimoCandle
         );
 
         if (data.vwap?.length > 0) {
@@ -171,71 +146,9 @@ export default function App() {
         { time: ultimoTime, value: data.alvo },
       ]);
 
-      if (
-        data.zona_absorcao !== null &&
-        data.zona_absorcao !== undefined
-      ) {
-
-        absorcaoLineRef.current.setData([
-          {
-            time: primeiroTime,
-            value: data.zona_absorcao,
-          },
-          {
-            time: ultimoTime,
-            value: data.zona_absorcao,
-          },
-        ]);
-
-      } else {
-
-        absorcaoLineRef.current.setData([]);
-      }
-
-      const markers = [];
-
-      data.historico.forEach((candle) => {
-
-        if (candle.reversao_detectada) {
-
-          markers.push({
-            time: candle.time,
-            position: "aboveBar",
-            color: "yellow",
-            shape: "arrowDown",
-            text: "REV",
-          });
-        }
-
-        if (candle.explosao_detectada) {
-
-          markers.push({
-            time: candle.time,
-            position: "belowBar",
-            color: "#00ffcc",
-            shape: "circle",
-            text: "⚡",
-          });
-        }
-      });
-
-      candleSeriesRef.current.setMarkers(markers);
-
       let fundo = "#050915";
 
-      if (data.tipo_explosao === "BUY EXPLOSION") {
-
-        fundo = "#021b11";
-
-      } else if (
-        data.tipo_explosao === "SELL EXPLOSION"
-      ) {
-
-        fundo = "#1b0505";
-
-      } else if (
-        data.score_agressao > 15
-      ) {
+      if (data.score_agressao > 15) {
 
         fundo = "#061b11";
 
@@ -376,73 +289,14 @@ export default function App() {
     const interval =
       setInterval(fetchData, 1200);
 
-    const handleResize = () => {
-
-      if (
-        !chartContainerRef.current ||
-        !chartRef.current
-      ) return;
-
-      chartRef.current.applyOptions({
-
-        width:
-          chartContainerRef.current.clientWidth,
-
-        height:
-          window.innerHeight - 20,
-      });
-    };
-
-    window.addEventListener(
-      "resize",
-      handleResize
-    );
-
     return () => {
 
       clearInterval(interval);
-
-      window.removeEventListener(
-        "resize",
-        handleResize
-      );
 
       chart.remove();
     };
 
   }, []);
-
-  const glowPainel =
-
-    dataInfo.explosao === "BUY EXPLOSION"
-
-      ? "0 0 45px rgba(0,255,180,0.55)"
-
-      : dataInfo.explosao === "SELL EXPLOSION"
-
-      ? "0 0 45px rgba(255,40,40,0.55)"
-
-      : dataInfo.scoreAgressao > 15
-
-      ? "0 0 35px rgba(0,255,180,0.35)"
-
-      : dataInfo.scoreAgressao < -15
-
-      ? "0 0 35px rgba(255,60,60,0.35)"
-
-      : "0 0 18px rgba(0,255,200,0.15)";
-
-  const heatmapColor =
-
-    dataInfo.scoreAgressao > 15
-
-      ? "rgba(0,255,140,0.08)"
-
-      : dataInfo.scoreAgressao < -15
-
-      ? "rgba(255,50,50,0.08)"
-
-      : "rgba(255,255,0,0.03)";
 
   return (
 
@@ -461,44 +315,9 @@ export default function App() {
       }}
     >
 
-      <style>
-        {`
-          @keyframes radarPulse {
-
-            0% {
-              transform: scale(0.85);
-              opacity: 0.35;
-            }
-
-            50% {
-              transform: scale(1.08);
-              opacity: 1;
-            }
-
-            100% {
-              transform: scale(0.85);
-              opacity: 0.35;
-            }
-          }
-
-          @keyframes scannerSpin {
-
-            from {
-              transform: rotate(0deg);
-            }
-
-            to {
-              transform: rotate(360deg);
-            }
-          }
-        `}
-      </style>
-
       <div
         style={{
           flex: 1,
-
-          minWidth: 0,
 
           border: "2px solid #1c2f4a",
 
@@ -506,12 +325,8 @@ export default function App() {
 
           overflow: "hidden",
 
-          boxShadow: glowPainel,
-
-          background: heatmapColor,
-
-          transition:
-            "all 0.4s ease",
+          boxShadow:
+            "0 0 30px rgba(0,255,180,0.25)",
         }}
       >
 
@@ -523,17 +338,16 @@ export default function App() {
 
       <div
         style={{
-          width: 330,
+          width: 340,
           marginLeft: 10,
         }}
       >
 
         <Titulo>
-          TRIN FLOW PRO 5.2
+          TRIN FLOW PRO 5.3
         </Titulo>
 
         <Radar
-          explosao={dataInfo.explosao}
           scoreAgressao={
             dataInfo.scoreAgressao
           }
@@ -542,11 +356,6 @@ export default function App() {
         <Box color="#0b5d1e">
           SCORE:
           {dataInfo.score}
-        </Box>
-
-        <Box color="#263238">
-          EXPLOSÃO:
-          {dataInfo.explosao}
         </Box>
 
         <Box color="#004d40">
@@ -583,75 +392,151 @@ export default function App() {
           {dataInfo.volume}
         </Box>
 
-        <Box color="#424242">
-          PRESSÃO:
-          {dataInfo.pressao}
-        </Box>
+        <PressaoBar
+          compra={dataInfo.pressaoCompra}
+          venda={dataInfo.pressaoVenda}
+        />
 
       </div>
     </div>
   );
 }
 
+function PressaoBar({
+  compra,
+  venda
+}) {
+
+  return (
+
+    <div
+      style={{
+        background: "#121212",
+
+        padding: 10,
+
+        borderRadius: 6,
+
+        marginTop: 8,
+      }}
+    >
+
+      <div
+        style={{
+          marginBottom: 8,
+          fontWeight: "bold",
+        }}
+      >
+        PRESSÃO INSTITUCIONAL
+      </div>
+
+      <div
+        style={{
+          height: 18,
+
+          background: "#222",
+
+          borderRadius: 10,
+
+          overflow: "hidden",
+
+          marginBottom: 8,
+        }}
+      >
+
+        <div
+          style={{
+            width: `${compra}%`,
+
+            height: "100%",
+
+            background:
+              "linear-gradient(90deg,#00ff99,#00ffc8)",
+
+            transition:
+              "all 0.4s ease",
+          }}
+        />
+      </div>
+
+      <div
+        style={{
+          color: "#00ffc8",
+          marginBottom: 10,
+        }}
+      >
+        COMPRA: {compra}%
+      </div>
+
+      <div
+        style={{
+          height: 18,
+
+          background: "#222",
+
+          borderRadius: 10,
+
+          overflow: "hidden",
+
+          marginBottom: 8,
+        }}
+      >
+
+        <div
+          style={{
+            width: `${venda}%`,
+
+            height: "100%",
+
+            background:
+              "linear-gradient(90deg,#ff4444,#ff0000)",
+
+            transition:
+              "all 0.4s ease",
+          }}
+        />
+      </div>
+
+      <div
+        style={{
+          color: "#ff5555",
+        }}
+      >
+        VENDA: {venda}%
+      </div>
+
+    </div>
+  );
+}
+
 function Radar({
-  explosao,
   scoreAgressao
 }) {
 
-  let cor = "#263238";
+  let cor = "#00ffc8";
 
-  let texto = "RADAR NEUTRO";
-
-  if (explosao === "BUY EXPLOSION") {
-
-    cor = "#00ff99";
-
-    texto = "BUY EXPLOSION";
-
-  } else if (
-    explosao === "SELL EXPLOSION"
-  ) {
-
+  if (scoreAgressao < -15) {
     cor = "#ff3333";
-
-    texto = "SELL EXPLOSION";
-
-  } else if (
-    scoreAgressao > 15
-  ) {
-
-    cor = "#00ffc8";
-
-    texto = "COMPRA AGRESSIVA";
-
-  } else if (
-    scoreAgressao < -15
-  ) {
-
-    cor = "#ff4444";
-
-    texto = "VENDA AGRESSIVA";
   }
 
   return (
 
     <div
       style={{
-        position: "relative",
-
         height: 150,
 
-        marginBottom: 10,
-
         borderRadius: 12,
+
+        marginBottom: 10,
 
         background: "#06101f",
 
         border: `1px solid ${cor}`,
 
-        boxShadow: `0 0 25px ${cor}`,
+        boxShadow:
+          `0 0 30px ${cor}`,
 
-        overflow: "hidden",
+        position: "relative",
       }}
     >
 
@@ -665,6 +550,8 @@ function Radar({
 
           borderRadius: "50%",
 
+          border: `2px solid ${cor}`,
+
           left: "50%",
 
           top: "50%",
@@ -673,64 +560,11 @@ function Radar({
 
           marginTop: -55,
 
-          border: `2px solid ${cor}`,
-
           boxShadow:
-            `0 0 30px ${cor}`,
-
-          animation:
-            "radarPulse 1.3s infinite",
+            `0 0 25px ${cor}`,
         }}
       />
 
-      <div
-        style={{
-          position: "absolute",
-
-          width: 2,
-
-          height: 65,
-
-          background: cor,
-
-          left: "50%",
-
-          top: "12%",
-
-          transformOrigin:
-            "bottom center",
-
-          animation:
-            "scannerSpin 2s linear infinite",
-
-          boxShadow:
-            `0 0 15px ${cor}`,
-        }}
-      />
-
-      <div
-        style={{
-          position: "absolute",
-
-          bottom: 12,
-
-          width: "100%",
-
-          textAlign: "center",
-
-          color: cor,
-
-          fontWeight: "900",
-
-          fontSize: 14,
-
-          letterSpacing: 1,
-        }}
-      >
-
-        {texto}
-
-      </div>
     </div>
   );
 }
