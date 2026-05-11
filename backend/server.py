@@ -17,6 +17,8 @@ app.add_middleware(
 
 historico = []
 fluxo_recente = []
+memoria_agressao = []
+
 preco_atual = 100.0
 ultimo_minuto = None
 
@@ -26,11 +28,8 @@ def criar_candle(time_value):
 
     abertura = preco_atual
     fechamento = abertura + random.uniform(-0.8, 0.8)
-
     maxima = max(abertura, fechamento) + random.uniform(0.1, 0.6)
     minima = min(abertura, fechamento) - random.uniform(0.1, 0.6)
-
-    volume_candle = random.randint(100, 900)
 
     preco_atual = fechamento
 
@@ -40,8 +39,8 @@ def criar_candle(time_value):
         "high": round(maxima, 2),
         "low": round(minima, 2),
         "close": round(fechamento, 2),
-        "volume": volume_candle,
-        "reversao_detectada": abs(fechamento - abertura) > 1.2,
+        "volume": random.randint(100, 900),
+        "reversao_detectada": False,
     }
 
 
@@ -72,27 +71,22 @@ def atualizar_candle():
 
     if minuto_atual == ultimo_minuto and historico:
         candle = historico[-1]
-
         candle["close"] = round(novo_preco, 2)
         candle["high"] = round(max(candle["high"], novo_preco), 2)
         candle["low"] = round(min(candle["low"], novo_preco), 2)
-        candle["reversao_detectada"] = abs(candle["close"] - candle["open"]) > 1.2
-
     else:
         ultimo_minuto = minuto_atual
         abertura = historico[-1]["close"]
 
-        novo_candle = {
+        historico.append({
             "time": int(minuto_atual.timestamp()),
             "open": round(abertura, 2),
             "high": round(max(abertura, novo_preco), 2),
             "low": round(min(abertura, novo_preco), 2),
             "close": round(novo_preco, 2),
             "volume": random.randint(100, 900),
-            "reversao_detectada": abs(novo_preco - abertura) > 1.2,
-        }
-
-        historico.append(novo_candle)
+            "reversao_detectada": False,
+        })
 
         if len(historico) > 300:
             historico = historico[-300:]
@@ -109,10 +103,7 @@ def calcular_vwap_e_bandas():
 
     for candle in historico:
         volume_candle = candle.get("volume", 1)
-
-        preco_medio = (
-            candle["high"] + candle["low"] + candle["close"]
-        ) / 3
+        preco_medio = (candle["high"] + candle["low"] + candle["close"]) / 3
 
         precos_medios.append(preco_medio)
 
@@ -125,9 +116,6 @@ def calcular_vwap_e_bandas():
         variancia = sum((p - media) ** 2 for p in precos_medios) / len(precos_medios)
         desvio = math.sqrt(variancia)
 
-        banda_superior = valor_vwap + desvio
-        banda_inferior = valor_vwap - desvio
-
         vwap.append({
             "time": candle["time"],
             "value": round(valor_vwap, 2),
@@ -135,12 +123,12 @@ def calcular_vwap_e_bandas():
 
         vwap_superior.append({
             "time": candle["time"],
-            "value": round(banda_superior, 2),
+            "value": round(valor_vwap + desvio, 2),
         })
 
         vwap_inferior.append({
             "time": candle["time"],
-            "value": round(banda_inferior, 2),
+            "value": round(valor_vwap - desvio, 2),
         })
 
     return vwap, vwap_superior, vwap_inferior
@@ -158,19 +146,149 @@ def calcular_frequencia(saldo_agressor, delta, volume):
     media = sum(fluxo_recente) / len(fluxo_recente)
 
     if media > 1300:
-        frequencia = "FREQUÊNCIA ALTA"
-        modo = "MERCADO ACELERADO"
-    elif media > 800:
-        frequencia = "FREQUÊNCIA MÉDIA"
-        modo = "MERCADO ATIVO"
+        return "FREQUÊNCIA ALTA", "MERCADO ACELERADO", round(media, 2)
+
+    if media > 800:
+        return "FREQUÊNCIA MÉDIA", "MERCADO ATIVO", round(media, 2)
+
+    return "FREQUÊNCIA BAIXA", "MERCADO LENTO", round(media, 2)
+
+
+def calcular_memoria_agressao(saldo_agressor, delta, volume):
+    global memoria_agressao
+
+    memoria_agressao.append({
+        "saldo": saldo_agressor,
+        "delta": delta,
+        "volume": volume,
+    })
+
+    if len(memoria_agressao) > 20:
+        memoria_agressao = memoria_agressao[-20:]
+
+    compras = sum(
+        1 for x in memoria_agressao
+        if x["saldo"] > 0 and x["delta"] > 0
+    )
+
+    vendas = sum(
+        1 for x in memoria_agressao
+        if x["saldo"] < 0 and x["delta"] < 0
+    )
+
+    saldo_total = sum(x["saldo"] for x in memoria_agressao)
+    delta_total = sum(x["delta"] for x in memoria_agressao)
+    volume_total = sum(x["volume"] for x in memoria_agressao)
+
+    persistencia_compra = round((compras / len(memoria_agressao)) * 100, 2)
+    persistencia_venda = round((vendas / len(memoria_agressao)) * 100, 2)
+
+    score_agressao = round(
+        (saldo_total / 100)
+        + (delta_total / 50)
+        + (volume_total / 1000),
+        2
+    )
+
+    if persistencia_compra >= 60 and score_agressao > 10:
+        leitura = "PERSISTÊNCIA COMPRADORA"
+    elif persistencia_venda >= 60 and score_agressao < -10:
+        leitura = "PERSISTÊNCIA VENDEDORA"
+    elif abs(score_agressao) < 8:
+        leitura = "AGRESSÃO NEUTRA"
     else:
-        frequencia = "FREQUÊNCIA BAIXA"
-        modo = "MERCADO LENTO"
+        leitura = "AGRESSÃO INSTÁVEL"
 
     return {
-        "frequencia_mercado": frequencia,
-        "intensidade_fluxo": round(media, 2),
-        "modo_mercado": modo,
+        "persistencia_compra": persistencia_compra,
+        "persistencia_venda": persistencia_venda,
+        "score_agressao": score_agressao,
+        "leitura_agressao": leitura,
+    }
+
+
+def detectar_ciclo_institucional(
+    preco,
+    vwap_atual,
+    vwap_superior_atual,
+    vwap_inferior_atual,
+    memoria,
+    frequencia_mercado,
+    intensidade_fluxo,
+    exaustao,
+    absorcao,
+):
+    distancia_vwap = preco - vwap_atual
+
+    persist_compra = memoria["persistencia_compra"]
+    persist_venda = memoria["persistencia_venda"]
+    score_agressao = memoria["score_agressao"]
+
+    ciclo = "NEUTRO"
+    risco = "BAIXO"
+    contexto = "AGUARDAR CONFIRMAÇÃO"
+
+    if absorcao != "SEM ABSORÇÃO" and abs(score_agressao) < 12:
+        ciclo = "ACUMULAÇÃO"
+        risco = "MÉDIO"
+        contexto = "INSTITUCIONAL ABSORVENDO FLUXO"
+
+    if (
+        preco > vwap_atual
+        and persist_compra >= 55
+        and score_agressao > 12
+        and frequencia_mercado in ["FREQUÊNCIA MÉDIA", "FREQUÊNCIA ALTA"]
+    ):
+        ciclo = "EXPANSÃO DE COMPRA"
+        risco = "MÉDIO"
+        contexto = "FLUXO COMPRADOR EM CONTINUIDADE"
+
+    if (
+        preco < vwap_atual
+        and persist_venda >= 55
+        and score_agressao < -8
+        and frequencia_mercado in ["FREQUÊNCIA MÉDIA", "FREQUÊNCIA ALTA"]
+    ):
+        ciclo = "EXPANSÃO DE VENDA"
+        risco = "MÉDIO"
+        contexto = "FLUXO VENDEDOR EM CONTINUIDADE"
+
+    if (
+        preco > vwap_superior_atual
+        and persist_compra < 40
+        and intensidade_fluxo > 1000
+    ):
+        ciclo = "DISTRIBUIÇÃO"
+        risco = "ALTO"
+        contexto = "PREÇO ESTICADO COM COMPRA FRACA"
+
+    if (
+        preco < vwap_inferior_atual
+        and persist_venda < 40
+        and intensidade_fluxo > 1000
+    ):
+        ciclo = "ACUMULAÇÃO DEFENSIVA"
+        risco = "ALTO"
+        contexto = "PREÇO ESTICADO COM VENDA FRACA"
+
+    if exaustao:
+        ciclo = "EXAUSTÃO"
+        risco = "ALTO"
+        contexto = "RISCO DE REVERSÃO OU PAUSA FORTE"
+
+    if (
+        abs(distancia_vwap) > 2.0
+        and abs(score_agressao) < 8
+        and intensidade_fluxo > 1100
+    ):
+        ciclo = "ARMADILHA"
+        risco = "ALTO"
+        contexto = "MOVIMENTO FORTE SEM CONFIRMAÇÃO DE AGRESSÃO"
+
+    return {
+        "ciclo_institucional": ciclo,
+        "risco_ciclo": risco,
+        "contexto_ciclo": contexto,
     }
 
 
@@ -194,26 +312,50 @@ def data():
     )
 
     vwap, vwap_superior, vwap_inferior = calcular_vwap_e_bandas()
+
     vwap_atual = vwap[-1]["value"]
+    vwap_superior_atual = vwap_superior[-1]["value"]
+    vwap_inferior_atual = vwap_inferior[-1]["value"]
 
-    tendencia = resultado["tendencia"]
+    distancia_vwap = abs(preco - vwap_atual)
+    movimento_candle = abs(ultimo["close"] - ultimo["open"])
 
-    reversao_detectada = False
+    reversao_forte = (
+        distancia_vwap > 1.5
+        and movimento_candle > 0.8
+        and abs(delta) > 180
+    )
 
-    if tendencia == "TENDÊNCIA FORTE DE COMPRA" and preco < vwap_atual:
-        reversao_detectada = True
+    ultimo["reversao_detectada"] = reversao_forte
 
-    elif tendencia == "TENDÊNCIA FORTE DE VENDA" and preco > vwap_atual:
-        reversao_detectada = True
-
-    ultimo["reversao_detectada"] = reversao_detectada or ultimo["reversao_detectada"]
-
-    reversao = "REVERSÃO DETECTADA" if ultimo["reversao_detectada"] else "SEM REVERSÃO"
+    reversao = "REVERSÃO DETECTADA" if reversao_forte else "SEM REVERSÃO"
 
     pressao_compra = random.randint(0, 100)
     pressao_venda = 100 - pressao_compra
 
-    frequencia = calcular_frequencia(saldo_agressor, delta, volume)
+    frequencia_mercado, modo_mercado, intensidade_fluxo = calcular_frequencia(
+        saldo_agressor,
+        delta,
+        volume
+    )
+
+    memoria = calcular_memoria_agressao(
+        saldo_agressor,
+        delta,
+        volume
+    )
+
+    ciclo = detectar_ciclo_institucional(
+        preco,
+        vwap_atual,
+        vwap_superior_atual,
+        vwap_inferior_atual,
+        memoria,
+        frequencia_mercado,
+        intensidade_fluxo,
+        resultado["exaustao"],
+        resultado["absorcao"],
+    )
 
     return {
         "historico": historico,
@@ -241,7 +383,16 @@ def data():
         "pressao_venda": pressao_venda,
         "sinal": resultado["sinal"],
 
-        "frequencia_mercado": frequencia["frequencia_mercado"],
-        "intensidade_fluxo": frequencia["intensidade_fluxo"],
-        "modo_mercado": frequencia["modo_mercado"],
+        "frequencia_mercado": frequencia_mercado,
+        "intensidade_fluxo": intensidade_fluxo,
+        "modo_mercado": modo_mercado,
+
+        "persistencia_compra": memoria["persistencia_compra"],
+        "persistencia_venda": memoria["persistencia_venda"],
+        "score_agressao": memoria["score_agressao"],
+        "leitura_agressao": memoria["leitura_agressao"],
+
+        "ciclo_institucional": ciclo["ciclo_institucional"],
+        "risco_ciclo": ciclo["risco_ciclo"],
+        "contexto_ciclo": ciclo["contexto_ciclo"],
     }
