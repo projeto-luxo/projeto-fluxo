@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
 import random
+import math
 
 from flow_data import gerar_sinal
 
@@ -15,6 +16,7 @@ app.add_middleware(
 )
 
 historico = []
+fluxo_recente = []
 preco_atual = 100.0
 ultimo_minuto = None
 
@@ -24,8 +26,11 @@ def criar_candle(time_value):
 
     abertura = preco_atual
     fechamento = abertura + random.uniform(-0.8, 0.8)
+
     maxima = max(abertura, fechamento) + random.uniform(0.1, 0.6)
     minima = min(abertura, fechamento) - random.uniform(0.1, 0.6)
+
+    volume_candle = random.randint(100, 900)
 
     preco_atual = fechamento
 
@@ -35,6 +40,7 @@ def criar_candle(time_value):
         "high": round(maxima, 2),
         "low": round(minima, 2),
         "close": round(fechamento, 2),
+        "volume": volume_candle,
         "reversao_detectada": abs(fechamento - abertura) > 1.2,
     }
 
@@ -82,6 +88,7 @@ def atualizar_candle():
             "high": round(max(abertura, novo_preco), 2),
             "low": round(min(abertura, novo_preco), 2),
             "close": round(novo_preco, 2),
+            "volume": random.randint(100, 900),
             "reversao_detectada": abs(novo_preco - abertura) > 1.2,
         }
 
@@ -91,26 +98,80 @@ def atualizar_candle():
             historico = historico[-300:]
 
 
-def calcular_vwap_series():
+def calcular_vwap_e_bandas():
     vwap = []
+    vwap_superior = []
+    vwap_inferior = []
+
     soma_preco_volume = 0
     soma_volume = 0
+    precos_medios = []
 
     for candle in historico:
-        volume_candle = random.randint(100, 900)
-        preco_medio = (candle["high"] + candle["low"] + candle["close"]) / 3
+        volume_candle = candle.get("volume", 1)
+
+        preco_medio = (
+            candle["high"] + candle["low"] + candle["close"]
+        ) / 3
+
+        precos_medios.append(preco_medio)
 
         soma_preco_volume += preco_medio * volume_candle
         soma_volume += volume_candle
 
-        valor = soma_preco_volume / soma_volume if soma_volume else candle["close"]
+        valor_vwap = soma_preco_volume / soma_volume if soma_volume else candle["close"]
+
+        media = sum(precos_medios) / len(precos_medios)
+        variancia = sum((p - media) ** 2 for p in precos_medios) / len(precos_medios)
+        desvio = math.sqrt(variancia)
+
+        banda_superior = valor_vwap + desvio
+        banda_inferior = valor_vwap - desvio
 
         vwap.append({
             "time": candle["time"],
-            "value": round(valor, 2),
+            "value": round(valor_vwap, 2),
         })
 
-    return vwap
+        vwap_superior.append({
+            "time": candle["time"],
+            "value": round(banda_superior, 2),
+        })
+
+        vwap_inferior.append({
+            "time": candle["time"],
+            "value": round(banda_inferior, 2),
+        })
+
+    return vwap, vwap_superior, vwap_inferior
+
+
+def calcular_frequencia(saldo_agressor, delta, volume):
+    global fluxo_recente
+
+    intensidade = abs(saldo_agressor) + abs(delta) + (volume / 2)
+    fluxo_recente.append(intensidade)
+
+    if len(fluxo_recente) > 30:
+        fluxo_recente = fluxo_recente[-30:]
+
+    media = sum(fluxo_recente) / len(fluxo_recente)
+
+    if media > 1300:
+        frequencia = "FREQUÊNCIA ALTA"
+        modo = "MERCADO ACELERADO"
+    elif media > 800:
+        frequencia = "FREQUÊNCIA MÉDIA"
+        modo = "MERCADO ATIVO"
+    else:
+        frequencia = "FREQUÊNCIA BAIXA"
+        modo = "MERCADO LENTO"
+
+    return {
+        "frequencia_mercado": frequencia,
+        "intensidade_fluxo": round(media, 2),
+        "modo_mercado": modo,
+    }
 
 
 @app.get("/data")
@@ -132,7 +193,7 @@ def data():
         preco
     )
 
-    vwap = calcular_vwap_series()
+    vwap, vwap_superior, vwap_inferior = calcular_vwap_e_bandas()
     vwap_atual = vwap[-1]["value"]
 
     tendencia = resultado["tendencia"]
@@ -152,9 +213,13 @@ def data():
     pressao_compra = random.randint(0, 100)
     pressao_venda = 100 - pressao_compra
 
+    frequencia = calcular_frequencia(saldo_agressor, delta, volume)
+
     return {
         "historico": historico,
         "vwap": vwap,
+        "vwap_superior": vwap_superior,
+        "vwap_inferior": vwap_inferior,
 
         "forca": resultado["forca"],
         "entrada": resultado["entrada"],
@@ -175,4 +240,8 @@ def data():
         "pressao_compra": pressao_compra,
         "pressao_venda": pressao_venda,
         "sinal": resultado["sinal"],
+
+        "frequencia_mercado": frequencia["frequencia_mercado"],
+        "intensidade_fluxo": frequencia["intensidade_fluxo"],
+        "modo_mercado": frequencia["modo_mercado"],
     }

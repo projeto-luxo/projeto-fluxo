@@ -9,8 +9,12 @@ export default function App() {
   const stopLineRef = useRef(null);
   const parcialLineRef = useRef(null);
   const alvoLineRef = useRef(null);
-  const vwapLineRef = useRef(null);
 
+  const vwapLineRef = useRef(null);
+  const vwapSuperiorRef = useRef(null);
+  const vwapInferiorRef = useRef(null);
+
+  const absorcaoLineRef = useRef(null);
   const carregouHistoricoRef = useRef(false);
 
   const [dataInfo, setDataInfo] = useState({});
@@ -31,9 +35,10 @@ export default function App() {
         score: data.forca,
         reversao: data.reversao,
         zonaQuente: data.zona_quente_absorcao
-          ? "ZONA QUENTE"
+          ? "🔥 ZONA QUENTE"
           : "SEM ZONA QUENTE",
-        exaustao: data.exaustao ? "EXAUSTÃO" : "SEM EXAUSTÃO",
+        absorcao: data.absorcao,
+        exaustao: data.exaustao ? "⚠ EXAUSTÃO" : "SEM EXAUSTÃO",
         entrada: data.entrada,
         direcao: data.tendencia,
         padrao: data.sinal,
@@ -45,18 +50,61 @@ export default function App() {
         delta: data.delta,
         volume: data.volume,
         pressao: `${data.pressao_compra ?? 0}% x ${data.pressao_venda ?? 0}%`,
+        frequencia: data.frequencia_mercado,
+        modo: data.modo_mercado,
+        intensidade: data.intensidade_fluxo,
+      });
+
+      const historicoComCores = data.historico.map((candle) => {
+        if (candle.reversao_detectada) {
+          return {
+            ...candle,
+            color: "#ffff00",
+            borderColor: "#ffff00",
+            wickColor: "#ffff00",
+          };
+        }
+
+        if (data.zona_quente_absorcao && candle.time === ultimoCandle.time) {
+          return {
+            ...candle,
+            color: "#ff9800",
+            borderColor: "#ffcc00",
+            wickColor: "#ffcc00",
+          };
+        }
+
+        return candle;
       });
 
       if (!carregouHistoricoRef.current) {
-        candleSeriesRef.current.setData(data.historico);
+        candleSeriesRef.current.setData(historicoComCores);
+
         vwapLineRef.current.setData(data.vwap || []);
+        vwapSuperiorRef.current.setData(data.vwap_superior || []);
+        vwapInferiorRef.current.setData(data.vwap_inferior || []);
+
         carregouHistoricoRef.current = true;
       } else {
-        candleSeriesRef.current.update(ultimoCandle);
+        const ultimoComCor =
+          historicoComCores[historicoComCores.length - 1];
+
+        candleSeriesRef.current.update(ultimoComCor);
 
         if (data.vwap && data.vwap.length > 0) {
-          const ultimoVwap = data.vwap[data.vwap.length - 1];
-          vwapLineRef.current.update(ultimoVwap);
+          vwapLineRef.current.update(data.vwap[data.vwap.length - 1]);
+        }
+
+        if (data.vwap_superior && data.vwap_superior.length > 0) {
+          vwapSuperiorRef.current.update(
+            data.vwap_superior[data.vwap_superior.length - 1]
+          );
+        }
+
+        if (data.vwap_inferior && data.vwap_inferior.length > 0) {
+          vwapInferiorRef.current.update(
+            data.vwap_inferior[data.vwap_inferior.length - 1]
+          );
         }
       }
 
@@ -81,15 +129,48 @@ export default function App() {
         ]);
       }
 
-      const markers = data.historico
-        .filter((candle) => candle.reversao_detectada === true)
-        .map((candle) => ({
-          time: candle.time,
+      if (data.zona_absorcao !== null && data.zona_absorcao !== undefined) {
+        absorcaoLineRef.current.setData([
+          { time: primeiroTime, value: data.zona_absorcao },
+          { time: ultimoTime, value: data.zona_absorcao },
+        ]);
+      } else {
+        absorcaoLineRef.current.setData([]);
+      }
+
+      const markers = [];
+
+      data.historico.forEach((candle) => {
+        if (candle.reversao_detectada === true) {
+          markers.push({
+            time: candle.time,
+            position: "aboveBar",
+            color: "yellow",
+            shape: "arrowDown",
+            text: "REV",
+          });
+        }
+      });
+
+      if (data.zona_quente_absorcao) {
+        markers.push({
+          time: ultimoCandle.time,
+          position: "belowBar",
+          color: "orange",
+          shape: "arrowUp",
+          text: "ABS",
+        });
+      }
+
+      if (data.exaustao) {
+        markers.push({
+          time: ultimoCandle.time,
           position: "aboveBar",
-          color: "yellow",
-          shape: "arrowDown",
-          text: "REV",
-        }));
+          color: "red",
+          shape: "circle",
+          text: "EXA",
+        });
+      }
 
       candleSeriesRef.current.setMarkers(markers);
     } catch (err) {
@@ -104,12 +185,12 @@ export default function App() {
       width: chartContainerRef.current.clientWidth,
       height: window.innerHeight - 20,
       layout: {
-        backgroundColor: "#0b111f",
+        backgroundColor: "#050915",
         textColor: "#ffffff",
       },
       grid: {
-        vertLines: { color: "#334158" },
-        horzLines: { color: "#334158" },
+        vertLines: { color: "#22304a" },
+        horzLines: { color: "#22304a" },
       },
       rightPriceScale: {
         borderColor: "#334158",
@@ -119,36 +200,61 @@ export default function App() {
         timeVisible: true,
         secondsVisible: true,
       },
+      crosshair: {
+        mode: 1,
+      },
     });
 
     chartRef.current = chart;
 
     candleSeriesRef.current = chart.addCandlestickSeries({
-      upColor: "#00d4aa",
-      downColor: "#ff4d4d",
-      borderVisible: false,
-      wickUpColor: "#00d4aa",
-      wickDownColor: "#ff4d4d",
+      upColor: "#00ffc8",
+      downColor: "#ff3b3b",
+      borderUpColor: "#00ffc8",
+      borderDownColor: "#ff3b3b",
+      wickUpColor: "#00ffc8",
+      wickDownColor: "#ff3b3b",
     });
 
     stopLineRef.current = chart.addLineSeries({
-      color: "red",
+      color: "#ff0000",
       lineWidth: 1,
+      lineStyle: 2,
     });
 
     parcialLineRef.current = chart.addLineSeries({
-      color: "yellow",
+      color: "#ffff00",
       lineWidth: 1,
+      lineStyle: 2,
     });
 
     alvoLineRef.current = chart.addLineSeries({
-      color: "green",
+      color: "#00ff66",
       lineWidth: 1,
+      lineStyle: 2,
     });
 
     vwapLineRef.current = chart.addLineSeries({
-      color: "blue",
-      lineWidth: 2,
+      color: "#0066ff",
+      lineWidth: 3,
+    });
+
+    vwapSuperiorRef.current = chart.addLineSeries({
+      color: "#00ffff",
+      lineWidth: 1,
+      lineStyle: 2,
+    });
+
+    vwapInferiorRef.current = chart.addLineSeries({
+      color: "#00ffff",
+      lineWidth: 1,
+      lineStyle: 2,
+    });
+
+    absorcaoLineRef.current = chart.addLineSeries({
+      color: "#ff9800",
+      lineWidth: 3,
+      lineStyle: 2,
     });
 
     fetchData();
@@ -179,31 +285,72 @@ export default function App() {
         display: "flex",
         height: "100vh",
         padding: 10,
-        background: "#050915",
+        background:
+          "radial-gradient(circle at top, #111a33 0%, #050915 55%, #02040a 100%)",
         boxSizing: "border-box",
       }}
     >
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          border: "2px solid #1c2f4a",
+          borderRadius: 8,
+          overflow: "hidden",
+          boxShadow: "0 0 25px rgba(0, 255, 200, 0.15)",
+        }}
+      >
         <div ref={chartContainerRef} style={{ height: "100%" }} />
       </div>
 
-      <div style={{ width: 230, marginLeft: 10 }}>
-        <Box color="#1b5e20">SCORE INSTITUCIONAL: {dataInfo.score}</Box>
+      <div style={{ width: 265, marginLeft: 10 }}>
+        <Titulo>TRIN FLOW PRO 4.4</Titulo>
+
+        <Box color="#0b5d1e">SCORE INSTITUCIONAL: {dataInfo.score}</Box>
         <Box color="#827717">{dataInfo.reversao}</Box>
-        <Box color="#1a1a2e">{dataInfo.zonaQuente}</Box>
+        <Box color="#bf6b00">{dataInfo.zonaQuente}</Box>
+        <Box color="#4e342e">ABSORÇÃO: {dataInfo.absorcao}</Box>
         <Box color="#1a1a2e">{dataInfo.exaustao}</Box>
+
         <Box color="#424242">ENTRADA: {dataInfo.entrada}</Box>
         <Box color="#424242">DIREÇÃO: {dataInfo.direcao}</Box>
         <Box color="#424242">PADRÃO: {dataInfo.padrao}</Box>
-        <Box color="#424242">PREÇO: {dataInfo.preco}</Box>
-        <Box color="#424242">STOP: {dataInfo.stop}</Box>
-        <Box color="#424242">PARCIAL: {dataInfo.parcial}</Box>
-        <Box color="#424242">ALVO: {dataInfo.alvo}</Box>
+
+        <Box color="#263238">PREÇO: {dataInfo.preco}</Box>
+        <Box color="#7f0000">STOP: {dataInfo.stop}</Box>
+        <Box color="#827717">PARCIAL: {dataInfo.parcial}</Box>
+        <Box color="#1b5e20">ALVO: {dataInfo.alvo}</Box>
+
         <Box color="#424242">SALDO: {dataInfo.saldo}</Box>
         <Box color="#424242">DELTA: {dataInfo.delta}</Box>
         <Box color="#424242">VOLUME: {dataInfo.volume}</Box>
         <Box color="#424242">PRESSÃO: {dataInfo.pressao}</Box>
+
+        <Box color="#004d40">FREQUÊNCIA: {dataInfo.frequencia}</Box>
+        <Box color="#1a237e">MODO: {dataInfo.modo}</Box>
+        <Box color="#4a148c">INTENSIDADE: {dataInfo.intensidade}</Box>
       </div>
+    </div>
+  );
+}
+
+function Titulo({ children }) {
+  return (
+    <div
+      style={{
+        background: "linear-gradient(90deg, #00ffc8, #0066ff)",
+        color: "#001014",
+        padding: 10,
+        marginBottom: 8,
+        borderRadius: 6,
+        fontSize: 15,
+        fontWeight: "900",
+        textAlign: "center",
+        letterSpacing: 1,
+        boxShadow: "0 0 15px rgba(0, 255, 200, 0.35)",
+      }}
+    >
+      {children}
     </div>
   );
 }
@@ -216,9 +363,11 @@ function Box({ children, color }) {
         color: "white",
         padding: 8,
         marginBottom: 5,
-        borderRadius: 4,
+        borderRadius: 5,
         fontSize: 13,
         fontWeight: "bold",
+        border: "1px solid rgba(255,255,255,0.08)",
+        boxShadow: "0 0 8px rgba(0,0,0,0.35)",
       }}
     >
       {children}
