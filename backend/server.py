@@ -1,13 +1,17 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
 import random
-import math
 import asyncio
 
-from flow_data import gerar_sinal
+from backend.flow_data import gerar_sinal
+from core.engine import Engine
+from core.vwap_engine import VWAPEngine
+from core.candle_engine import CandleEngine
+from core.aggression_engine import AggressionEngine
 
-app = FastAPI()
+
+app = FastAPI(title="TRIN FLOW PRO", version="5.5 WS RESTAURADO")
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,15 +20,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+engine = Engine()
+vwap_engine = VWAPEngine()
+candle_engine = CandleEngine()
+aggression_engine = AggressionEngine()
+
 historico = []
-fluxo_recente = []
-memoria_agressao = []
-
 preco_atual = 100.0
-ultimo_minuto = None
+
+tempo_base = datetime.now() - timedelta(minutes=120)
+contador_candle = 0
 
 
-def criar_candle(time_value):
+def proximo_time():
+    global contador_candle
+
+    tempo = tempo_base + timedelta(minutes=contador_candle)
+    contador_candle += 1
+
+    return int(tempo.timestamp())
+
+
+def gerar_candle():
     global preco_atual
 
     abertura = preco_atual
@@ -32,233 +50,85 @@ def criar_candle(time_value):
     maxima = max(abertura, fechamento) + random.uniform(0.1, 0.6)
     minima = min(abertura, fechamento) - random.uniform(0.1, 0.6)
 
+    volume = random.randint(100, 1500)
+    delta = random.randint(-500, 500)
+    saldo_agressor = random.randint(-1000, 1000)
+
     preco_atual = fechamento
 
     return {
-        "time": int(time_value),
+        "time": proximo_time(),
         "open": round(abertura, 2),
         "high": round(maxima, 2),
         "low": round(minima, 2),
         "close": round(fechamento, 2),
-        "volume": random.randint(100, 900),
+        "volume": volume,
+        "delta": delta,
+        "saldo_agressor": saldo_agressor,
         "reversao_detectada": False,
         "explosao_detectada": False,
     }
 
 
-def iniciar_historico(qtd=120):
-    global historico
+def atualizar_historico():
+    candle = gerar_candle()
 
-    if historico:
-        return
+    historico.append(candle)
 
-    agora = datetime.now() - timedelta(minutes=qtd)
+    if len(historico) > 120:
+        historico.pop(0)
 
-    for i in range(qtd):
-        candle_time = agora + timedelta(minutes=i)
-        historico.append(criar_candle(candle_time.timestamp()))
+    candle_engine.adicionar_candle(candle)
+    vwap_engine.adicionar_candle(candle)
 
-
-def atualizar_candle():
-    global historico, preco_atual, ultimo_minuto
-
-    agora = datetime.now()
-    minuto_atual = agora.replace(second=0, microsecond=0)
-
-    if ultimo_minuto is None:
-        ultimo_minuto = minuto_atual
-
-    novo_preco = preco_atual + random.uniform(-0.35, 0.35)
-    preco_atual = novo_preco
-
-    if minuto_atual == ultimo_minuto and historico:
-        candle = historico[-1]
-        candle["close"] = round(novo_preco, 2)
-        candle["high"] = round(max(candle["high"], novo_preco), 2)
-        candle["low"] = round(min(candle["low"], novo_preco), 2)
-    else:
-        ultimo_minuto = minuto_atual
-        abertura = historico[-1]["close"]
-
-        historico.append({
-            "time": int(minuto_atual.timestamp()),
-            "open": round(abertura, 2),
-            "high": round(max(abertura, novo_preco), 2),
-            "low": round(min(abertura, novo_preco), 2),
-            "close": round(novo_preco, 2),
-            "volume": random.randint(100, 900),
-            "reversao_detectada": False,
-            "explosao_detectada": False,
-        })
-
-        if len(historico) > 300:
-            historico = historico[-300:]
+    return candle
 
 
-def calcular_vwap_e_bandas():
-    vwap = []
-    vwap_superior = []
-    vwap_inferior = []
-
-    soma_preco_volume = 0
-    soma_volume = 0
-    precos_medios = []
-
-    for candle in historico:
-        volume_candle = candle.get("volume", 1)
-        preco_medio = (candle["high"] + candle["low"] + candle["close"]) / 3
-
-        precos_medios.append(preco_medio)
-
-        soma_preco_volume += preco_medio * volume_candle
-        soma_volume += volume_candle
-
-        valor_vwap = soma_preco_volume / soma_volume if soma_volume else candle["close"]
-
-        media = sum(precos_medios) / len(precos_medios)
-        variancia = sum((p - media) ** 2 for p in precos_medios) / len(precos_medios)
-        desvio = math.sqrt(variancia)
-
-        vwap.append({"time": candle["time"], "value": round(valor_vwap, 2)})
-        vwap_superior.append({"time": candle["time"], "value": round(valor_vwap + desvio, 2)})
-        vwap_inferior.append({"time": candle["time"], "value": round(valor_vwap - desvio, 2)})
-
-    return vwap, vwap_superior, vwap_inferior
-
-
-def calcular_frequencia(saldo_agressor, delta, volume):
-    global fluxo_recente
-
-    intensidade = abs(saldo_agressor) + abs(delta) + (volume / 2)
-    fluxo_recente.append(intensidade)
-
-    if len(fluxo_recente) > 30:
-        fluxo_recente = fluxo_recente[-30:]
-
-    media = sum(fluxo_recente) / len(fluxo_recente)
-
-    if media > 1300:
-        return "FREQUÊNCIA ALTA", "MERCADO ACELERADO", round(media, 2)
-
-    if media > 800:
-        return "FREQUÊNCIA MÉDIA", "MERCADO ATIVO", round(media, 2)
-
-    return "FREQUÊNCIA BAIXA", "MERCADO LENTO", round(media, 2)
-
-
-def calcular_memoria_agressao(saldo_agressor, delta, volume):
-    global memoria_agressao
-
-    memoria_agressao.append({
-        "saldo": saldo_agressor,
-        "delta": delta,
-        "volume": volume,
-    })
-
-    if len(memoria_agressao) > 20:
-        memoria_agressao = memoria_agressao[-20:]
-
-    compras = sum(1 for x in memoria_agressao if x["saldo"] > 0 and x["delta"] > 0)
-    vendas = sum(1 for x in memoria_agressao if x["saldo"] < 0 and x["delta"] < 0)
-
-    saldo_total = sum(x["saldo"] for x in memoria_agressao)
-    delta_total = sum(x["delta"] for x in memoria_agressao)
-    volume_total = sum(x["volume"] for x in memoria_agressao)
-
-    persistencia_compra = round((compras / len(memoria_agressao)) * 100, 2)
-    persistencia_venda = round((vendas / len(memoria_agressao)) * 100, 2)
-
-    score_agressao = round(
-        (saldo_total / 100)
-        + (delta_total / 50)
-        + (volume_total / 1000),
-        2
-    )
-
-    if persistencia_compra >= 60 and score_agressao > 10:
-        leitura = "PERSISTÊNCIA COMPRADORA"
-    elif persistencia_venda >= 60 and score_agressao < -10:
-        leitura = "PERSISTÊNCIA VENDEDORA"
-    elif abs(score_agressao) < 8:
-        leitura = "AGRESSÃO NEUTRA"
-    else:
-        leitura = "AGRESSÃO INSTÁVEL"
-
-    return {
-        "persistencia_compra": persistencia_compra,
-        "persistencia_venda": persistencia_venda,
-        "score_agressao": score_agressao,
-        "leitura_agressao": leitura,
-    }
-
-
-def detectar_explosao_fluxo(saldo_agressor, delta, volume, score_agressao, intensidade_fluxo):
-    if (
-        saldo_agressor > 850
-        and delta > 350
-        and volume > 1200
-        and score_agressao > 18
-        and intensidade_fluxo > 1300
-    ):
-        return True, "BUY EXPLOSION"
-
-    if (
-        saldo_agressor < -850
-        and delta < -350
-        and volume > 1200
-        and score_agressao < -18
-        and intensidade_fluxo > 1300
-    ):
-        return True, "SELL EXPLOSION"
-
-    return False, "SEM EXPLOSÃO"
+def garantir_historico_inicial():
+    while len(historico) < 60:
+        atualizar_historico()
 
 
 def gerar_payload():
-    iniciar_historico()
-    atualizar_candle()
+    garantir_historico_inicial()
 
-    ultimo = historico[-1]
-    preco = ultimo["close"]
+    atual = atualizar_historico()
+    anterior = historico[-2] if len(historico) > 1 else None
 
-    saldo_agressor = random.randint(-1000, 1000)
-    delta = random.randint(-500, 500)
-    volume = random.randint(100, 1500)
+    preco = atual["close"]
+    saldo_agressor = atual["saldo_agressor"]
+    delta = atual["delta"]
+    volume = atual["volume"]
 
-    resultado = gerar_sinal(saldo_agressor, volume, delta, preco)
-
-    vwap, vwap_superior, vwap_inferior = calcular_vwap_e_bandas()
-    vwap_atual = vwap[-1]["value"]
-
-    distancia_vwap = abs(preco - vwap_atual)
-    movimento_candle = abs(ultimo["close"] - ultimo["open"])
-
-    reversao_forte = (
-        distancia_vwap > 1.5
-        and movimento_candle > 0.8
-        and abs(delta) > 180
+    resultado = gerar_sinal(
+        saldo_agressor,
+        volume,
+        delta,
+        preco,
     )
 
-    ultimo["reversao_detectada"] = reversao_forte
+    engine_data = engine.processar(
+        atual,
+        anterior,
+    )
 
-    reversao = "REVERSÃO DETECTADA" if reversao_forte else "SEM REVERSÃO"
+    vwap, vwap_superior, vwap_inferior = vwap_engine.calcular_vwap_e_bandas()
 
-    pressao_compra = random.randint(0, 100)
-    pressao_venda = 100 - pressao_compra
+    frequencia_mercado, modo_mercado, intensidade_fluxo = (
+        aggression_engine.calcular_frequencia(
+            saldo_agressor,
+            delta,
+            volume,
+        )
+    )
 
-    frequencia_mercado, modo_mercado, intensidade_fluxo = calcular_frequencia(
+    memoria = aggression_engine.calcular_memoria_agressao(
         saldo_agressor,
         delta,
         volume,
     )
 
-    memoria = calcular_memoria_agressao(
-        saldo_agressor,
-        delta,
-        volume,
-    )
-
-    explosao_detectada, tipo_explosao = detectar_explosao_fluxo(
+    explosao_detectada, tipo_explosao = aggression_engine.detectar_explosao_fluxo(
         saldo_agressor,
         delta,
         volume,
@@ -266,10 +136,19 @@ def gerar_payload():
         intensidade_fluxo,
     )
 
-    ultimo["explosao_detectada"] = explosao_detectada
+    pressao_compra = random.randint(0, 100)
+    pressao_venda = 100 - pressao_compra
+
+    reversao_detectada = candle_engine.calcular_reversao()
+
+    atual["reversao_detectada"] = reversao_detectada
+    atual["explosao_detectada"] = explosao_detectada
+
+    historico[-1] = atual
 
     return {
         "historico": historico,
+
         "vwap": vwap,
         "vwap_superior": vwap_superior,
         "vwap_inferior": vwap_inferior,
@@ -281,22 +160,26 @@ def gerar_payload():
         "zona_absorcao": resultado["zona_absorcao"],
         "zona_quente_absorcao": resultado["zona_quente_absorcao"],
         "exaustao": resultado["exaustao"],
+
         "stop": resultado["stop"],
         "parcial": resultado["parcial"],
         "alvo": resultado["alvo"],
 
-        "reversao": reversao,
+        "sinal": resultado["sinal"],
+
+        "reversao": "REVERSÃO DETECTADA" if reversao_detectada else "SEM REVERSÃO",
         "preco_atual": preco,
+
         "saldo_agressor": saldo_agressor,
         "delta": delta,
         "volume": volume,
+
         "pressao_compra": pressao_compra,
         "pressao_venda": pressao_venda,
-        "sinal": resultado["sinal"],
 
         "frequencia_mercado": frequencia_mercado,
-        "intensidade_fluxo": intensidade_fluxo,
         "modo_mercado": modo_mercado,
+        "intensidade_fluxo": intensidade_fluxo,
 
         "persistencia_compra": memoria["persistencia_compra"],
         "persistencia_venda": memoria["persistencia_venda"],
@@ -305,6 +188,24 @@ def gerar_payload():
 
         "explosao_detectada": explosao_detectada,
         "tipo_explosao": tipo_explosao,
+
+        "engine_score": engine_data["engine_score"],
+        "engine_direcao": engine_data["engine_direcao"],
+        "engine_fase": engine_data["engine_fase"],
+        "engine_absorcao": engine_data["engine_absorcao"],
+        "engine_trap": engine_data["engine_trap"],
+        "engine_seq_delta": engine_data["engine_seq_delta"],
+        "engine_zona_low": engine_data["engine_zona_low"],
+        "engine_zona_high": engine_data["engine_zona_high"],
+    }
+
+
+@app.get("/")
+def home():
+    return {
+        "projeto": "TRIN FLOW PRO",
+        "status": "ONLINE",
+        "versao": "5.5 WS RESTAURADO",
     }
 
 
@@ -321,7 +222,10 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             payload = gerar_payload()
             await websocket.send_json(payload)
-            await asyncio.sleep(1.0)
+            await asyncio.sleep(1)
 
-    except Exception:
-        pass
+    except WebSocketDisconnect:
+        print("Cliente WebSocket desconectado.")
+
+    except Exception as erro:
+        print(f"Erro WebSocket TRIN: {erro}")
