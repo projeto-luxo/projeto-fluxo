@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
 
 export default function App() {
@@ -18,8 +18,9 @@ export default function App() {
   const carregouHistoricoRef = useRef(false);
 
   const [dataInfo, setDataInfo] = useState({});
+  const [wsStatus, setWsStatus] = useState("DESCONECTADO");
 
-  const ordenarPorTempo = useCallback((lista) => {
+  const ordenarPorTempo = (lista) => {
     if (!Array.isArray(lista)) return [];
 
     const mapa = new Map();
@@ -31,122 +32,144 @@ export default function App() {
     });
 
     return Array.from(mapa.values()).sort((a, b) => a.time - b.time);
-  }, []);
+  };
 
-  const setLinhaHorizontal = useCallback(
-    (seriesRef, primeiroTime, ultimoTime, valor) => {
-      if (!seriesRef.current) return;
+  const formatar = (valor) => {
+    if (valor === null || valor === undefined) return "-";
+    const n = Number(valor);
+    if (!Number.isFinite(n)) return valor;
+    return n.toFixed(2);
+  };
 
-      if (valor === null || valor === undefined || Number.isNaN(Number(valor))) {
-        seriesRef.current.setData([]);
-        return;
-      }
+  const setLinhaHorizontal = (seriesRef, primeiroTime, ultimoTime, valor) => {
+    if (!seriesRef.current) return;
 
-      seriesRef.current.setData([
-        { time: primeiroTime, value: Number(valor) },
-        { time: ultimoTime, value: Number(valor) },
-      ]);
-    },
-    []
-  );
+    if (valor === null || valor === undefined || Number.isNaN(Number(valor))) {
+      seriesRef.current.setData([]);
+      return;
+    }
 
-  const gerarMarkersREV = useCallback((historico) => {
-    if (!historico || historico.length === 0) return [];
+    seriesRef.current.setData([
+      { time: primeiroTime, value: Number(valor) },
+      { time: ultimoTime, value: Number(valor) },
+    ]);
+  };
+
+  const gerarMarkersInstitucionais = (historico) => {
+    if (!Array.isArray(historico)) return [];
 
     return historico
-      .filter((candle) => candle.reversao_detectada)
-      .slice(-20)
-      .map((candle) => ({
-        time: candle.time,
-        position: candle.close >= candle.open ? "belowBar" : "aboveBar",
-        color: "#ffaa00",
-        shape: "circle",
-        text: "REV",
-      }));
-  }, []);
+      .filter((candle) => candle.reversao_detectada || candle.explosao_detectada)
+      .slice(-30)
+      .map((candle) => {
+        if (candle.explosao_detectada) {
+          return {
+            time: candle.time,
+            position: candle.delta >= 0 ? "belowBar" : "aboveBar",
+            color: candle.delta >= 0 ? "#00ff99" : "#ff3333",
+            shape: candle.delta >= 0 ? "arrowUp" : "arrowDown",
+            text: candle.delta >= 0 ? "BUY EXP" : "SELL EXP",
+          };
+        }
 
-  const processarDados = useCallback(
-    (data) => {
-      const historicoOrdenado = ordenarPorTempo(data.historico);
-
-      if (!historicoOrdenado.length) return;
-      if (!candleSeriesRef.current) return;
-
-      const ultimoCandle = historicoOrdenado[historicoOrdenado.length - 1];
-      const primeiroTime = historicoOrdenado[0].time;
-      const ultimoTime = ultimoCandle.time;
-
-      const vwap = ordenarPorTempo(data.vwap || []);
-      const vwapSuperior = ordenarPorTempo(data.vwap_superior || []);
-      const vwapInferior = ordenarPorTempo(data.vwap_inferior || []);
-
-      setDataInfo({
-        score: data.forca,
-        frequencia: data.frequencia_mercado,
-        intensidade: data.intensidade_fluxo,
-        scoreAgressao: data.score_agressao,
-        leituraAgressao: data.leitura_agressao,
-        saldo: data.saldo_agressor,
-        delta: data.delta,
-        volume: data.volume,
-        compra: data.pressao_compra || 0,
-        venda: data.pressao_venda || 0,
-        explosao: data.tipo_explosao,
-        reversao: data.reversao,
-        entrada: data.entrada,
-        tendencia: data.tendencia,
-        engineFase: data.engine_fase,
-        engineDirecao: data.engine_direcao,
-        engineScore: data.engine_score,
-        engineTrap: data.engine_trap,
+        return {
+          time: candle.time,
+          position: candle.close >= candle.open ? "belowBar" : "aboveBar",
+          color: "#ffaa00",
+          shape: "circle",
+          text: "REV",
+        };
       });
+  };
 
-      if (!carregouHistoricoRef.current) {
-        candleSeriesRef.current.setData(historicoOrdenado);
-        vwapLineRef.current.setData(vwap);
-        vwapSuperiorRef.current.setData(vwapSuperior);
-        vwapInferiorRef.current.setData(vwapInferior);
+  const processarDados = (data) => {
+    const historico = ordenarPorTempo(data.historico);
+    const vwap = ordenarPorTempo(data.vwap || []);
+    const vwapSuperior = ordenarPorTempo(data.vwap_superior || []);
+    const vwapInferior = ordenarPorTempo(data.vwap_inferior || []);
 
-        if (typeof candleSeriesRef.current.setMarkers === "function") {
-          candleSeriesRef.current.setMarkers(gerarMarkersREV(historicoOrdenado));
-        }
+    if (!historico.length) return;
+    if (!candleSeriesRef.current) return;
 
-        setTimeout(() => {
-          if (chartRef.current) {
-            chartRef.current.timeScale().setVisibleLogicalRange({
-              from: 0,
-              to: 120,
-            });
-          }
-        }, 100);
+    const ultimoCandle = historico[historico.length - 1];
+    const primeiroTime = historico[0].time;
+    const ultimoTime = ultimoCandle.time;
 
-        carregouHistoricoRef.current = true;
-      } else {
-        candleSeriesRef.current.update(ultimoCandle);
+    setDataInfo({
+      score: data.forca,
+      sinal: data.sinal,
+      entrada: data.entrada,
+      tendencia: data.tendencia,
 
-        if (vwap.length > 0) {
-          vwapLineRef.current.update(vwap[vwap.length - 1]);
-        }
+      frequencia: data.frequencia_mercado,
+      intensidade: data.intensidade_fluxo,
+      scoreAgressao: data.score_agressao,
+      leituraAgressao: data.leitura_agressao,
 
-        if (vwapSuperior.length > 0) {
-          vwapSuperiorRef.current.update(vwapSuperior[vwapSuperior.length - 1]);
-        }
+      saldo: data.saldo_agressor,
+      delta: data.delta,
+      volume: data.volume,
 
-        if (vwapInferior.length > 0) {
-          vwapInferiorRef.current.update(vwapInferior[vwapInferior.length - 1]);
-        }
+      compra: data.pressao_compra || 0,
+      venda: data.pressao_venda || 0,
 
-        if (typeof candleSeriesRef.current.setMarkers === "function") {
-          candleSeriesRef.current.setMarkers(gerarMarkersREV(historicoOrdenado));
-        }
+      explosao: data.tipo_explosao,
+      explosaoDetectada: data.explosao_detectada,
+
+      reversao: data.reversao,
+
+      engineScore: data.engine_score,
+      engineFase: data.engine_fase,
+      engineDirecao: data.engine_direcao,
+      engineTrap: data.engine_trap,
+      engineAbsorcao: data.engine_absorcao,
+      engineSeqDelta: data.engine_seq_delta,
+    });
+
+    if (!carregouHistoricoRef.current) {
+      candleSeriesRef.current.setData(historico);
+      vwapLineRef.current.setData(vwap);
+      vwapSuperiorRef.current.setData(vwapSuperior);
+      vwapInferiorRef.current.setData(vwapInferior);
+
+      if (typeof candleSeriesRef.current.setMarkers === "function") {
+        candleSeriesRef.current.setMarkers(gerarMarkersInstitucionais(historico));
       }
 
-      setLinhaHorizontal(stopLineRef, primeiroTime, ultimoTime, data.stop);
-      setLinhaHorizontal(parcialLineRef, primeiroTime, ultimoTime, data.parcial);
-      setLinhaHorizontal(alvoLineRef, primeiroTime, ultimoTime, data.alvo);
-    },
-    [ordenarPorTempo, gerarMarkersREV, setLinhaHorizontal]
-  );
+      setTimeout(() => {
+        if (chartRef.current) {
+          chartRef.current.timeScale().setVisibleLogicalRange({
+            from: 0,
+            to: 120,
+          });
+        }
+      }, 100);
+
+      carregouHistoricoRef.current = true;
+    } else {
+      candleSeriesRef.current.update(ultimoCandle);
+
+      if (vwap.length > 0) {
+        vwapLineRef.current.update(vwap[vwap.length - 1]);
+      }
+
+      if (vwapSuperior.length > 0) {
+        vwapSuperiorRef.current.update(vwapSuperior[vwapSuperior.length - 1]);
+      }
+
+      if (vwapInferior.length > 0) {
+        vwapInferiorRef.current.update(vwapInferior[vwapInferior.length - 1]);
+      }
+
+      if (typeof candleSeriesRef.current.setMarkers === "function") {
+        candleSeriesRef.current.setMarkers(gerarMarkersInstitucionais(historico));
+      }
+    }
+
+    setLinhaHorizontal(stopLineRef, primeiroTime, ultimoTime, data.stop);
+    setLinhaHorizontal(parcialLineRef, primeiroTime, ultimoTime, data.parcial);
+    setLinhaHorizontal(alvoLineRef, primeiroTime, ultimoTime, data.alvo);
+  };
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -227,22 +250,34 @@ export default function App() {
       lineStyle: 2,
     });
 
-    socketRef.current = new WebSocket("ws://127.0.0.1:8000/ws");
+    if (socketRef.current && socketRef.current.readyState <= 1) {
+      return;
+    }
 
-    socketRef.current.onopen = () => {
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws");
+    socketRef.current = socket;
+
+    socket.onopen = () => {
+      setWsStatus("ONLINE");
       console.log("TRIN WebSocket conectado.");
     };
 
-    socketRef.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      processarDados(data);
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        processarDados(data);
+      } catch (erro) {
+        console.error("Erro ao processar dados TRIN:", erro);
+      }
     };
 
-    socketRef.current.onerror = (error) => {
+    socket.onerror = (error) => {
+      setWsStatus("ERRO");
       console.error("Erro no WebSocket:", error);
     };
 
-    socketRef.current.onclose = () => {
+    socket.onclose = () => {
+      setWsStatus("DESCONECTADO");
       console.log("TRIN WebSocket desconectado.");
     };
 
@@ -260,8 +295,9 @@ export default function App() {
     return () => {
       window.removeEventListener("resize", handleResize);
 
-      if (socketRef.current) {
-        socketRef.current.close();
+      if (socketRef.current === socket) {
+        socket.close();
+        socketRef.current = null;
       }
 
       chart.remove();
@@ -288,9 +324,9 @@ export default function App() {
       : "#00d4ff";
 
   const leituraDominante =
-    compra > 65
+    compra >= 65
       ? "DOMÍNIO COMPRADOR"
-      : venda > 65
+      : venda >= 65
       ? "DOMÍNIO VENDEDOR"
       : "FLUXO EQUILIBRADO";
 
@@ -301,16 +337,16 @@ export default function App() {
         height: "100vh",
         padding: 10,
         background:
-          "radial-gradient(circle at top, #071120 0%, #020816 72%)",
+          "radial-gradient(circle at top, #071120 0%, #020816 70%)",
         boxSizing: "border-box",
       }}
     >
       <style>
         {`
           @keyframes pulseRadar {
-            0% { transform: scale(0.92); opacity: 0.50; }
+            0% { transform: scale(0.92); opacity: 0.5; }
             50% { transform: scale(1.08); opacity: 1; }
-            100% { transform: scale(0.92); opacity: 0.50; }
+            100% { transform: scale(0.92); opacity: 0.5; }
           }
 
           @keyframes spinScanner {
@@ -333,9 +369,11 @@ export default function App() {
           border: `2px solid ${glowRadar}`,
           borderRadius: 10,
           overflow: "hidden",
-          boxShadow: `0 0 38px ${glowRadar}`,
+          boxShadow: `0 0 35px ${glowRadar}`,
+          position: "relative",
         }}
       >
+        <TopBar dataInfo={dataInfo} cor={glowRadar} wsStatus={wsStatus} />
         <div ref={chartContainerRef} style={{ height: "100%" }} />
       </div>
 
@@ -348,18 +386,20 @@ export default function App() {
           borderRadius: 10,
           border: `1px solid ${glowRadar}`,
           padding: 8,
-          boxShadow: `0 0 26px ${glowRadar}`,
           boxSizing: "border-box",
+          boxShadow: `0 0 25px ${glowRadar}`,
         }}
       >
-        <Titulo>TRIN FLOW PRO 5.7 WS DESK</Titulo>
+        <Titulo>TRIN FLOW PRO 5.8.1 WS HARDENED</Titulo>
 
-        <Radar cor={glowRadar} intensidade={dataInfo.intensidade} />
+        <Radar cor={glowRadar} intensidade={dataInfo.intensidade} wsStatus={wsStatus} />
 
         <Secao titulo="REGIME INSTITUCIONAL">
+          <Linha label="WS" valor={wsStatus} cor={wsStatus === "ONLINE" ? "#00ff99" : "#ff4444"} />
           <Linha label="FASE" valor={dataInfo.engineFase || "AGUARDANDO"} cor="#00d4ff" />
           <Linha label="DIREÇÃO" valor={dataInfo.engineDirecao || "NEUTRO"} cor="#00ffc8" />
           <Linha label="ENTRADA" valor={dataInfo.entrada || "AGUARDAR"} cor="#ffaa00" />
+          <Linha label="SINAL" valor={dataInfo.sinal || "SEM ENTRADA"} cor="#ffffff" />
           <Linha label="REVERSÃO" valor={dataInfo.reversao || "SEM REVERSÃO"} cor="#ffaa00" />
           <Linha label="TRAP" valor={dataInfo.engineTrap || "SEM TRAP"} cor="#ff66ff" />
         </Secao>
@@ -374,6 +414,8 @@ export default function App() {
           </BoxDestaque>
           <Linha label="FREQUÊNCIA" valor={dataInfo.frequencia || "-"} cor="#00ffc8" />
           <Linha label="INTENSIDADE" valor={formatar(dataInfo.intensidade)} cor="#b56cff" />
+          <Linha label="ENGINE SCORE" valor={dataInfo.engineScore ?? "-"} cor="#00d4ff" />
+          <Linha label="SEQ DELTA" valor={dataInfo.engineSeqDelta ?? "-"} cor="#ffaa00" />
         </Secao>
 
         <Secao titulo="TAPE SIMULADO">
@@ -391,14 +433,49 @@ export default function App() {
   );
 }
 
-function formatar(valor) {
-  if (valor === null || valor === undefined) return "-";
-  const n = Number(valor);
-  if (!Number.isFinite(n)) return valor;
-  return n.toFixed(2);
+function TopBar({ dataInfo, cor, wsStatus }) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        zIndex: 10,
+        top: 10,
+        left: 12,
+        display: "flex",
+        gap: 8,
+        pointerEvents: "none",
+      }}
+    >
+      <MiniBadge cor={wsStatus === "ONLINE" ? "#00ff99" : "#ff4444"}>
+        WS {wsStatus}
+      </MiniBadge>
+      <MiniBadge cor={cor}>FASE: {dataInfo.engineFase || "AGUARDANDO"}</MiniBadge>
+      <MiniBadge cor={cor}>DIREÇÃO: {dataInfo.engineDirecao || "NEUTRO"}</MiniBadge>
+      <MiniBadge cor={cor}>ENTRADA: {dataInfo.entrada || "AGUARDAR"}</MiniBadge>
+    </div>
+  );
 }
 
-function Radar({ cor, intensidade }) {
+function MiniBadge({ children, cor }) {
+  return (
+    <div
+      style={{
+        background: "rgba(2, 8, 22, 0.85)",
+        color: cor,
+        border: `1px solid ${cor}`,
+        borderRadius: 999,
+        padding: "5px 9px",
+        fontSize: 11,
+        fontWeight: "900",
+        boxShadow: `0 0 14px ${cor}`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Radar({ cor, intensidade, wsStatus }) {
   return (
     <div
       style={{
@@ -456,11 +533,18 @@ function Radar({ cor, intensidade }) {
           fontWeight: "900",
         }}
       >
-        <span>RADAR WS</span>
-        <span>{formatar(intensidade)}</span>
+        <span>RADAR WS {wsStatus}</span>
+        <span>{formatarGlobal(intensidade)}</span>
       </div>
     </div>
   );
+}
+
+function formatarGlobal(valor) {
+  if (valor === null || valor === undefined) return "-";
+  const n = Number(valor);
+  if (!Number.isFinite(n)) return valor;
+  return n.toFixed(2);
 }
 
 function Titulo({ children }) {
