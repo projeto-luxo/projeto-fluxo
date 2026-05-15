@@ -1,5 +1,10 @@
+// frontend/src/App.js
 import React, { useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
+import {
+  connectTrinWebSocket,
+  disconnectTrinWebSocket
+} from "./services/trinWebSocket";
 
 export default function App() {
   const chartContainerRef = useRef(null);
@@ -22,16 +27,7 @@ export default function App() {
 
   const ordenarPorTempo = (lista) => {
     if (!Array.isArray(lista)) return [];
-
-    const mapa = new Map();
-
-    lista.forEach((item) => {
-      if (item && item.time !== undefined) {
-        mapa.set(item.time, item);
-      }
-    });
-
-    return Array.from(mapa.values()).sort((a, b) => a.time - b.time);
+    return [...lista].sort((a, b) => a.time - b.time);
   };
 
   const formatar = (valor) => {
@@ -83,47 +79,55 @@ export default function App() {
   };
 
   const processarDados = (data) => {
-    const historico = ordenarPorTempo(data.historico);
+    setWsStatus("ONLINE");
+
+    const historico = ordenarPorTempo(data.historico || []);
     const vwap = ordenarPorTempo(data.vwap || []);
     const vwapSuperior = ordenarPorTempo(data.vwap_superior || []);
     const vwapInferior = ordenarPorTempo(data.vwap_inferior || []);
 
-    if (!historico.length) return;
-    if (!candleSeriesRef.current) return;
+    if (!historico.length || !candleSeriesRef.current) return;
 
     const ultimoCandle = historico[historico.length - 1];
     const primeiroTime = historico[0].time;
     const ultimoTime = ultimoCandle.time;
 
+    const engine = data.engine || {};
+    const agressao = data.agressao || {};
+
     setDataInfo({
-      score: data.forca,
-      sinal: data.sinal,
-      entrada: data.entrada,
-      tendencia: data.tendencia,
+      score: data.forca ?? data.score ?? data.sinal?.forca ?? engine.engine_score,
+      sinal: data.sinal?.sinal ?? data.sinal ?? "SEM ENTRADA",
+      entrada: data.entrada ?? data.sinal?.entrada ?? "AGUARDAR",
+      tendencia: data.tendencia ?? data.sinal?.tendencia ?? "NEUTRO",
 
-      frequencia: data.frequencia_mercado,
-      intensidade: data.intensidade_fluxo,
-      scoreAgressao: data.score_agressao,
-      leituraAgressao: data.leitura_agressao,
+      frequencia: data.frequencia_mercado ?? agressao.frequencia_mercado,
+      intensidade: data.intensidade_fluxo ?? agressao.intensidade_fluxo,
+      scoreAgressao: data.score_agressao ?? agressao.score_agressao,
+      leituraAgressao: data.leitura_agressao ?? agressao.leitura_agressao,
 
-      saldo: data.saldo_agressor,
-      delta: data.delta,
-      volume: data.volume,
+      saldo: data.saldo_agressor ?? ultimoCandle.saldo,
+      delta: data.delta ?? ultimoCandle.delta,
+      volume: data.volume ?? ultimoCandle.volume,
 
-      compra: data.pressao_compra || 0,
-      venda: data.pressao_venda || 0,
+      compra: data.pressao_compra ?? agressao.persistencia_compra ?? 0,
+      venda: data.pressao_venda ?? agressao.persistencia_venda ?? 0,
 
-      explosao: data.tipo_explosao,
-      explosaoDetectada: data.explosao_detectada,
+      explosao: data.tipo_explosao ?? agressao.tipo_explosao ?? agressao.explosao ?? "SEM EXPLOSÃO",
+      explosaoDetectada: data.explosao_detectada ?? agressao.explosao_detectada,
 
       reversao: data.reversao,
 
-      engineScore: data.engine_score,
-      engineFase: data.engine_fase,
-      engineDirecao: data.engine_direcao,
-      engineTrap: data.engine_trap,
-      engineAbsorcao: data.engine_absorcao,
-      engineSeqDelta: data.engine_seq_delta,
+      engineScore: data.engine_score ?? engine.engine_score,
+      engineFase: data.engine_fase ?? engine.engine_fase,
+      engineDirecao: data.engine_direcao ?? engine.engine_direcao,
+      engineTrap: data.engine_trap ?? engine.engine_trap,
+      engineAbsorcao: data.engine_absorcao ?? engine.engine_absorcao,
+      engineSeqDelta: data.engine_seq_delta ?? engine.engine_seq_delta,
+
+      stop: data.stop,
+      parcial: data.parcial,
+      alvo: data.alvo,
     });
 
     if (!carregouHistoricoRef.current) {
@@ -136,30 +140,13 @@ export default function App() {
         candleSeriesRef.current.setMarkers(gerarMarkersInstitucionais(historico));
       }
 
-      setTimeout(() => {
-        if (chartRef.current) {
-          chartRef.current.timeScale().setVisibleLogicalRange({
-            from: 0,
-            to: 120,
-          });
-        }
-      }, 100);
-
       carregouHistoricoRef.current = true;
     } else {
       candleSeriesRef.current.update(ultimoCandle);
 
-      if (vwap.length > 0) {
-        vwapLineRef.current.update(vwap[vwap.length - 1]);
-      }
-
-      if (vwapSuperior.length > 0) {
-        vwapSuperiorRef.current.update(vwapSuperior[vwapSuperior.length - 1]);
-      }
-
-      if (vwapInferior.length > 0) {
-        vwapInferiorRef.current.update(vwapInferior[vwapInferior.length - 1]);
-      }
+      if (vwap.length) vwapLineRef.current.update(vwap[vwap.length - 1]);
+      if (vwapSuperior.length) vwapSuperiorRef.current.update(vwapSuperior[vwapSuperior.length - 1]);
+      if (vwapInferior.length) vwapInferiorRef.current.update(vwapInferior[vwapInferior.length - 1]);
 
       if (typeof candleSeriesRef.current.setMarkers === "function") {
         candleSeriesRef.current.setMarkers(gerarMarkersInstitucionais(historico));
@@ -250,36 +237,13 @@ export default function App() {
       lineStyle: 2,
     });
 
-    if (socketRef.current && socketRef.current.readyState <= 1) {
-      return;
-    }
-
-    const socket = new WebSocket("ws://127.0.0.1:8000/ws");
-    socketRef.current = socket;
-
-    socket.onopen = () => {
-      setWsStatus("ONLINE");
-      console.log("TRIN WebSocket conectado.");
-    };
-
-    socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
+    socketRef.current = connectTrinWebSocket(
+      (data) => {
+        setWsStatus("ONLINE");
         processarDados(data);
-      } catch (erro) {
-        console.error("Erro ao processar dados TRIN:", erro);
-      }
-    };
-
-    socket.onerror = (error) => {
-      setWsStatus("ERRO");
-      console.error("Erro no WebSocket:", error);
-    };
-
-    socket.onclose = () => {
-      setWsStatus("DESCONECTADO");
-      console.log("TRIN WebSocket desconectado.");
-    };
+      },
+      setWsStatus
+    );
 
     const handleResize = () => {
       if (!chartContainerRef.current || !chartRef.current) return;
@@ -295,15 +259,12 @@ export default function App() {
     return () => {
       window.removeEventListener("resize", handleResize);
 
-      if (socketRef.current === socket) {
-        socket.close();
-        socketRef.current = null;
+      if (socketRef.current) {
+        disconnectTrinWebSocket();
       }
 
       chart.remove();
     };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const scoreAgressao = Number(dataInfo.scoreAgressao || 0);
@@ -311,24 +272,19 @@ export default function App() {
   const venda = Number(dataInfo.venda || 0);
 
   const glowRadar =
-    dataInfo.explosao && dataInfo.explosao !== "SEM EXPLOSÃO"
-      ? "#ffaa00"
-      : scoreAgressao > 15
-      ? "#00ff99"
-      : scoreAgressao < -15
-      ? "#ff3333"
-      : compra > venda
-      ? "#00ffc8"
-      : venda > compra
-      ? "#ff4444"
-      : "#00d4ff";
-
-  const leituraDominante =
-    compra >= 65
-      ? "DOMÍNIO COMPRADOR"
-      : venda >= 65
-      ? "DOMÍNIO VENDEDOR"
-      : "FLUXO EQUILIBRADO";
+    wsStatus === "ONLINE"
+      ? dataInfo.explosao && dataInfo.explosao !== "SEM EXPLOSÃO"
+        ? "#ffaa00"
+        : scoreAgressao > 15
+        ? "#00ff99"
+        : scoreAgressao < -15
+        ? "#ff3333"
+        : compra > venda
+        ? "#00ffc8"
+        : venda > compra
+        ? "#ff4444"
+        : "#00d4ff"
+      : "#ff4444";
 
   return (
     <div
@@ -367,7 +323,7 @@ export default function App() {
           flex: 1,
           minWidth: 0,
           border: `2px solid ${glowRadar}`,
-          borderRadius: 10,
+          borderRadius: 8,
           overflow: "hidden",
           boxShadow: `0 0 35px ${glowRadar}`,
           position: "relative",
@@ -377,57 +333,32 @@ export default function App() {
         <div ref={chartContainerRef} style={{ height: "100%" }} />
       </div>
 
-      <div
-        style={{
-          width: 370,
-          marginLeft: 10,
-          background:
-            "linear-gradient(180deg, rgba(3,10,24,0.98), rgba(1,5,12,0.98))",
-          borderRadius: 10,
-          border: `1px solid ${glowRadar}`,
-          padding: 8,
-          boxSizing: "border-box",
-          boxShadow: `0 0 25px ${glowRadar}`,
-        }}
-      >
-        <Titulo>TRIN FLOW PRO 5.8.1 WS HARDENED</Titulo>
+      <div style={{ width: 340, marginLeft: 10 }}>
+        <Titulo>TRIN FLOW PRO 5.8.1 WS</Titulo>
 
         <Radar cor={glowRadar} intensidade={dataInfo.intensidade} wsStatus={wsStatus} />
 
-        <Secao titulo="REGIME INSTITUCIONAL">
-          <Linha label="WS" valor={wsStatus} cor={wsStatus === "ONLINE" ? "#00ff99" : "#ff4444"} />
-          <Linha label="FASE" valor={dataInfo.engineFase || "AGUARDANDO"} cor="#00d4ff" />
-          <Linha label="DIREÇÃO" valor={dataInfo.engineDirecao || "NEUTRO"} cor="#00ffc8" />
-          <Linha label="ENTRADA" valor={dataInfo.entrada || "AGUARDAR"} cor="#ffaa00" />
-          <Linha label="SINAL" valor={dataInfo.sinal || "SEM ENTRADA"} cor="#ffffff" />
-          <Linha label="REVERSÃO" valor={dataInfo.reversao || "SEM REVERSÃO"} cor="#ffaa00" />
-          <Linha label="TRAP" valor={dataInfo.engineTrap || "SEM TRAP"} cor="#ff66ff" />
-        </Secao>
+        <Box color="#0b5d1e">SCORE: {dataInfo.score ?? "-"}</Box>
+        <Box color="#004d40">FREQUÊNCIA: {dataInfo.frequencia || "-"}</Box>
+        <Box color="#4a148c">INTENSIDADE: {formatar(dataInfo.intensidade)}</Box>
+        <Box color="#263238">SCORE AGRESSÃO: {formatar(dataInfo.scoreAgressao)}</Box>
+        <Box color="#311b92">{dataInfo.leituraAgressao || "AGUARDANDO LEITURA"}</Box>
 
-        <Secao titulo="AGRESSÃO E FLUXO">
-          <BoxDestaque cor="#0b5d1e">SCORE: {dataInfo.score}</BoxDestaque>
-          <BoxDestaque cor="#263238">
-            SCORE AGRESSÃO: {formatar(dataInfo.scoreAgressao)}
-          </BoxDestaque>
-          <BoxDestaque cor="#311b92">
-            {dataInfo.leituraAgressao || "AGUARDANDO LEITURA"}
-          </BoxDestaque>
-          <Linha label="FREQUÊNCIA" valor={dataInfo.frequencia || "-"} cor="#00ffc8" />
-          <Linha label="INTENSIDADE" valor={formatar(dataInfo.intensidade)} cor="#b56cff" />
-          <Linha label="ENGINE SCORE" valor={dataInfo.engineScore ?? "-"} cor="#00d4ff" />
-          <Linha label="SEQ DELTA" valor={dataInfo.engineSeqDelta ?? "-"} cor="#ffaa00" />
-        </Secao>
+        <Box color="#102027">SINAL: {dataInfo.sinal || "SEM ENTRADA"}</Box>
+        <Box color="#1b2631">ENTRADA: {dataInfo.entrada || "AGUARDAR"}</Box>
+        <Box color="#263238">TENDÊNCIA: {dataInfo.tendencia || "NEUTRO"}</Box>
 
-        <Secao titulo="TAPE SIMULADO">
-          <Linha label="SALDO" valor={dataInfo.saldo ?? "-"} cor="#ffffff" />
-          <Linha label="DELTA" valor={dataInfo.delta ?? "-"} cor="#ffffff" />
-          <Linha label="VOLUME" valor={dataInfo.volume ?? "-"} cor="#ffffff" />
-          <Linha label="EXPLOSÃO" valor={dataInfo.explosao || "SEM EXPLOSÃO"} cor="#ffaa00" />
-        </Secao>
+        <Box color="#424242">SALDO: {dataInfo.saldo ?? "-"}</Box>
+        <Box color="#424242">DELTA: {dataInfo.delta ?? "-"}</Box>
+        <Box color="#424242">VOLUME: {dataInfo.volume ?? "-"}</Box>
+        <Box color="#263238">EXPLOSÃO: {dataInfo.explosao || "SEM EXPLOSÃO"}</Box>
 
-        <Secao titulo={leituraDominante}>
-          <PressaoBar compra={dataInfo.compra} venda={dataInfo.venda} />
-        </Secao>
+        <Box color="#0d2538">FASE: {dataInfo.engineFase || "AGUARDANDO"}</Box>
+        <Box color="#0d2538">DIREÇÃO: {dataInfo.engineDirecao || "NEUTRO"}</Box>
+        <Box color="#0d2538">TRAP: {dataInfo.engineTrap || "SEM TRAP"}</Box>
+        <Box color="#0d2538">SEQ DELTA: {dataInfo.engineSeqDelta ?? "-"}</Box>
+
+        <PressaoBar compra={dataInfo.compra} venda={dataInfo.venda} />
       </div>
     </div>
   );
@@ -479,28 +410,27 @@ function Radar({ cor, intensidade, wsStatus }) {
   return (
     <div
       style={{
-        height: 160,
-        background:
-          "radial-gradient(circle at center, rgba(0,255,200,0.08), #05101d 62%)",
+        height: 170,
+        background: "#05101d",
         border: `1px solid ${cor}`,
         borderRadius: 12,
-        marginBottom: 8,
+        marginBottom: 10,
         position: "relative",
         overflow: "hidden",
-        boxShadow: `0 0 26px ${cor}`,
+        boxShadow: `0 0 30px ${cor}`,
       }}
     >
       <div
         style={{
-          width: 116,
-          height: 116,
+          width: 120,
+          height: 120,
           borderRadius: "50%",
           border: `2px solid ${cor}`,
           position: "absolute",
           left: "50%",
           top: "50%",
-          marginLeft: -58,
-          marginTop: -58,
+          marginLeft: -60,
+          marginTop: -60,
           animation: "pulseRadar 1.4s infinite",
           boxShadow: `0 0 35px ${cor}`,
         }}
@@ -509,11 +439,11 @@ function Radar({ cor, intensidade, wsStatus }) {
       <div
         style={{
           width: 2,
-          height: 72,
+          height: 75,
           background: cor,
           position: "absolute",
           left: "50%",
-          top: "14%",
+          top: "15%",
           transformOrigin: "bottom center",
           animation: "spinScanner 2s linear infinite",
           boxShadow: `0 0 15px ${cor}`,
@@ -540,103 +470,20 @@ function Radar({ cor, intensidade, wsStatus }) {
   );
 }
 
-function formatarGlobal(valor) {
-  if (valor === null || valor === undefined) return "-";
-  const n = Number(valor);
-  if (!Number.isFinite(n)) return valor;
-  return n.toFixed(2);
-}
-
-function Titulo({ children }) {
-  return (
-    <div
-      style={{
-        background: "linear-gradient(90deg,#00ffc8,#0066ff)",
-        color: "#001014",
-        padding: 10,
-        marginBottom: 8,
-        borderRadius: 7,
-        fontWeight: "900",
-        textAlign: "center",
-        letterSpacing: 0.5,
-        boxShadow: "0 0 16px #00ffc8",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function Secao({ titulo, children }) {
-  return (
-    <div
-      style={{
-        background: "rgba(0,0,0,0.34)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        borderRadius: 8,
-        padding: 8,
-        marginBottom: 8,
-      }}
-    >
-      <div
-        style={{
-          color: "#8fbbe8",
-          fontSize: 11,
-          fontWeight: "900",
-          marginBottom: 6,
-          letterSpacing: 0.8,
-        }}
-      >
-        {titulo}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function Linha({ label, valor, cor }) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        background: "#101722",
-        color: "#ffffff",
-        padding: "6px 8px",
-        marginBottom: 5,
-        borderRadius: 5,
-        fontWeight: "800",
-        fontSize: 12,
-      }}
-    >
-      <span style={{ color: "#9fb3c8" }}>{label}</span>
-      <span style={{ color: cor }}>{valor}</span>
-    </div>
-  );
-}
-
-function BoxDestaque({ children, cor }) {
-  return (
-    <div
-      style={{
-        backgroundColor: cor,
-        color: "white",
-        padding: 8,
-        marginBottom: 5,
-        borderRadius: 5,
-        fontWeight: "900",
-        border: "1px solid rgba(255,255,255,0.08)",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
 function PressaoBar({ compra, venda }) {
   return (
-    <div>
+    <div
+      style={{
+        background: "#101010",
+        padding: 10,
+        borderRadius: 8,
+        marginTop: 10,
+      }}
+    >
+      <div style={{ fontWeight: "bold", marginBottom: 8, color: "#ffffff" }}>
+        PRESSÃO INSTITUCIONAL
+      </div>
+
       <div
         style={{
           height: 18,
@@ -648,7 +495,7 @@ function PressaoBar({ compra, venda }) {
       >
         <div
           style={{
-            width: `${compra || 0}%`,
+            width: `${Math.min(Number(compra || 0), 100)}%`,
             height: "100%",
             background: "linear-gradient(90deg,#00ff99,#00ffc8)",
             transition: "all 0.4s ease",
@@ -656,7 +503,7 @@ function PressaoBar({ compra, venda }) {
         />
       </div>
 
-      <div style={{ color: "#00ffc8", marginBottom: 10, fontWeight: "900" }}>
+      <div style={{ color: "#00ffc8", marginBottom: 10 }}>
         COMPRA: {compra || 0}%
       </div>
 
@@ -671,7 +518,7 @@ function PressaoBar({ compra, venda }) {
       >
         <div
           style={{
-            width: `${venda || 0}%`,
+            width: `${Math.min(Number(venda || 0), 100)}%`,
             height: "100%",
             background: "linear-gradient(90deg,#ff4444,#ff0000)",
             transition: "all 0.4s ease",
@@ -679,9 +526,49 @@ function PressaoBar({ compra, venda }) {
         />
       </div>
 
-      <div style={{ color: "#ff4444", fontWeight: "900" }}>
-        VENDA: {venda || 0}%
-      </div>
+      <div style={{ color: "#ff4444" }}>VENDA: {venda || 0}%</div>
     </div>
   );
+}
+
+function Titulo({ children }) {
+  return (
+    <div
+      style={{
+        background: "linear-gradient(90deg,#00ffc8,#0066ff)",
+        color: "#001014",
+        padding: 10,
+        marginBottom: 8,
+        borderRadius: 6,
+        fontWeight: "900",
+        textAlign: "center",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Box({ children, color }) {
+  return (
+    <div
+      style={{
+        backgroundColor: color,
+        color: "white",
+        padding: 8,
+        marginBottom: 5,
+        borderRadius: 5,
+        fontWeight: "bold",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function formatarGlobal(valor) {
+  if (valor === null || valor === undefined) return "-";
+  const n = Number(valor);
+  if (!Number.isFinite(n)) return valor;
+  return n.toFixed(2);
 }

@@ -3,9 +3,19 @@ import random
 
 def gerar_sinal(saldo, volume, delta, preco=None):
     if abs(saldo) < 120 or abs(delta) < 60:
-        return {"sinal": "SEM ENTRADA", "forca": 0, "entrada": "AGUARDAR", "tendencia": "MERCADO LATERAL",
-                "absorcao": "SEM ABSORÇÃO", "zona_absorcao": None, "zona_quente_absorcao": False,
-                "exaustao": False, "stop": None, "parcial": None, "alvo": None}
+        return {
+            "sinal": "SEM ENTRADA",
+            "forca": 0,
+            "entrada": "AGUARDAR",
+            "tendencia": "MERCADO LATERAL",
+            "absorcao": "SEM ABSORÇÃO",
+            "zona_absorcao": None,
+            "zona_quente_absorcao": False,
+            "exaustao": False,
+            "stop": None,
+            "parcial": None,
+            "alvo": None,
+        }
 
     if saldo > 400 and delta > 200:
         sinal = "COMPRA FORTE"; forca = 3
@@ -43,19 +53,34 @@ def gerar_sinal(saldo, volume, delta, preco=None):
         absorcao = "ABSORÇÃO DE COMPRA"
     elif saldo < -400 and delta > 150:
         absorcao = "ABSORÇÃO DE VENDA"
+
     if absorcao != "SEM ABSORÇÃO" and preco is not None:
         zona_absorcao = round(preco, 2)
+
     zona_quente_absorcao = absorcao != "SEM ABSORÇÃO" and abs(saldo) > 500 and volume > 900
 
     if preco is not None:
         if saldo > 0:
-            stop = round(preco - 0.5, 2); parcial = round(preco + 0.5, 2); alvo = round(preco + 1.0, 2)
+            stop = round(preco - 0.5, 2)
+            parcial = round(preco + 0.5, 2)
+            alvo = round(preco + 1.0, 2)
         else:
-            stop = round(preco + 0.5, 2); parcial = round(preco - 0.5, 2); alvo = round(preco - 1.0, 2)
+            stop = round(preco + 0.5, 2)
+            parcial = round(preco - 0.5, 2)
+            alvo = round(preco - 1.0, 2)
     else:
         stop = parcial = alvo = None
 
-    return {"sinal": sinal, "forca": forca, "entrada": entrada, "tendencia": tendencia,
-            "absorcao": absorcao, "zona_absorcao": zona_absorcao,
-            "zona_quente_absorcao": zona_quente_absorcao, "exaustao": exaustao,
-            "stop": stop, "parcial": parcial, "alvo": alvo}
+    return {
+        "sinal": sinal,
+        "forca": forca,
+        "entrada": entrada,
+        "tendencia": tendencia,
+        "absorcao": absorcao,
+        "zona_absorcao": zona_absorcao,
+        "zona_quente_absorcao": zona_quente_absorcao,
+        "exaustao": exaustao,
+        "stop": stop,
+        "parcial": parcial,
+        "alvo": alvo
+    }
