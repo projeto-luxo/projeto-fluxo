@@ -1,5 +1,5 @@
 // frontend/src/App.js
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
 import {
   connectTrinWebSocket,
@@ -11,6 +11,7 @@ export default function App() {
   const chartRef = useRef(null);
 
   const candleSeriesRef = useRef(null);
+
   const stopLineRef = useRef(null);
   const parcialLineRef = useRef(null);
   const alvoLineRef = useRef(null);
@@ -19,16 +20,31 @@ export default function App() {
   const vwapSuperiorRef = useRef(null);
   const vwapInferiorRef = useRef(null);
 
+  const hotZoneTopRef = useRef(null);
+  const hotZoneBottomRef = useRef(null);
+  const absorcaoLineRef = useRef(null);
+
   const socketRef = useRef(null);
   const carregouHistoricoRef = useRef(false);
 
   const [dataInfo, setDataInfo] = useState({});
   const [wsStatus, setWsStatus] = useState("DESCONECTADO");
 
-  const ordenarPorTempo = (lista) => {
+  const ordenarPorTempo = useCallback((lista) => {
     if (!Array.isArray(lista)) return [];
-    return [...lista].sort((a, b) => a.time - b.time);
-  };
+
+    const mapa = new Map();
+
+    lista.forEach((item) => {
+      if (!item || item.time === undefined || item.time === null) return;
+      mapa.set(Number(item.time), {
+        ...item,
+        time: Number(item.time),
+      });
+    });
+
+    return Array.from(mapa.values()).sort((a, b) => a.time - b.time);
+  }, []);
 
   const formatar = (valor) => {
     if (valor === null || valor === undefined) return "-";
@@ -37,10 +53,16 @@ export default function App() {
     return n.toFixed(2);
   };
 
-  const setLinhaHorizontal = (seriesRef, primeiroTime, ultimoTime, valor) => {
+  const setLinhaHorizontal = useCallback((seriesRef, primeiroTime, ultimoTime, valor) => {
     if (!seriesRef.current) return;
 
-    if (valor === null || valor === undefined || Number.isNaN(Number(valor))) {
+    if (
+      valor === null ||
+      valor === undefined ||
+      primeiroTime === undefined ||
+      ultimoTime === undefined ||
+      Number.isNaN(Number(valor))
+    ) {
       seriesRef.current.setData([]);
       return;
     }
@@ -49,9 +71,9 @@ export default function App() {
       { time: primeiroTime, value: Number(valor) },
       { time: ultimoTime, value: Number(valor) },
     ]);
-  };
+  }, []);
 
-  const gerarMarkersInstitucionais = (historico) => {
+  const gerarMarkersInstitucionais = useCallback((historico) => {
     if (!Array.isArray(historico)) return [];
 
     return historico
@@ -76,9 +98,9 @@ export default function App() {
           text: "REV",
         };
       });
-  };
+  }, []);
 
-  const processarDados = (data) => {
+  const processarDados = useCallback((data) => {
     setWsStatus("ONLINE");
 
     const historico = ordenarPorTempo(data.historico || []);
@@ -94,6 +116,10 @@ export default function App() {
 
     const engine = data.engine || {};
     const agressao = data.agressao || {};
+
+    const zonaLow = data.engine_zona_low ?? engine.engine_zona_low;
+    const zonaHigh = data.engine_zona_high ?? engine.engine_zona_high;
+    const absorcao = data.engine_absorcao ?? engine.engine_absorcao;
 
     setDataInfo({
       score: data.forca ?? data.score ?? data.sinal?.forca ?? engine.engine_score,
@@ -116,14 +142,14 @@ export default function App() {
       explosao: data.tipo_explosao ?? agressao.tipo_explosao ?? agressao.explosao ?? "SEM EXPLOSÃO",
       explosaoDetectada: data.explosao_detectada ?? agressao.explosao_detectada,
 
-      reversao: data.reversao,
-
       engineScore: data.engine_score ?? engine.engine_score,
       engineFase: data.engine_fase ?? engine.engine_fase,
       engineDirecao: data.engine_direcao ?? engine.engine_direcao,
       engineTrap: data.engine_trap ?? engine.engine_trap,
-      engineAbsorcao: data.engine_absorcao ?? engine.engine_absorcao,
+      engineAbsorcao: absorcao,
       engineSeqDelta: data.engine_seq_delta ?? engine.engine_seq_delta,
+      zonaLow,
+      zonaHigh,
 
       stop: data.stop,
       parcial: data.parcial,
@@ -138,6 +164,10 @@ export default function App() {
 
       if (typeof candleSeriesRef.current.setMarkers === "function") {
         candleSeriesRef.current.setMarkers(gerarMarkersInstitucionais(historico));
+      }
+
+      if (chartRef.current) {
+        chartRef.current.timeScale().fitContent();
       }
 
       carregouHistoricoRef.current = true;
@@ -156,19 +186,28 @@ export default function App() {
     setLinhaHorizontal(stopLineRef, primeiroTime, ultimoTime, data.stop);
     setLinhaHorizontal(parcialLineRef, primeiroTime, ultimoTime, data.parcial);
     setLinhaHorizontal(alvoLineRef, primeiroTime, ultimoTime, data.alvo);
-  };
+
+    setLinhaHorizontal(hotZoneTopRef, primeiroTime, ultimoTime, zonaHigh);
+    setLinhaHorizontal(hotZoneBottomRef, primeiroTime, ultimoTime, zonaLow);
+
+    if (absorcao && zonaLow !== null && zonaLow !== undefined && zonaHigh !== null && zonaHigh !== undefined) {
+      const meioZona = (Number(zonaLow) + Number(zonaHigh)) / 2;
+      setLinhaHorizontal(absorcaoLineRef, primeiroTime, ultimoTime, meioZona);
+    } else {
+      setLinhaHorizontal(absorcaoLineRef, primeiroTime, ultimoTime, null);
+    }
+  }, [ordenarPorTempo, gerarMarkersInstitucionais, setLinhaHorizontal]);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
+
+    carregouHistoricoRef.current = false;
 
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       height: window.innerHeight - 20,
       layout: {
-        background: {
-          type: "solid",
-          color: "#020816",
-        },
+        background: { type: "solid", color: "#020816" },
         textColor: "#ffffff",
       },
       grid: {
@@ -185,9 +224,8 @@ export default function App() {
         rightOffset: 8,
         barSpacing: 4,
         minBarSpacing: 3,
-        fixLeftEdge: true,
+        fixLeftEdge: false,
         fixRightEdge: false,
-        lockVisibleTimeRangeOnResize: false,
       },
     });
 
@@ -237,6 +275,24 @@ export default function App() {
       lineStyle: 2,
     });
 
+    hotZoneTopRef.current = chart.addLineSeries({
+      color: "#ffaa00",
+      lineWidth: 3,
+      lineStyle: 2,
+    });
+
+    hotZoneBottomRef.current = chart.addLineSeries({
+      color: "#ffaa00",
+      lineWidth: 3,
+      lineStyle: 2,
+    });
+
+    absorcaoLineRef.current = chart.addLineSeries({
+      color: "#ff00ff",
+      lineWidth: 2,
+      lineStyle: 1,
+    });
+
     socketRef.current = connectTrinWebSocket(
       (data) => {
         setWsStatus("ONLINE");
@@ -252,6 +308,8 @@ export default function App() {
         width: chartContainerRef.current.clientWidth,
         height: window.innerHeight - 20,
       });
+
+      chartRef.current.timeScale().fitContent();
     };
 
     window.addEventListener("resize", handleResize);
@@ -263,17 +321,40 @@ export default function App() {
         disconnectTrinWebSocket();
       }
 
-      chart.remove();
+      if (chartRef.current) {
+        chartRef.current.remove();
+        chartRef.current = null;
+      }
+
+      candleSeriesRef.current = null;
+      stopLineRef.current = null;
+      parcialLineRef.current = null;
+      alvoLineRef.current = null;
+      vwapLineRef.current = null;
+      vwapSuperiorRef.current = null;
+      vwapInferiorRef.current = null;
+      hotZoneTopRef.current = null;
+      hotZoneBottomRef.current = null;
+      absorcaoLineRef.current = null;
     };
-  }, []);
+  }, [processarDados]);
+
+  const statusVisual = dataInfo.volume !== undefined ? "ONLINE" : wsStatus;
 
   const scoreAgressao = Number(dataInfo.scoreAgressao || 0);
   const compra = Number(dataInfo.compra || 0);
   const venda = Number(dataInfo.venda || 0);
 
+  const temHotZone = dataInfo.zonaLow !== null && dataInfo.zonaLow !== undefined &&
+    dataInfo.zonaHigh !== null && dataInfo.zonaHigh !== undefined;
+
   const glowRadar =
-    wsStatus === "ONLINE"
-      ? dataInfo.explosao && dataInfo.explosao !== "SEM EXPLOSÃO"
+    statusVisual === "ONLINE"
+      ? dataInfo.engineAbsorcao
+        ? "#ff00ff"
+        : temHotZone
+        ? "#ffaa00"
+        : dataInfo.explosao && dataInfo.explosao !== "SEM EXPLOSÃO"
         ? "#ffaa00"
         : scoreAgressao > 15
         ? "#00ff99"
@@ -292,8 +373,7 @@ export default function App() {
         display: "flex",
         height: "100vh",
         padding: 10,
-        background:
-          "radial-gradient(circle at top, #071120 0%, #020816 70%)",
+        background: "radial-gradient(circle at top, #071120 0%, #020816 70%)",
         boxSizing: "border-box",
       }}
     >
@@ -310,10 +390,10 @@ export default function App() {
             to { transform: rotate(360deg); }
           }
 
-          @keyframes livePulse {
-            0% { opacity: .45; }
-            50% { opacity: 1; }
-            100% { opacity: .45; }
+          @keyframes hotPulse {
+            0% { opacity: .40; box-shadow: 0 0 18px #ffaa00; }
+            50% { opacity: 1; box-shadow: 0 0 35px #ffaa00; }
+            100% { opacity: .40; box-shadow: 0 0 18px #ffaa00; }
           }
         `}
       </style>
@@ -329,14 +409,23 @@ export default function App() {
           position: "relative",
         }}
       >
-        <TopBar dataInfo={dataInfo} cor={glowRadar} wsStatus={wsStatus} />
+        <TopBar dataInfo={dataInfo} cor={glowRadar} wsStatus={statusVisual} />
+
+        {temHotZone && (
+          <HotZoneOverlay
+            low={dataInfo.zonaLow}
+            high={dataInfo.zonaHigh}
+            absorcao={dataInfo.engineAbsorcao}
+          />
+        )}
+
         <div ref={chartContainerRef} style={{ height: "100%" }} />
       </div>
 
       <div style={{ width: 340, marginLeft: 10 }}>
         <Titulo>TRIN FLOW PRO 5.8.1 WS</Titulo>
 
-        <Radar cor={glowRadar} intensidade={dataInfo.intensidade} wsStatus={wsStatus} />
+        <Radar cor={glowRadar} intensidade={dataInfo.intensidade} wsStatus={statusVisual} />
 
         <Box color="#0b5d1e">SCORE: {dataInfo.score ?? "-"}</Box>
         <Box color="#004d40">FREQUÊNCIA: {dataInfo.frequencia || "-"}</Box>
@@ -358,8 +447,43 @@ export default function App() {
         <Box color="#0d2538">TRAP: {dataInfo.engineTrap || "SEM TRAP"}</Box>
         <Box color="#0d2538">SEQ DELTA: {dataInfo.engineSeqDelta ?? "-"}</Box>
 
+        <Box color={temHotZone ? "#5a3600" : "#263238"}>
+          HOT ZONE: {temHotZone ? `${formatar(dataInfo.zonaLow)} - ${formatar(dataInfo.zonaHigh)}` : "SEM ZONA"}
+        </Box>
+
+        <Box color={dataInfo.engineAbsorcao ? "#7b1fa2" : "#263238"}>
+          ABSORÇÃO: {dataInfo.engineAbsorcao ? "ATIVA" : "NÃO"}
+        </Box>
+
         <PressaoBar compra={dataInfo.compra} venda={dataInfo.venda} />
       </div>
+    </div>
+  );
+}
+
+function HotZoneOverlay({ low, high, absorcao }) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        zIndex: 8,
+        left: 20,
+        bottom: 20,
+        padding: "8px 12px",
+        borderRadius: 8,
+        background: absorcao
+          ? "linear-gradient(90deg, rgba(255,0,255,.20), rgba(255,170,0,.20))"
+          : "rgba(255,170,0,.15)",
+        color: absorcao ? "#ff66ff" : "#ffaa00",
+        border: `1px solid ${absorcao ? "#ff00ff" : "#ffaa00"}`,
+        fontSize: 12,
+        fontWeight: "900",
+        animation: "hotPulse 1.6s infinite",
+        pointerEvents: "none",
+      }}
+    >
+      HOT ZONE {Number(low).toFixed(2)} / {Number(high).toFixed(2)}
+      {absorcao ? " • ABSORÇÃO" : ""}
     </div>
   );
 }
@@ -484,15 +608,7 @@ function PressaoBar({ compra, venda }) {
         PRESSÃO INSTITUCIONAL
       </div>
 
-      <div
-        style={{
-          height: 18,
-          background: "#222",
-          borderRadius: 10,
-          overflow: "hidden",
-          marginBottom: 6,
-        }}
-      >
+      <div style={{ height: 18, background: "#222", borderRadius: 10, overflow: "hidden", marginBottom: 6 }}>
         <div
           style={{
             width: `${Math.min(Number(compra || 0), 100)}%`,
@@ -507,15 +623,7 @@ function PressaoBar({ compra, venda }) {
         COMPRA: {compra || 0}%
       </div>
 
-      <div
-        style={{
-          height: 18,
-          background: "#222",
-          borderRadius: 10,
-          overflow: "hidden",
-          marginBottom: 6,
-        }}
-      >
+      <div style={{ height: 18, background: "#222", borderRadius: 10, overflow: "hidden", marginBottom: 6 }}>
         <div
           style={{
             width: `${Math.min(Number(venda || 0), 100)}%`,
