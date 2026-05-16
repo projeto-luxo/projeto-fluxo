@@ -24,6 +24,12 @@ export default function App() {
   const hotZoneBottomRef = useRef(null);
   const absorcaoLineRef = useRef(null);
 
+  const heatmap1Ref = useRef(null);
+  const heatmap2Ref = useRef(null);
+  const heatmap3Ref = useRef(null);
+  const heatmap4Ref = useRef(null);
+  const heatmap5Ref = useRef(null);
+
   const socketRef = useRef(null);
   const carregouHistoricoRef = useRef(false);
 
@@ -37,6 +43,7 @@ export default function App() {
 
     lista.forEach((item) => {
       if (!item || item.time === undefined || item.time === null) return;
+
       mapa.set(Number(item.time), {
         ...item,
         time: Number(item.time),
@@ -48,8 +55,11 @@ export default function App() {
 
   const formatar = (valor) => {
     if (valor === null || valor === undefined) return "-";
+
     const n = Number(valor);
+
     if (!Number.isFinite(n)) return valor;
+
     return n.toFixed(2);
   };
 
@@ -100,6 +110,122 @@ export default function App() {
       });
   }, []);
 
+  const calcularContextoInstitucional = useCallback((info) => {
+    const compra = Number(info.compra || 0);
+    const venda = Number(info.venda || 0);
+    const scoreAgressao = Number(info.scoreAgressao || 0);
+    const fase = info.engineFase || "AGUARDANDO";
+    const direcao = info.engineDirecao || "NEUTRO";
+    const absorcao = Boolean(info.engineAbsorcao);
+    const temHotZone =
+      info.zonaLow !== null &&
+      info.zonaLow !== undefined &&
+      info.zonaHigh !== null &&
+      info.zonaHigh !== undefined;
+
+    if (absorcao) {
+      return {
+        texto: "ABSORÇÃO ATIVA",
+        cor: "#ff00ff",
+        detalhe: "Região com possível defesa institucional"
+      };
+    }
+
+    if (fase === "ROMPIMENTO" && direcao === "COMPRA") {
+      return {
+        texto: "ROMPIMENTO COMPRADOR",
+        cor: "#00ffc8",
+        detalhe: "Fluxo comprador em expansão"
+      };
+    }
+
+    if (fase === "ROMPIMENTO" && direcao === "VENDA") {
+      return {
+        texto: "ROMPIMENTO VENDEDOR",
+        cor: "#ff3333",
+        detalhe: "Fluxo vendedor em expansão"
+      };
+    }
+
+    if (fase === "ACUMULACAO" && compra > venda && scoreAgressao > 5) {
+      return {
+        texto: "ACUMULAÇÃO COMPRADORA",
+        cor: "#00d4ff",
+        detalhe: "Compradores defendendo região"
+      };
+    }
+
+    if (fase === "ACUMULACAO" && venda > compra && scoreAgressao < -5) {
+      return {
+        texto: "ACUMULAÇÃO VENDEDORA",
+        cor: "#ff6666",
+        detalhe: "Vendedores defendendo região"
+      };
+    }
+
+    if (temHotZone) {
+      return {
+        texto: "HOT ZONE NEUTRA",
+        cor: "#ffaa00",
+        detalhe: "Região institucional em observação"
+      };
+    }
+
+    return {
+      texto: "CONTEXTO NEUTRO",
+      cor: "#00d4ff",
+      detalhe: "Aguardando confirmação do fluxo"
+    };
+  }, []);
+
+  const atualizarHeatmap = useCallback((primeiroTime, ultimoTime, zonaLow, zonaHigh, absorcao) => {
+    if (
+      zonaLow === null ||
+      zonaLow === undefined ||
+      zonaHigh === null ||
+      zonaHigh === undefined
+    ) {
+      setLinhaHorizontal(heatmap1Ref, primeiroTime, ultimoTime, null);
+      setLinhaHorizontal(heatmap2Ref, primeiroTime, ultimoTime, null);
+      setLinhaHorizontal(heatmap3Ref, primeiroTime, ultimoTime, null);
+      setLinhaHorizontal(heatmap4Ref, primeiroTime, ultimoTime, null);
+      setLinhaHorizontal(heatmap5Ref, primeiroTime, ultimoTime, null);
+      return;
+    }
+
+    const low = Number(zonaLow);
+    const high = Number(zonaHigh);
+
+    if (!Number.isFinite(low) || !Number.isFinite(high) || high <= low) {
+      setLinhaHorizontal(heatmap1Ref, primeiroTime, ultimoTime, null);
+      setLinhaHorizontal(heatmap2Ref, primeiroTime, ultimoTime, null);
+      setLinhaHorizontal(heatmap3Ref, primeiroTime, ultimoTime, null);
+      setLinhaHorizontal(heatmap4Ref, primeiroTime, ultimoTime, null);
+      setLinhaHorizontal(heatmap5Ref, primeiroTime, ultimoTime, null);
+      return;
+    }
+
+    const faixa = high - low;
+
+    setLinhaHorizontal(heatmap1Ref, primeiroTime, ultimoTime, low + faixa * 0.16);
+    setLinhaHorizontal(heatmap2Ref, primeiroTime, ultimoTime, low + faixa * 0.33);
+    setLinhaHorizontal(heatmap3Ref, primeiroTime, ultimoTime, low + faixa * 0.50);
+    setLinhaHorizontal(heatmap4Ref, primeiroTime, ultimoTime, low + faixa * 0.66);
+    setLinhaHorizontal(heatmap5Ref, primeiroTime, ultimoTime, low + faixa * 0.84);
+
+    if (absorcao) {
+      heatmap3Ref.current?.applyOptions({
+        color: "rgba(255, 0, 255, 0.90)",
+        lineWidth: 4,
+      });
+    } else {
+      heatmap3Ref.current?.applyOptions({
+        color: "rgba(255, 170, 0, 0.60)",
+        lineWidth: 3,
+      });
+    }
+  }, [setLinhaHorizontal]);
+
   const processarDados = useCallback((data) => {
     setWsStatus("ONLINE");
 
@@ -121,7 +247,7 @@ export default function App() {
     const zonaHigh = data.engine_zona_high ?? engine.engine_zona_high;
     const absorcao = data.engine_absorcao ?? engine.engine_absorcao;
 
-    setDataInfo({
+    const baseInfo = {
       score: data.forca ?? data.score ?? data.sinal?.forca ?? engine.engine_score,
       sinal: data.sinal?.sinal ?? data.sinal ?? "SEM ENTRADA",
       entrada: data.entrada ?? data.sinal?.entrada ?? "AGUARDAR",
@@ -148,14 +274,23 @@ export default function App() {
       engineTrap: data.engine_trap ?? engine.engine_trap,
       engineAbsorcao: absorcao,
       engineSeqDelta: data.engine_seq_delta ?? engine.engine_seq_delta,
+
       zonaLow,
       zonaHigh,
 
       stop: data.stop,
       parcial: data.parcial,
       alvo: data.alvo,
-    });
+    };
 
+    const contexto = calcularContextoInstitucional(baseInfo);
+
+    setDataInfo({
+      ...baseInfo,
+      contextoInstitucional: contexto.texto,
+      contextoCor: contexto.cor,
+      contextoDetalhe: contexto.detalhe,
+    });
     if (!carregouHistoricoRef.current) {
       candleSeriesRef.current.setData(historico);
       vwapLineRef.current.setData(vwap);
@@ -174,9 +309,17 @@ export default function App() {
     } else {
       candleSeriesRef.current.update(ultimoCandle);
 
-      if (vwap.length) vwapLineRef.current.update(vwap[vwap.length - 1]);
-      if (vwapSuperior.length) vwapSuperiorRef.current.update(vwapSuperior[vwapSuperior.length - 1]);
-      if (vwapInferior.length) vwapInferiorRef.current.update(vwapInferior[vwapInferior.length - 1]);
+      if (vwap.length) {
+        vwapLineRef.current.update(vwap[vwap.length - 1]);
+      }
+
+      if (vwapSuperior.length) {
+        vwapSuperiorRef.current.update(vwapSuperior[vwapSuperior.length - 1]);
+      }
+
+      if (vwapInferior.length) {
+        vwapInferiorRef.current.update(vwapInferior[vwapInferior.length - 1]);
+      }
 
       if (typeof candleSeriesRef.current.setMarkers === "function") {
         candleSeriesRef.current.setMarkers(gerarMarkersInstitucionais(historico));
@@ -190,13 +333,27 @@ export default function App() {
     setLinhaHorizontal(hotZoneTopRef, primeiroTime, ultimoTime, zonaHigh);
     setLinhaHorizontal(hotZoneBottomRef, primeiroTime, ultimoTime, zonaLow);
 
-    if (absorcao && zonaLow !== null && zonaLow !== undefined && zonaHigh !== null && zonaHigh !== undefined) {
+    atualizarHeatmap(primeiroTime, ultimoTime, zonaLow, zonaHigh, absorcao);
+
+    if (
+      absorcao &&
+      zonaLow !== null &&
+      zonaLow !== undefined &&
+      zonaHigh !== null &&
+      zonaHigh !== undefined
+    ) {
       const meioZona = (Number(zonaLow) + Number(zonaHigh)) / 2;
       setLinhaHorizontal(absorcaoLineRef, primeiroTime, ultimoTime, meioZona);
     } else {
       setLinhaHorizontal(absorcaoLineRef, primeiroTime, ultimoTime, null);
     }
-  }, [ordenarPorTempo, gerarMarkersInstitucionais, setLinhaHorizontal]);
+  }, [
+    ordenarPorTempo,
+    gerarMarkersInstitucionais,
+    setLinhaHorizontal,
+    atualizarHeatmap,
+    calcularContextoInstitucional,
+  ]);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -277,19 +434,49 @@ export default function App() {
 
     hotZoneTopRef.current = chart.addLineSeries({
       color: "#ffaa00",
-      lineWidth: 3,
+      lineWidth: 4,
       lineStyle: 2,
     });
 
     hotZoneBottomRef.current = chart.addLineSeries({
       color: "#ffaa00",
-      lineWidth: 3,
+      lineWidth: 4,
       lineStyle: 2,
+    });
+
+    heatmap1Ref.current = chart.addLineSeries({
+      color: "rgba(255, 170, 0, 0.18)",
+      lineWidth: 2,
+      lineStyle: 0,
+    });
+
+    heatmap2Ref.current = chart.addLineSeries({
+      color: "rgba(255, 170, 0, 0.30)",
+      lineWidth: 2,
+      lineStyle: 0,
+    });
+
+    heatmap3Ref.current = chart.addLineSeries({
+      color: "rgba(255, 170, 0, 0.60)",
+      lineWidth: 3,
+      lineStyle: 0,
+    });
+
+    heatmap4Ref.current = chart.addLineSeries({
+      color: "rgba(255, 170, 0, 0.30)",
+      lineWidth: 2,
+      lineStyle: 0,
+    });
+
+    heatmap5Ref.current = chart.addLineSeries({
+      color: "rgba(255, 170, 0, 0.18)",
+      lineWidth: 2,
+      lineStyle: 0,
     });
 
     absorcaoLineRef.current = chart.addLineSeries({
       color: "#ff00ff",
-      lineWidth: 2,
+      lineWidth: 3,
       lineStyle: 1,
     });
 
@@ -327,15 +514,24 @@ export default function App() {
       }
 
       candleSeriesRef.current = null;
+
       stopLineRef.current = null;
       parcialLineRef.current = null;
       alvoLineRef.current = null;
+
       vwapLineRef.current = null;
       vwapSuperiorRef.current = null;
       vwapInferiorRef.current = null;
+
       hotZoneTopRef.current = null;
       hotZoneBottomRef.current = null;
       absorcaoLineRef.current = null;
+
+      heatmap1Ref.current = null;
+      heatmap2Ref.current = null;
+      heatmap3Ref.current = null;
+      heatmap4Ref.current = null;
+      heatmap5Ref.current = null;
     };
   }, [processarDados]);
 
@@ -345,26 +541,30 @@ export default function App() {
   const compra = Number(dataInfo.compra || 0);
   const venda = Number(dataInfo.venda || 0);
 
-  const temHotZone = dataInfo.zonaLow !== null && dataInfo.zonaLow !== undefined &&
-    dataInfo.zonaHigh !== null && dataInfo.zonaHigh !== undefined;
+  const temHotZone =
+    dataInfo.zonaLow !== null &&
+    dataInfo.zonaLow !== undefined &&
+    dataInfo.zonaHigh !== null &&
+    dataInfo.zonaHigh !== undefined;
 
   const glowRadar =
     statusVisual === "ONLINE"
-      ? dataInfo.engineAbsorcao
-        ? "#ff00ff"
-        : temHotZone
-        ? "#ffaa00"
-        : dataInfo.explosao && dataInfo.explosao !== "SEM EXPLOSÃO"
-        ? "#ffaa00"
-        : scoreAgressao > 15
-        ? "#00ff99"
-        : scoreAgressao < -15
-        ? "#ff3333"
-        : compra > venda
-        ? "#00ffc8"
-        : venda > compra
-        ? "#ff4444"
-        : "#00d4ff"
+      ? dataInfo.contextoCor ||
+        (dataInfo.engineAbsorcao
+          ? "#ff00ff"
+          : temHotZone
+          ? "#ffaa00"
+          : dataInfo.explosao && dataInfo.explosao !== "SEM EXPLOSÃO"
+          ? "#ffaa00"
+          : scoreAgressao > 15
+          ? "#00ff99"
+          : scoreAgressao < -15
+          ? "#ff3333"
+          : compra > venda
+          ? "#00ffc8"
+          : venda > compra
+          ? "#ff4444"
+          : "#00d4ff")
       : "#ff4444";
 
   return (
@@ -391,9 +591,9 @@ export default function App() {
           }
 
           @keyframes hotPulse {
-            0% { opacity: .40; box-shadow: 0 0 18px #ffaa00; }
+            0% { opacity: .45; box-shadow: 0 0 18px #ffaa00; }
             50% { opacity: 1; box-shadow: 0 0 35px #ffaa00; }
-            100% { opacity: .40; box-shadow: 0 0 18px #ffaa00; }
+            100% { opacity: .45; box-shadow: 0 0 18px #ffaa00; }
           }
         `}
       </style>
@@ -421,11 +621,18 @@ export default function App() {
 
         <div ref={chartContainerRef} style={{ height: "100%" }} />
       </div>
-
       <div style={{ width: 340, marginLeft: 10 }}>
         <Titulo>TRIN FLOW PRO 5.8.1 WS</Titulo>
 
         <Radar cor={glowRadar} intensidade={dataInfo.intensidade} wsStatus={statusVisual} />
+
+        <Box color={dataInfo.contextoCor || "#263238"}>
+          CONTEXTO: {dataInfo.contextoInstitucional || "AGUARDANDO"}
+        </Box>
+
+        <Box color="#102027">
+          LEITURA: {dataInfo.contextoDetalhe || "Aguardando dados institucionais"}
+        </Box>
 
         <Box color="#0b5d1e">SCORE: {dataInfo.score ?? "-"}</Box>
         <Box color="#004d40">FREQUÊNCIA: {dataInfo.frequencia || "-"}</Box>
@@ -472,8 +679,8 @@ function HotZoneOverlay({ low, high, absorcao }) {
         padding: "8px 12px",
         borderRadius: 8,
         background: absorcao
-          ? "linear-gradient(90deg, rgba(255,0,255,.20), rgba(255,170,0,.20))"
-          : "rgba(255,170,0,.15)",
+          ? "linear-gradient(90deg, rgba(255,0,255,.22), rgba(255,170,0,.22))"
+          : "rgba(255,170,0,.16)",
         color: absorcao ? "#ff66ff" : "#ffaa00",
         border: `1px solid ${absorcao ? "#ff00ff" : "#ffaa00"}`,
         fontSize: 12,
@@ -504,6 +711,11 @@ function TopBar({ dataInfo, cor, wsStatus }) {
       <MiniBadge cor={wsStatus === "ONLINE" ? "#00ff99" : "#ff4444"}>
         WS {wsStatus}
       </MiniBadge>
+
+      <MiniBadge cor={cor}>
+        CONTEXTO: {dataInfo.contextoInstitucional || "AGUARDANDO"}
+      </MiniBadge>
+
       <MiniBadge cor={cor}>FASE: {dataInfo.engineFase || "AGUARDANDO"}</MiniBadge>
       <MiniBadge cor={cor}>DIREÇÃO: {dataInfo.engineDirecao || "NEUTRO"}</MiniBadge>
       <MiniBadge cor={cor}>ENTRADA: {dataInfo.entrada || "AGUARDAR"}</MiniBadge>
@@ -608,7 +820,15 @@ function PressaoBar({ compra, venda }) {
         PRESSÃO INSTITUCIONAL
       </div>
 
-      <div style={{ height: 18, background: "#222", borderRadius: 10, overflow: "hidden", marginBottom: 6 }}>
+      <div
+        style={{
+          height: 18,
+          background: "#222",
+          borderRadius: 10,
+          overflow: "hidden",
+          marginBottom: 6,
+        }}
+      >
         <div
           style={{
             width: `${Math.min(Number(compra || 0), 100)}%`,
@@ -623,7 +843,15 @@ function PressaoBar({ compra, venda }) {
         COMPRA: {compra || 0}%
       </div>
 
-      <div style={{ height: 18, background: "#222", borderRadius: 10, overflow: "hidden", marginBottom: 6 }}>
+      <div
+        style={{
+          height: 18,
+          background: "#222",
+          borderRadius: 10,
+          overflow: "hidden",
+          marginBottom: 6,
+        }}
+      >
         <div
           style={{
             width: `${Math.min(Number(venda || 0), 100)}%`,
@@ -676,7 +904,10 @@ function Box({ children, color }) {
 
 function formatarGlobal(valor) {
   if (valor === null || valor === undefined) return "-";
+
   const n = Number(valor);
+
   if (!Number.isFinite(n)) return valor;
+
   return n.toFixed(2);
 }

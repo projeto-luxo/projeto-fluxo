@@ -1,160 +1,238 @@
-# 🚀 TRIN — Checklist Oficial (Pronto para colar)
+# 🚀 TRIN — CHECKLIST OFICIAL DO PROJETO
 
-## 📌 Estado Atual do Projeto
+## 📌 ESTADO ATUAL DO PROJETO
 
-🟢 **STATUS:** OPERACIONAL  
-🖥 **Frontend:** React  
-⚡ **Backend:** FastAPI  
-📊 **Gráfico:** lightweight-charts  
-🔄 **Atualização:** tempo real via WebSocket  
-🔧 **Módulos funcionando:** 
-  - Engine (absorção, trap, seq_delta, score, fase)
-  - VWAPEngine (VWAP e bandas)
-  - CandleEngine (candles e reversão)
-  - AggressionEngine (frequência, memória agressão, explosão)
-📜 **Dados:** Candles realistas, histórico atualizado, JSON consistente
+🟢 STATUS: OPERACIONAL / ESTÁVEL  
+🏷 VERSÃO ATUAL: **TRIN 5.8.1**  
+
+🖥 Frontend: React  
+⚡ Backend: FastAPI  
+📊 Gráfico: lightweight-charts  
+🔄 Comunicação: WebSocket tempo real  
 
 ---
 
-## ✅ Etapa 1 — Backend
+# ✅ ARQUITETURA FUNCIONAL ATUAL
 
-* [x] FastAPI rodando (`server.py`)
-* [x] Endpoint `/data` funcionando
-* [x] WebSocket `/ws` ativo e estável
-* [x] Histórico de candles atualizado corretamente
-* [x] Engines base sincronizadas
-* [x] Payload JSON consistente com todos os dados necessários para o frontend
-
----
-
-## ✅ Etapa 2 — Frontend
-
-* [x] React rodando (`App.jsx`)
-* [x] WebSocket conectado (`connectTrinWebSocket`) e recebendo dados
-* [x] Gráfico candlestick atualizado em tempo real
-* [x] Painel lateral institucional funcionando
-* [x] VWAP e bandas exibidas
-* [x] Candles amarelos de reversão visíveis
-* [x] Score institucional visualizado
-* [x] Tendência institucional funcionando
-* [x] Linhas de STOP, PARCIAL e ALVO corretas
-* [x] Glow dinâmico no gráfico
-* [x] Radar de pressão institucional presente
+## Backend
+✔ FastAPI operacional  
+✔ Endpoint `/data` funcional  
+✔ WebSocket `/ws` estável  
+✔ Histórico de candles atualizado  
+✔ JSON consistente  
+✔ Backend sincronizado com frontend  
 
 ---
 
-## ✅ Etapa 3 — Dados e Lógica
+## Engines
+✔ Engine institucional
+- absorção
+- trap
+- seq_delta
+- score
+- fase
+- direção
+- zona institucional
 
-* [x] Funções de fluxo (`flow_data.py`) retornando sinais confiáveis
-* [x] Cálculos de agressão consistentes (`AggressionEngine`)
-* [x] Detectores de reversão funcionando (`CandleEngine`)
-* [x] Absorção detectada corretamente (`Engine`)
-* [x] Score e fase institucionais corretos
-* [x] Explosões de fluxo funcionando (`AggressionEngine`)
+✔ VWAPEngine
+- VWAP
+- banda superior
+- banda inferior
 
----
+✔ CandleEngine
+- candles
+- reversão
 
-## 📌 Etapa 4 — Diretrizes Oficiais de Trabalho
-
-### 1️⃣ Princípio Central
-Construir sistema funcional, estável, evolutivo e tecnicamente confiável.
-
-### 2️⃣ Regras do Projeto
-1. **Não mexer em código funcional sem necessidade.**
-2. **Salvar antes de qualquer teste.**
-3. **Testar backend isolado antes do frontend.**
-4. **Uma alteração por vez.**
-5. **Checklist atualizado diariamente.**
-6. **Manter App.js e server.py organizados.**
-7. **Confirmação de WebSocket ativo antes de testar sinais.**
-8. **Se quebrar → parar, corrigir, testar, só depois evoluir.**
-
-### 3️⃣ Anti-Bajulação Técnica
-Não implementar ideias que aumentem risco técnico sem benefício proporcional:
-- Não adicionar múltiplas features ao mesmo tempo
-- Não automatizar antes da leitura manual
-- Não trocar arquitetura estável por modismo
-- Não implementar IA antes das engines estarem maduras
-
-### 4️⃣ Clarificação Obrigatória
-Confirmar termos vagos antes de alterar:
-- "institucional" → visual profissional / fluxo real / footprint / tape reading / DOM L2 / replay / automação / IA comparativa
-
-### 5️⃣ Sistemática do Repetível
-Checklist diário:
-- **Frontend:** App.jsx sem erro, console limpo, renderização normal, WebSocket conectado, JSON chegando
-- **Backend:** server sobe, endpoints respondem, WebSocket ativo, payload consistente, engines sincronizadas
-- **Integração:** frontend/backend comunicam, dados atualizam, sem loops quebrados ou freeze
-
-### 6️⃣ Verificação Antes de Entregar
-- Imports corretos
-- Função existe
-- Nomes consistentes
-- Sintaxe válida
-- Frontend compatível
-- Backend compatível
-- JSON bate
-- Estrutura modular respeitada
-
-### 7️⃣ Admitir Incerteza Técnica
-- Profit API
-- WebSocket externo
-- DOM real
-- L2 real
-- Provedor real
-- Replay proprietário
-→ Não fingir certeza, testar antes
-
-### 8️⃣ Arquitetura Primeiro
-Antes de codar:
-- Definir problema
-- Impacto
-- Módulo afetado
-- Dependências
-- Risco de quebra
-
-### 9️⃣ Uma Alteração por Vez
-Nunca alterar:
-- backend + frontend + websocket + layout juntos
-Sempre: 1 mudança → teste → validação → próximo passo
-
-### 🔟 Preservação de Estabilidade
-Se algo funciona:
-- não reescrever por impulso
-- questionar benefício técnico real
+✔ AggressionEngine
+- frequência
+- memória de agressão
+- persistência
+- explosão de fluxo
 
 ---
 
-## 🔮 Etapa 5 — Próximos Passos Seguros
-
-### NÍVEL 4.6 — Heatmap Institucional
-* [ ] Desenhar zonas quentes
-* [ ] Identificar regiões institucionais
-* [ ] Mostrar defesa compradora/vendedora
-* [ ] Melhorar leitura visual do fluxo
-* [ ] Aproximar visual ASG institucional
-
-### Evolução futura
-* Painel estilo ASG
-* Tape reading visual
-* Replay mode
-* Alertas sonoros
-* Detector de armadilhas
-* Detector de spoofing
-* Multiativos
-* Multi-timeframe
-* IA de classificação de contexto
-* Conexão Profit Pro / NinjaTrader
-* Backend online
-* Frontend online
-* Domínio próprio
+## Frontend
+✔ App.js funcional  
+✔ WebSocket estabilizado  
+✔ WS ONLINE  
+✔ gráfico candlestick renderizando  
+✔ VWAP renderizando  
+✔ bandas VWAP renderizando  
+✔ reversões visuais  
+✔ explosões visuais  
+✔ STOP visual  
+✔ PARCIAL visual  
+✔ ALVO visual  
+✔ glow contextual  
+✔ radar institucional  
+✔ painel lateral institucional  
 
 ---
 
-# ⚠️ Observação Final
-Este checklist é **documento oficial diário**.  
-Antes de qualquer mudança:
-- Revisar checklist
-- Garantir compatibilidade
-- Testar alterações isoladas
-- Atualizar status após conclusão
+# 🔥 TRIN 5.8.1 — ETAPA ATUAL
+
+## ✅ JÁ CONCLUÍDO NO 5.8.1
+
+### Estrutura visual institucional
+✔ HOT ZONE funcional  
+✔ overlay HOT ZONE  
+✔ heatmap institucional por séries  
+✔ absorção visual magenta  
+✔ glow institucional contextual  
+✔ heatmap integrado ao lightweight-charts  
+
+---
+
+### Integração
+✔ frontend/backend sincronizados  
+✔ engine → frontend funcionando  
+✔ zona institucional chegando no frontend  
+✔ absorção chegando no frontend  
+✔ WebSocket estável  
+✔ renderização estável  
+
+---
+
+### Estabilidade
+✔ warning React corrigido  
+✔ gráfico restaurado  
+✔ histórico renderizando corretamente  
+✔ resize funcionando  
+✔ limpeza correta do chart no unmount  
+✔ controle de refs estabilizado  
+
+---
+
+# ⏳ O QUE FALTA PARA FECHAR O TRIN 5.8.1
+
+## 1) Heatmap institucional refinado
+Ainda falta:
+
+[ ] heatmap com preenchimento visual mais institucional  
+[ ] densidade visual mais forte  
+[ ] diferenciação entre:
+- defesa compradora
+- defesa vendedora
+
+---
+
+## 2) Contexto institucional visual
+Falta:
+
+[ ] distinguir acumulação vs distribuição por cor  
+[ ] continuidade vs exaustão  
+[ ] contexto comprador  
+[ ] contexto vendedor  
+[ ] compressão institucional  
+
+---
+
+## 3) Trap refinement
+Falta:
+
+[ ] trap comprador visual melhor  
+[ ] trap vendedor visual melhor  
+[ ] indicação contextual no painel  
+
+---
+
+## 4) Painel institucional refinado
+Falta:
+
+[ ] painel contexto institucional
+[ ] leitura contextual resumida
+[ ] força institucional
+[ ] probabilidade contextual
+
+---
+
+## 5) Validação funcional
+Antes de encerrar 5.8.1:
+
+[ ] validar STOP / PARCIAL / ALVO com lógica real
+[ ] validar explosão com cenários reais
+[ ] validar HOT ZONE dinâmica
+[ ] validar absorção em diferentes contextos
+
+---
+
+# 📌 REGRAS OFICIAIS DE TRABALHO
+
+## PRINCÍPIOS
+
+✔ não mexer no que funciona  
+✔ salvar no Git antes de alterar  
+✔ uma alteração por vez  
+✔ testar backend isolado primeiro  
+✔ depois frontend  
+✔ depois integração  
+✔ se quebrar → parar imediatamente  
+
+---
+
+## PROIBIDO
+
+❌ alterar backend + frontend + websocket juntos  
+❌ refatorar por impulso  
+❌ adicionar IA cedo  
+❌ automação antes da leitura manual  
+❌ patch parcial  
+
+---
+
+## OBRIGATÓRIO
+
+✔ sempre entregar arquivo completo  
+✔ checklist atualizado  
+✔ confirmar impacto arquitetural antes de mexer  
+
+---
+
+# 🔮 PRÓXIMA VERSÃO
+
+# TRIN 5.9
+
+Liberado SOMENTE após concluir 5.8.1
+
+Planejamento inicial:
+
+[ ] painel estilo ASG institucional
+[ ] tape reading visual
+[ ] footprint contextual
+[ ] contexto institucional avançado
+[ ] detector de armadilhas avançado
+[ ] detector de spoofing
+[ ] multi-timeframe
+[ ] multiativos
+[ ] replay mode
+
+---
+
+# FUTURO (APÓS 5.9)
+
+TRIN 6.x
+
+[ ] integração Profit Pro
+[ ] integração NinjaTrader
+[ ] DOM real
+[ ] fluxo real
+[ ] provedor real
+[ ] alertas sonoros
+[ ] IA comparativa
+[ ] classificação contextual IA
+[ ] backend online
+[ ] frontend online
+[ ] domínio próprio
+
+---
+
+# ⚠️ CHECKPOINT OFICIAL
+
+ANTES DE QUALQUER ALTERAÇÃO:
+
+✔ revisar checklist  
+✔ salvar Git  
+✔ validar impacto  
+✔ testar isoladamente  
+✔ validar integração  
+✔ só então evoluir
