@@ -114,6 +114,16 @@ def gerar_payload():
         memoria["score_agressao"],
         intensidade
     )
+    explosao, tipo_explosao = aggression_engine.detectar_explosao_fluxo(
+        atual["saldo"],
+        atual["delta"],
+        atual["volume"],
+        memoria["score_agressao"],
+        intensidade
+    )
+
+    atual["explosao_detectada"] = explosao
+    atual["tipo_explosao"] = tipo_explosao
 
     sinal_data = gerar_sinal(
         atual["saldo"],
