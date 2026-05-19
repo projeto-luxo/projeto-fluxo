@@ -178,7 +178,7 @@ export default function App() {
     };
   }, []);
 
-  const atualizarHeatmap = useCallback((primeiroTime, ultimoTime, zonaLow, zonaHigh, absorcao) => {
+ const atualizarHeatmap = useCallback((primeiroTime, ultimoTime, zonaLow, zonaHigh, absorcao, compra, venda) => {
     if (
       zonaLow === null ||
       zonaLow === undefined ||
@@ -212,20 +212,39 @@ export default function App() {
     setLinhaHorizontal(heatmap3Ref, primeiroTime, ultimoTime, low + faixa * 0.50);
     setLinhaHorizontal(heatmap4Ref, primeiroTime, ultimoTime, low + faixa * 0.66);
     setLinhaHorizontal(heatmap5Ref, primeiroTime, ultimoTime, low + faixa * 0.84);
+// ---------- Heatmap visual reforçado ----------
+const compraNum = Number(compra || 0);
+const vendaNum = Number(venda || 0);
 
-    if (absorcao) {
-      heatmap3Ref.current?.applyOptions({
-        color: "rgba(255, 0, 255, 0.90)",
-        lineWidth: 4,
-      });
-    } else {
-      heatmap3Ref.current?.applyOptions({
-        color: "rgba(255, 170, 0, 0.60)",
-        lineWidth: 3,
-      });
-    }
+let corBase = "255, 170, 0"; // neutro laranja
+let opacidadeLinha = 0.18;
+let espessuraLinha = 2;
+
+if (absorcao) {
+  corBase = "255, 0, 255"; // magenta
+  opacidadeLinha = 0.9;
+  espessuraLinha = 4;
+} else if (compraNum > vendaNum) {
+  corBase = "0, 255, 153"; // verde
+  opacidadeLinha = 0.45;
+  espessuraLinha = 3;
+} else if (vendaNum > compraNum) {
+  corBase = "255, 51, 51"; // vermelho
+  opacidadeLinha = 0.45;
+  espessuraLinha = 3;
+}
+
+// Aplicando cores e opacidade reforçada nas 5 linhas
+[heatmap1Ref, heatmap2Ref, heatmap3Ref, heatmap4Ref, heatmap5Ref].forEach((ref, i) => {
+  const fatorOpacidade = i === 2 ? 1.0 : opacidadeLinha; // central mais visível
+  const fatorEspessura = i === 2 ? espessuraLinha : espessuraLinha - 1;
+  ref.current?.applyOptions({
+    color: `rgba(${corBase}, ${fatorOpacidade})`,
+    lineWidth: fatorEspessura,
+  });
+});
+   
   }, [setLinhaHorizontal]);
-
   const processarDados = useCallback((data) => {
     setWsStatus("ONLINE");
 
@@ -288,9 +307,11 @@ export default function App() {
     setDataInfo({
       ...baseInfo,
       contextoInstitucional: contexto.texto,
+      contextoTexto: contexto.texto,
       contextoCor: contexto.cor,
       contextoDetalhe: contexto.detalhe,
     });
+
     if (!carregouHistoricoRef.current) {
       candleSeriesRef.current.setData(historico);
       vwapLineRef.current.setData(vwap);
@@ -333,7 +354,15 @@ export default function App() {
     setLinhaHorizontal(hotZoneTopRef, primeiroTime, ultimoTime, zonaHigh);
     setLinhaHorizontal(hotZoneBottomRef, primeiroTime, ultimoTime, zonaLow);
 
-    atualizarHeatmap(primeiroTime, ultimoTime, zonaLow, zonaHigh, absorcao);
+    atualizarHeatmap(
+      primeiroTime,
+      ultimoTime,
+      zonaLow,
+      zonaHigh,
+      absorcao,
+      baseInfo.compra,
+      baseInfo.venda
+    );
 
     if (
       absorcao &&
@@ -354,6 +383,7 @@ export default function App() {
     atualizarHeatmap,
     calcularContextoInstitucional,
   ]);
+ 
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -612,11 +642,13 @@ export default function App() {
         <TopBar dataInfo={dataInfo} cor={glowRadar} wsStatus={statusVisual} />
 
         {temHotZone && (
-          <HotZoneOverlay
-            low={dataInfo.zonaLow}
-            high={dataInfo.zonaHigh}
-            absorcao={dataInfo.engineAbsorcao}
-          />
+         <HotZoneOverlay
+  low={dataInfo.zonaLow}
+  high={dataInfo.zonaHigh}
+  absorcao={dataInfo.engineAbsorcao}
+  compra={dataInfo.compra}
+  venda={dataInfo.venda}
+/>
         )}
 
         <div ref={chartContainerRef} style={{ height: "100%" }} />
@@ -668,7 +700,24 @@ export default function App() {
   );
 }
 
-function HotZoneOverlay({ low, high, absorcao }) {
+function HotZoneOverlay({ low, high, absorcao, compra, venda }) {
+  const compraNum = Number(compra || 0);
+  const vendaNum = Number(venda || 0);
+
+  let cor = "#ffaa00";
+  let texto = "HOT ZONE NEUTRA";
+
+  if (absorcao) {
+    cor = "#ff00ff";
+    texto = "HOT ZONE • ABSORÇÃO";
+  } else if (compraNum > vendaNum) {
+    cor = "#00ff99";
+    texto = "DEFESA COMPRADORA";
+  } else if (vendaNum > compraNum) {
+    cor = "#ff3333";
+    texto = "DEFESA VENDEDORA";
+  }
+
   return (
     <div
       style={{
@@ -678,19 +727,17 @@ function HotZoneOverlay({ low, high, absorcao }) {
         bottom: 20,
         padding: "8px 12px",
         borderRadius: 8,
-        background: absorcao
-          ? "linear-gradient(90deg, rgba(255,0,255,.22), rgba(255,170,0,.22))"
-          : "rgba(255,170,0,.16)",
-        color: absorcao ? "#ff66ff" : "#ffaa00",
-        border: `1px solid ${absorcao ? "#ff00ff" : "#ffaa00"}`,
+        background: `rgba(2, 8, 22, 0.88)`,
+        color: cor,
+        border: `1px solid ${cor}`,
         fontSize: 12,
         fontWeight: "900",
         animation: "hotPulse 1.6s infinite",
+        boxShadow: `0 0 28px ${cor}`,
         pointerEvents: "none",
       }}
     >
-      HOT ZONE {Number(low).toFixed(2)} / {Number(high).toFixed(2)}
-      {absorcao ? " • ABSORÇÃO" : ""}
+      {texto} {Number(low).toFixed(2)} / {Number(high).toFixed(2)}
     </div>
   );
 }
