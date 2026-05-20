@@ -57,24 +57,48 @@ class AggressionEngine:
             2
         )
 
+        volume_medio = volume_total / len(self.memoria_agressao)
+
+        direcao_fluxo = 0
+
+        if saldo_total > 0 and delta_total > 0:
+            direcao_fluxo = 1
+        elif saldo_total < 0 and delta_total < 0:
+            direcao_fluxo = -1
+        elif delta_total > 0:
+            direcao_fluxo = 0.5
+        elif delta_total < 0:
+            direcao_fluxo = -0.5
+
+        score_base = (
+            (saldo_total / 120) +
+            (delta_total / 60)
+        )
+
+        peso_volume = min(volume_medio / 800, 2)
+
         score_agressao = round(
-            (saldo_total / 100) +
-            (delta_total / 50) +
-            (volume_total / 1000),
+            score_base * peso_volume,
             2
         )
 
-        if persistencia_compra >= 60 and score_agressao > 10:
+        if direcao_fluxo == 0:
+            score_agressao = round(score_agressao * 0.5, 2)
+
+        if persistencia_compra >= 60 and score_agressao > 8:
             leitura = "PERSISTÊNCIA COMPRADORA"
 
-        elif persistencia_venda >= 60 and score_agressao < -10:
+        elif persistencia_venda >= 60 and score_agressao < -8:
             leitura = "PERSISTÊNCIA VENDEDORA"
 
-        elif abs(score_agressao) < 8:
-            leitura = "AGRESSÃO NEUTRA"
+        elif score_agressao > 8:
+            leitura = "AGRESSÃO COMPRADORA INSTÁVEL"
+
+        elif score_agressao < -8:
+            leitura = "AGRESSÃO VENDEDORA INSTÁVEL"
 
         else:
-            leitura = "AGRESSÃO INSTÁVEL"
+            leitura = "AGRESSÃO NEUTRA"
 
         return {
             "persistencia_compra": persistencia_compra,
@@ -95,7 +119,7 @@ class AggressionEngine:
             saldo_agressor > 400 and
             delta > 220 and
             volume > 900 and
-            score_agressao > 10 and
+            score_agressao > 8 and
             intensidade_fluxo > 800
         ):
             return True, "BUY EXPLOSION"
@@ -104,7 +128,7 @@ class AggressionEngine:
             saldo_agressor < -400 and
             delta < -220 and
             volume > 900 and
-            score_agressao < -10 and
+            score_agressao < -8 and
             intensidade_fluxo > 800
         ):
             return True, "SELL EXPLOSION"

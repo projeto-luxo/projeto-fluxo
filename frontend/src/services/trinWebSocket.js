@@ -96,12 +96,15 @@ export function disconnectTrinWebSocket() {
     reconnectTimer = null;
   }
 
-  if (socket) {
+  if (
+    socket &&
+    (
+      socket.readyState === WebSocket.OPEN ||
+      socket.readyState === WebSocket.CONNECTING
+    )
+  ) {
     socket.close();
-    socket = null;
   }
-}
 
-export function getTrinWebSocket() {
-  return socket;
+  socket = null;
 }

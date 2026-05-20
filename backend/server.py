@@ -55,7 +55,7 @@ def gerar_candle():
         "volume": volume,
         "delta": delta,
         "saldo": saldo,
-        "reversao_detectada": False
+        "reversao_detectada": False,
     }
 
     preco_atual = fechamento
@@ -114,13 +114,6 @@ def gerar_payload():
         memoria["score_agressao"],
         intensidade
     )
-    explosao, tipo_explosao = aggression_engine.detectar_explosao_fluxo(
-        atual["saldo"],
-        atual["delta"],
-        atual["volume"],
-        memoria["score_agressao"],
-        intensidade
-    )
 
     atual["explosao_detectada"] = explosao
     atual["tipo_explosao"] = tipo_explosao
@@ -131,6 +124,159 @@ def gerar_payload():
         atual["delta"],
         preco=atual["close"]
     )
+
+    # ==============================
+    # ENTRADA INSTITUCIONAL TRIN 5.8.1
+    # ==============================
+    engine_score = engine_data.get("engine_score", 0)
+    engine_fase = engine_data.get("engine_fase", "AGUARDANDO")
+    engine_direcao = engine_data.get("engine_direcao", "NEUTRO")
+    engine_seq_delta = engine_data.get("engine_seq_delta", 0)
+    engine_trap = engine_data.get("engine_trap")
+    engine_absorcao = engine_data.get("engine_absorcao", False)
+
+    score_agressao = memoria.get("score_agressao", 0)
+
+    entrada_institucional = "AGUARDAR"
+
+    if explosao and tipo_explosao == "BUY EXPLOSION":
+        entrada_institucional = "SCALPING CONTROLADO"
+
+    elif explosao and tipo_explosao == "SELL EXPLOSION":
+        entrada_institucional = "SCALPING CONTROLADO"
+
+    elif (
+        engine_score >= 6
+        and engine_fase == "ROMPIMENTO"
+        and engine_direcao == "COMPRA"
+        and engine_seq_delta >= 2
+        and atual["delta"] > 180
+        and not engine_absorcao
+    ):
+        entrada_institucional = "COMPRA CONSERVADORA"
+
+    elif (
+        engine_score >= 6
+        and engine_fase == "ROMPIMENTO"
+        and engine_direcao == "VENDA"
+        and engine_seq_delta <= -2
+        and atual["delta"] < -180
+        and not engine_absorcao
+    ):
+        entrada_institucional = "VENDA CONSERVADORA"
+
+    elif (
+        engine_fase == "DISTRIBUICAO"
+        and engine_direcao == "VENDA"
+        and atual["delta"] < -120
+        and not engine_absorcao
+    ):
+        entrada_institucional = "VENDA MODERADA"
+
+    elif (
+        engine_fase == "ACUMULACAO"
+        and engine_direcao == "COMPRA"
+        and atual["delta"] > 120
+        and not engine_absorcao
+    ):
+        entrada_institucional = "COMPRA MODERADA"
+
+    elif (
+        engine_score >= 5
+        and engine_direcao == "COMPRA"
+        and score_agressao > 5
+        and (engine_trap == "COMPRA" or engine_absorcao)
+    ):
+        entrada_institucional = "COMPRA MODERADA"
+
+    elif (
+        engine_score >= 5
+        and engine_direcao == "VENDA"
+        and score_agressao < -5
+        and (engine_trap == "VENDA" or engine_absorcao)
+    ):
+        entrada_institucional = "VENDA MODERADA"
+
+    sinal_data["entrada"] = entrada_institucional
+
+    # ==============================
+    # ALERTA OPERACIONAL TRIN
+    # ==============================
+    alerta_operacional = "AGUARDANDO CONFIRMAÇÃO"
+
+    if (
+        engine_fase == "COMPRESSAO"
+        and atual["delta"] < -100
+        and score_agressao < -5
+        and not engine_absorcao
+    ):
+        alerta_operacional = "ALERTA: PRESSÃO VENDEDORA EM COMPRESSÃO"
+
+    elif (
+        engine_fase == "COMPRESSAO"
+        and atual["delta"] > 100
+        and score_agressao > 5
+        and not engine_absorcao
+    ):
+        alerta_operacional = "ALERTA: PRESSÃO COMPRADORA EM COMPRESSÃO"
+
+    elif (
+        engine_fase == "DISTRIBUICAO"
+        and engine_direcao == "VENDA"
+    ):
+        alerta_operacional = "ALERTA: DISTRIBUIÇÃO VENDEDORA"
+
+    elif (
+        engine_fase == "ACUMULACAO"
+        and engine_direcao == "COMPRA"
+    ):
+        alerta_operacional = "ALERTA: ACUMULAÇÃO COMPRADORA"
+
+    elif engine_fase == "ROMPIMENTO":
+        alerta_operacional = "ALERTA: ROMPIMENTO EM ANDAMENTO"
+
+    sinal_data["tendencia"] = alerta_operacional
+    # ==============================
+    # GESTÃO INSTITUCIONAL DINÂMICA
+    # STOP / PARCIAL / ALVO
+    # ==============================
+    zona_low = engine_data.get("engine_zona_low")
+    zona_high = engine_data.get("engine_zona_high")
+    preco_entrada = atual["close"]
+
+    stop = sinal_data.get("stop")
+    parcial = sinal_data.get("parcial")
+    alvo = sinal_data.get("alvo")
+
+    if zona_low is not None and zona_high is not None:
+        zona_low = float(zona_low)
+        zona_high = float(zona_high)
+        preco_entrada = float(preco_entrada)
+
+        range_zona = max(zona_high - zona_low, 0.5)
+        buffer = max(range_zona * 0.20, 0.15)
+
+        if entrada_institucional in [
+            "COMPRA MODERADA",
+            "COMPRA CONSERVADORA",
+            "SCALPING CONTROLADO",
+        ] and engine_direcao == "COMPRA":
+            stop = round(zona_low - buffer, 2)
+            parcial = round(preco_entrada + range_zona, 2)
+            alvo = round(preco_entrada + (range_zona * 2), 2)
+
+        elif entrada_institucional in [
+            "VENDA MODERADA",
+            "VENDA CONSERVADORA",
+            "SCALPING CONTROLADO",
+        ] and engine_direcao == "VENDA":
+            stop = round(zona_high + buffer, 2)
+            parcial = round(preco_entrada - range_zona, 2)
+            alvo = round(preco_entrada - (range_zona * 2), 2)
+
+    sinal_data["stop"] = stop
+    sinal_data["parcial"] = parcial
+    sinal_data["alvo"] = alvo
 
     payload = {
         "historico": historico,
@@ -148,10 +294,10 @@ def gerar_payload():
             "intensidade_fluxo": intensidade,
             **memoria,
             "explosao_detectada": explosao,
-            "tipo_explosao": tipo_explosao
+            "tipo_explosao": tipo_explosao,
         },
 
-        **sinal_data
+        **sinal_data,
     }
 
     return payload

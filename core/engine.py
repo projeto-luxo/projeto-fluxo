@@ -4,35 +4,89 @@ class Engine:
     def __init__(self):
         self.zona = None
         self.zona_tempo = 0
+
         self.trap = None
         self.trap_tempo = 0
-        self.seq_delta = 0
-        self.score = 0
-        self.direcao = "NEUTRO"
-        self.fase = "AGUARDANDO"
-        self.absorcao = False
         self.trap_detectado = None
 
-    def detectar_absorcao(self, c):
-        corpo = abs(c["close"] - c["open"])
-        range_total = c["high"] - c["low"]
+        self.seq_delta = 0
+        self.score = 0
 
-        if range_total == 0:
+        self.direcao = "NEUTRO"
+        self.fase = "AGUARDANDO"
+
+        self.absorcao = False
+        self.tipo_absorcao = None
+
+    def detectar_absorcao(self, c):
+        delta = c.get("delta", 0)
+        volume = c.get("volume", 0)
+
+        abertura = c["open"]
+        fechamento = c["close"]
+        maxima = c["high"]
+        minima = c["low"]
+
+        corpo = abs(fechamento - abertura)
+        range_total = maxima - minima
+
+        if range_total <= 0:
+            self.tipo_absorcao = None
             return False
 
-        return abs(c.get("delta", 0)) > 200 and corpo < range_total * 0.3
+        corpo_ratio = corpo / range_total
+
+        pavio_superior = maxima - max(abertura, fechamento)
+        pavio_inferior = min(abertura, fechamento) - minima
+
+        if (
+            delta < -150
+            and volume > 700
+            and corpo_ratio < 0.35
+            and pavio_inferior > corpo
+        ):
+            self.tipo_absorcao = "COMPRA"
+            return True
+
+        if (
+            delta > 150
+            and volume > 700
+            and corpo_ratio < 0.35
+            and pavio_superior > corpo
+        ):
+            self.tipo_absorcao = "VENDA"
+            return True
+
+        if (
+            abs(delta) > 220
+            and volume > 850
+            and corpo_ratio < 0.28
+        ):
+            self.tipo_absorcao = "NEUTRA"
+            return True
+
+        self.tipo_absorcao = None
+        return False
 
     def detectar_trap(self, atual, anterior):
         if anterior is None:
             return None
 
-        if atual["high"] > anterior["high"] and atual["close"] < anterior["high"]:
-            if atual.get("delta", 0) < -120:
-                return "VENDA"
+        delta = atual.get("delta", 0)
 
-        if atual["low"] < anterior["low"] and atual["close"] > anterior["low"]:
-            if atual.get("delta", 0) > 120:
-                return "COMPRA"
+        if (
+            atual["high"] > anterior["high"]
+            and atual["close"] < anterior["high"]
+            and delta < -120
+        ):
+            return "VENDA"
+
+        if (
+            atual["low"] < anterior["low"]
+            and atual["close"] > anterior["low"]
+            and delta > 120
+        ):
+            return "COMPRA"
 
         return None
 
@@ -40,11 +94,22 @@ class Engine:
         delta = c.get("delta", 0)
 
         if delta > 120:
-            self.seq_delta += 1
+            if self.seq_delta >= 0:
+                self.seq_delta += 1
+            else:
+                self.seq_delta = 1
+
         elif delta < -120:
-            self.seq_delta -= 1
+            if self.seq_delta <= 0:
+                self.seq_delta -= 1
+            else:
+                self.seq_delta = -1
+
         else:
-            self.seq_delta = 0
+            if self.seq_delta > 0:
+                self.seq_delta -= 1
+            elif self.seq_delta < 0:
+                self.seq_delta += 1
 
     def atualizar_zona(self, c, absorcao):
         if absorcao:
@@ -54,13 +119,19 @@ class Engine:
         if self.zona:
             self.zona_tempo += 1
 
-            if self.zona_tempo > 25:
-                self.zona = None
-            else:
-                z_low, z_high = self.zona
+            z_low, z_high = self.zona
 
-                if c["close"] > z_high + 10 or c["close"] < z_low - 10:
-                    self.zona = None
+            if self.zona_tempo > 20:
+                self.zona = None
+                return
+
+            if c["close"] > z_high + 10:
+                self.zona = None
+                return
+
+            if c["close"] < z_low - 10:
+                self.zona = None
+                return
 
     def atualizar_trap(self, trap, candle):
         if trap:
@@ -70,45 +141,79 @@ class Engine:
         if self.trap:
             self.trap_tempo += 1
 
-            if self.trap_tempo > 10:
+            if self.trap_tempo > 4:
                 self.trap = None
 
-    def atualizar_fase(self):
-        if self.seq_delta >= 3:
+    def atualizar_fase(self, c):
+        delta = c.get("delta", 0)
+        volume = c.get("volume", 0)
+
+        if abs(delta) > 280 and volume > 1000:
+            self.fase = "EXAUSTAO"
+            self.direcao = "NEUTRO"
+            return
+
+        if self.absorcao and self.zona:
+            self.fase = "COMPRESSAO"
+            self.direcao = "NEUTRO"
+            return
+
+        if self.seq_delta >= 2:
             self.fase = "ROMPIMENTO"
             self.direcao = "COMPRA"
             return
 
-        if self.seq_delta <= -3:
+        if self.seq_delta <= -2:
             self.fase = "ROMPIMENTO"
             self.direcao = "VENDA"
             return
 
         if self.zona:
-            self.fase = "ACUMULACAO"
-        else:
-            self.fase = "AGUARDANDO"
+            if self.seq_delta > 0:
+                self.fase = "ACUMULACAO"
+                self.direcao = "COMPRA"
+                return
 
+            if self.seq_delta < 0:
+                self.fase = "DISTRIBUICAO"
+                self.direcao = "VENDA"
+                return
+
+            self.fase = "COMPRESSAO"
+            self.direcao = "NEUTRO"
+            return
+
+        self.fase = "AGUARDANDO"
         self.direcao = "NEUTRO"
 
-    def atualizar_score(self):
+    def atualizar_score(self, c):
         score = 0
+
+        delta = abs(c.get("delta", 0))
+        volume = c.get("volume", 0)
 
         if self.zona:
             score += 2
 
-        if self.trap:
-            tipo, _ = self.trap
-
-            if (tipo == "COMPRA" and self.seq_delta > 0) or (
-                tipo == "VENDA" and self.seq_delta < 0
-            ):
-                score += 4
-
-        if abs(self.seq_delta) >= 2:
+        if self.absorcao:
             score += 3
 
-        self.score = score
+        if self.trap_detectado:
+            score += 3
+
+        if abs(self.seq_delta) >= 2:
+            score += 2
+
+        if abs(self.seq_delta) >= 4:
+            score += 2
+
+        if delta > 220:
+            score += 2
+
+        if volume > 850:
+            score += 1
+
+        self.score = min(score, 10)
 
     def processar(self, atual, anterior=None):
         self.absorcao = self.detectar_absorcao(atual)
@@ -117,8 +222,9 @@ class Engine:
         self.atualizar_fluxo(atual)
         self.atualizar_zona(atual, self.absorcao)
         self.atualizar_trap(self.trap_detectado, atual)
-        self.atualizar_fase()
-        self.atualizar_score()
+
+        self.atualizar_fase(atual)
+        self.atualizar_score(atual)
 
         return self.resultado()
 

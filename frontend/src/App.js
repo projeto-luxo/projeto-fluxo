@@ -110,13 +110,18 @@ export default function App() {
       });
   }, []);
 
-  const calcularContextoInstitucional = useCallback((info) => {
+    const calcularContextoInstitucional = useCallback((info) => {
     const compra = Number(info.compra || 0);
     const venda = Number(info.venda || 0);
     const scoreAgressao = Number(info.scoreAgressao || 0);
+    const scoreEngine = Number(info.engineScore || info.score || 0);
+    const seqDelta = Number(info.engineSeqDelta || 0);
+
     const fase = info.engineFase || "AGUARDANDO";
     const direcao = info.engineDirecao || "NEUTRO";
+    const trap = info.engineTrap || null;
     const absorcao = Boolean(info.engineAbsorcao);
+
     const temHotZone =
       info.zonaLow !== null &&
       info.zonaLow !== undefined &&
@@ -127,7 +132,7 @@ export default function App() {
       return {
         texto: "ABSORÇÃO ATIVA",
         cor: "#ff00ff",
-        detalhe: "Região com possível defesa institucional"
+        detalhe: "Defesa institucional ativa dentro da zona"
       };
     }
 
@@ -147,23 +152,71 @@ export default function App() {
       };
     }
 
-    if (fase === "ACUMULACAO" && compra > venda && scoreAgressao > 5) {
+    if (fase === "EXAUSTAO") {
       return {
-        texto: "ACUMULAÇÃO COMPRADORA",
-        cor: "#00d4ff",
-        detalhe: "Compradores defendendo região"
+        texto: "EXAUSTÃO INSTITUCIONAL",
+        cor: "#ffaa00",
+        detalhe: "Fluxo extremo com risco de reversão"
       };
     }
 
-    if (fase === "ACUMULACAO" && venda > compra && scoreAgressao < -5) {
+    if (fase === "COMPRESSAO") {
       return {
-        texto: "ACUMULAÇÃO VENDEDORA",
+        texto: "COMPRESSÃO INSTITUCIONAL",
+        cor: "#ffaa00",
+        detalhe: "Mercado comprimido dentro da zona institucional"
+      };
+    }
+
+    if (fase === "ACUMULACAO") {
+      if (direcao === "COMPRA" || seqDelta > 0 || trap === "COMPRA") {
+        return {
+          texto: "ACUMULAÇÃO COMPRADORA",
+          cor: "#00d4ff",
+          detalhe: "Compradores defendendo região"
+        };
+      }
+
+      if (direcao === "VENDA" || seqDelta < 0 || trap === "VENDA") {
+        return {
+          texto: "ACUMULAÇÃO VENDEDORA",
+          cor: "#ff6666",
+          detalhe: "Vendedores defendendo região"
+        };
+      }
+
+      return {
+        texto: "ACUMULAÇÃO NEUTRA",
+        cor: "#ffaa00",
+        detalhe: "Zona institucional sem domínio claro"
+      };
+    }
+
+    if (fase === "DISTRIBUICAO") {
+      return {
+        texto: "DISTRIBUIÇÃO VENDEDORA",
         cor: "#ff6666",
         detalhe: "Vendedores defendendo região"
       };
     }
 
     if (temHotZone) {
+      if (compra > venda && scoreAgressao > 0) {
+        return {
+          texto: "DEFESA COMPRADORA",
+          cor: "#00ff99",
+          detalhe: "Hot zone com predominância compradora"
+        };
+      }
+
+      if (venda > compra && scoreAgressao < 0) {
+        return {
+          texto: "DEFESA VENDEDORA",
+          cor: "#ff3333",
+          detalhe: "Hot zone com predominância vendedora"
+        };
+      }
+
       return {
         texto: "HOT ZONE NEUTRA",
         cor: "#ffaa00",
@@ -171,10 +224,26 @@ export default function App() {
       };
     }
 
+    if (scoreEngine >= 7 && direcao === "COMPRA") {
+      return {
+        texto: "CONTEXTO COMPRADOR",
+        cor: "#00ff99",
+        detalhe: "Score institucional favorece compra"
+      };
+    }
+
+    if (scoreEngine >= 7 && direcao === "VENDA") {
+      return {
+        texto: "CONTEXTO VENDEDOR",
+        cor: "#ff3333",
+        detalhe: "Score institucional favorece venda"
+      };
+    }
+
     return {
       texto: "CONTEXTO NEUTRO",
       cor: "#00d4ff",
-      detalhe: "Aguardando confirmação do fluxo"
+      detalhe: "Aguardando confirmação institucional"
     };
   }, []);
 
@@ -267,7 +336,7 @@ if (absorcao) {
     const absorcao = data.engine_absorcao ?? engine.engine_absorcao;
 
     const baseInfo = {
-      score: data.forca ?? data.score ?? data.sinal?.forca ?? engine.engine_score,
+      score: engine.engine_score ?? data.score ?? data.forca ?? data.sinal?.forca, 
       sinal: data.sinal?.sinal ?? data.sinal ?? "SEM ENTRADA",
       entrada: data.entrada ?? data.sinal?.entrada ?? "AGUARDAR",
       tendencia: data.tendencia ?? data.sinal?.tendencia ?? "NEUTRO",
