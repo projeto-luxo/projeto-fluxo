@@ -1,5 +1,69 @@
 # backend/flow_data.py
 
+def calcular_gestao(preco, saldo, delta, volume, forca, exaustao, entrada):
+    if preco is None:
+        return None, None, None
+
+    preco = float(preco)
+    saldo = int(saldo or 0)
+    delta = int(delta or 0)
+    volume = int(volume or 0)
+
+    intensidade = abs(saldo) + abs(delta) + (volume / 2)
+
+    if intensidade >= 1200:
+        range_base = 1.20
+    elif intensidade >= 900:
+        range_base = 1.00
+    elif intensidade >= 650:
+        range_base = 0.75
+    else:
+        range_base = 0.50
+
+    if forca >= 3:
+        multiplicador = 1.20
+    elif forca == 2:
+        multiplicador = 1.00
+    else:
+        multiplicador = 0.75
+
+    if exaustao:
+        multiplicador *= 0.70
+
+    risco = round(range_base * multiplicador, 2)
+
+    if risco < 0.35:
+        risco = 0.35
+
+    parcial_dist = round(risco * 1.20, 2)
+    alvo_dist = round(risco * 2.20, 2)
+
+    if "COMPRA" in entrada:
+        stop = round(preco - risco, 2)
+        parcial = round(preco + parcial_dist, 2)
+        alvo = round(preco + alvo_dist, 2)
+
+    elif "VENDA" in entrada:
+        stop = round(preco + risco, 2)
+        parcial = round(preco - parcial_dist, 2)
+        alvo = round(preco - alvo_dist, 2)
+
+    elif delta > 0:
+        stop = round(preco - risco, 2)
+        parcial = round(preco + parcial_dist, 2)
+        alvo = round(preco + alvo_dist, 2)
+
+    elif delta < 0:
+        stop = round(preco + risco, 2)
+        parcial = round(preco - parcial_dist, 2)
+        alvo = round(preco - alvo_dist, 2)
+
+    else:
+        stop = parcial = alvo = None
+
+    return stop, parcial, alvo
+
+
 def gerar_sinal(saldo, volume, delta, preco=None):
     saldo = int(saldo or 0)
     volume = int(volume or 0)
@@ -95,21 +159,15 @@ def gerar_sinal(saldo, volume, delta, preco=None):
     ):
         entrada = "SCALPING CONTROLADO"
 
-    if preco is not None:
-        preco = float(preco)
-
-        if saldo > 0:
-            stop = round(preco - 0.5, 2)
-            parcial = round(preco + 0.5, 2)
-            alvo = round(preco + 1.0, 2)
-        elif saldo < 0:
-            stop = round(preco + 0.5, 2)
-            parcial = round(preco - 0.5, 2)
-            alvo = round(preco - 1.0, 2)
-        else:
-            stop = parcial = alvo = None
-    else:
-        stop = parcial = alvo = None
+    stop, parcial, alvo = calcular_gestao(
+        preco=preco,
+        saldo=saldo,
+        delta=delta,
+        volume=volume,
+        forca=forca,
+        exaustao=exaustao,
+        entrada=entrada,
+    )
 
     return {
         "sinal": sinal,

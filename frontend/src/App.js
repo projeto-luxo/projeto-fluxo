@@ -723,7 +723,7 @@ if (absorcao) {
         <div ref={chartContainerRef} style={{ height: "100%" }} />
       </div>
       <div style={{ width: 340, marginLeft: 10 }}>
-        <Titulo>TRIN FLOW PRO 5.8.1 WS</Titulo>
+        <Titulo>TRIN FLOW PRO 5.8.7 RC</Titulo>
 
         <Radar cor={glowRadar} intensidade={dataInfo.intensidade} wsStatus={statusVisual} />
 
@@ -740,6 +740,10 @@ if (absorcao) {
         <Box color="#4a148c">INTENSIDADE: {formatar(dataInfo.intensidade)}</Box>
         <Box color="#263238">SCORE AGRESSÃO: {formatar(dataInfo.scoreAgressao)}</Box>
         <Box color="#311b92">{dataInfo.leituraAgressao || "AGUARDANDO LEITURA"}</Box>
+        
+        <Box color="#4a0000">STOP: {formatar(dataInfo.stop)}</Box>
+        <Box color="#5a4a00">PARCIAL: {formatar(dataInfo.parcial)}</Box>
+        <Box color="#003d1f">ALVO: {formatar(dataInfo.alvo)}</Box>
 
         <Box color="#102027">SINAL: {dataInfo.sinal || "SEM ENTRADA"}</Box>
         <Box color="#1b2631">ENTRADA: {dataInfo.entrada || "AGUARDAR"}</Box>
