@@ -16,6 +16,10 @@ export default function App() {
   const parcialLineRef = useRef(null);
   const alvoLineRef = useRef(null);
 
+  const stopPriceLineRef = useRef(null);
+  const parcialPriceLineRef = useRef(null);
+  const alvoPriceLineRef = useRef(null);
+
   const vwapLineRef = useRef(null);
   const vwapSuperiorRef = useRef(null);
   const vwapInferiorRef = useRef(null);
@@ -82,6 +86,31 @@ export default function App() {
       { time: ultimoTime, value: Number(valor) },
     ]);
   }, []);
+const atualizarPriceLineExecucao = useCallback((priceLineRef, titulo, valor, cor, lineStyle = 0) => {
+  if (!candleSeriesRef.current) return;
+
+  if (priceLineRef.current) {
+    candleSeriesRef.current.removePriceLine(priceLineRef.current);
+    priceLineRef.current = null;
+  }
+
+  if (
+    valor === null ||
+    valor === undefined ||
+    Number.isNaN(Number(valor))
+  ) {
+    return;
+  }
+
+  priceLineRef.current = candleSeriesRef.current.createPriceLine({
+    price: Number(valor),
+    color: cor,
+    lineWidth: 2,
+    lineStyle,
+    axisLabelVisible: true,
+    title: titulo,
+  });
+}, []);
 
   const gerarMarkersInstitucionais = useCallback((historico) => {
     if (!Array.isArray(historico)) return [];
@@ -420,6 +449,10 @@ if (absorcao) {
     setLinhaHorizontal(parcialLineRef, primeiroTime, ultimoTime, data.parcial);
     setLinhaHorizontal(alvoLineRef, primeiroTime, ultimoTime, data.alvo);
 
+    atualizarPriceLineExecucao(stopPriceLineRef, "STOP", data.stop, "#ff1f1f", 0);
+    atualizarPriceLineExecucao(parcialPriceLineRef, "PARCIAL", data.parcial, "#ffd700", 2);
+    atualizarPriceLineExecucao(alvoPriceLineRef, "ALVO", data.alvo, "#00ff88", 0);
+
     setLinhaHorizontal(hotZoneTopRef, primeiroTime, ultimoTime, zonaHigh);
     setLinhaHorizontal(hotZoneBottomRef, primeiroTime, ultimoTime, zonaLow);
 
@@ -446,6 +479,7 @@ if (absorcao) {
       setLinhaHorizontal(absorcaoLineRef, primeiroTime, ultimoTime, null);
     }
   }, [
+    atualizarPriceLineExecucao,
     ordenarPorTempo,
     gerarMarkersInstitucionais,
     setLinhaHorizontal,
@@ -723,7 +757,7 @@ if (absorcao) {
         <div ref={chartContainerRef} style={{ height: "100%" }} />
       </div>
       <div style={{ width: 340, marginLeft: 10 }}>
-        <Titulo>TRIN FLOW PRO 5.8.7 RC</Titulo>
+       <Titulo>TRIN FLOW PRO 5.9 EXEC</Titulo>
 
         <Radar cor={glowRadar} intensidade={dataInfo.intensidade} wsStatus={statusVisual} />
 
