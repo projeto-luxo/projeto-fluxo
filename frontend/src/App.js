@@ -102,13 +102,37 @@ const atualizarPriceLineExecucao = useCallback((priceLineRef, titulo, valor, cor
     return;
   }
 
-  priceLineRef.current = candleSeriesRef.current.createPriceLine({
-    price: Number(valor),
-    color: cor,
-    lineWidth: 2,
-    lineStyle,
-    axisLabelVisible: true,
-    title: titulo,
+ priceLineRef.current = candleSeriesRef.current.createPriceLine({
+  price: Number(valor),
+
+  color: cor,
+
+  lineWidth:
+    titulo === "STOP"
+      ? 3
+      : titulo === "ALVO"
+      ? 3
+      : 2,
+
+  lineStyle,
+
+  axisLabelVisible: true,
+
+  axisLabelColor: "#000000",
+
+  axisLabelTextColor:
+    titulo === "STOP"
+      ? "#ff4d4d"
+      : titulo === "PARCIAL"
+      ? "#ffd700"
+      : "#00ff88",
+
+  title:
+    titulo === "STOP"
+      ? "🟥 STOP"
+      : titulo === "PARCIAL"
+      ? "🟨 PARCIAL"
+      : "🟩 ALVO",
   });
 }, []);
 
@@ -449,10 +473,36 @@ if (absorcao) {
     setLinhaHorizontal(parcialLineRef, primeiroTime, ultimoTime, data.parcial);
     setLinhaHorizontal(alvoLineRef, primeiroTime, ultimoTime, data.alvo);
 
-    atualizarPriceLineExecucao(stopPriceLineRef, "STOP", data.stop, "#ff1f1f", 0);
-    atualizarPriceLineExecucao(parcialPriceLineRef, "PARCIAL", data.parcial, "#ffd700", 2);
-    atualizarPriceLineExecucao(alvoPriceLineRef, "ALVO", data.alvo, "#00ff88", 0);
+    const entradaAtual = baseInfo.entrada || "";
 
+if (
+  entradaAtual.includes("COMPRA") ||
+  entradaAtual.includes("VENDA")
+) {
+  atualizarPriceLineExecucao(
+    stopPriceLineRef,
+    "STOP",
+    data.stop,
+    "#ff1f1f",
+    0
+  );
+
+  atualizarPriceLineExecucao(
+    parcialPriceLineRef,
+    "PARCIAL",
+    data.parcial,
+    "#ffd700",
+    2
+  );
+
+  atualizarPriceLineExecucao(
+    alvoPriceLineRef,
+    "ALVO",
+    data.alvo,
+    "#00ff88",
+    0
+  );
+}
     setLinhaHorizontal(hotZoneTopRef, primeiroTime, ultimoTime, zonaHigh);
     setLinhaHorizontal(hotZoneBottomRef, primeiroTime, ultimoTime, zonaLow);
 
