@@ -476,13 +476,19 @@ alvo: temEntradaPainel ? data.alvo : null,
 
 const entradaAtual = baseInfo.entrada || "";
 const scoreAtual = Number(baseInfo.score || 0);
+const faseAtual = baseInfo.engineFase || "AGUARDANDO";
+const contextoAtual = baseInfo.contextoInstitucional || "";
+const direcaoAtual = baseInfo.engineDirecao || "NEUTRO";
 
 const temEntradaReal =
   (
     entradaAtual.includes("COMPRA") ||
     entradaAtual.includes("VENDA")
   ) &&
-  scoreAtual >= 5;
+  scoreAtual >= 5 &&
+  faseAtual !== "AGUARDANDO" &&
+  !contextoAtual.includes("NEUTRO") &&
+  direcaoAtual !== "NEUTRO";
 
 if (temEntradaReal) {
   setLinhaHorizontal(stopLineRef, primeiroTime, ultimoTime, data.stop);
