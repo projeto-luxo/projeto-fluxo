@@ -469,39 +469,28 @@ if (absorcao) {
       }
     }
 
-    setLinhaHorizontal(stopLineRef, primeiroTime, ultimoTime, data.stop);
-    setLinhaHorizontal(parcialLineRef, primeiroTime, ultimoTime, data.parcial);
-    setLinhaHorizontal(alvoLineRef, primeiroTime, ultimoTime, data.alvo);
-
-    const entradaAtual = baseInfo.entrada || "";
-
-if (
+const entradaAtual = baseInfo.entrada || "";
+const temEntradaReal =
   entradaAtual.includes("COMPRA") ||
-  entradaAtual.includes("VENDA")
-) {
-  atualizarPriceLineExecucao(
-    stopPriceLineRef,
-    "STOP",
-    data.stop,
-    "#ff1f1f",
-    0
-  );
+  entradaAtual.includes("VENDA");
 
-  atualizarPriceLineExecucao(
-    parcialPriceLineRef,
-    "PARCIAL",
-    data.parcial,
-    "#ffd700",
-    2
-  );
+if (temEntradaReal) {
+  setLinhaHorizontal(stopLineRef, primeiroTime, ultimoTime, data.stop);
+  setLinhaHorizontal(parcialLineRef, primeiroTime, ultimoTime, data.parcial);
+  setLinhaHorizontal(alvoLineRef, primeiroTime, ultimoTime, data.alvo);
 
-  atualizarPriceLineExecucao(
-    alvoPriceLineRef,
-    "ALVO",
-    data.alvo,
-    "#00ff88",
-    0
-  );
+  atualizarPriceLineExecucao(stopPriceLineRef, "STOP", data.stop, "#ff1f1f", 0);
+  atualizarPriceLineExecucao(parcialPriceLineRef, "PARCIAL", data.parcial, "#ffd700", 2);
+  atualizarPriceLineExecucao(alvoPriceLineRef, "ALVO", data.alvo, "#00ff88", 0);
+
+} else {
+  setLinhaHorizontal(stopLineRef, primeiroTime, ultimoTime, null);
+  setLinhaHorizontal(parcialLineRef, primeiroTime, ultimoTime, null);
+  setLinhaHorizontal(alvoLineRef, primeiroTime, ultimoTime, null);
+
+  atualizarPriceLineExecucao(stopPriceLineRef, "STOP", null, "#ff1f1f", 0);
+  atualizarPriceLineExecucao(parcialPriceLineRef, "PARCIAL", null, "#ffd700", 2);
+  atualizarPriceLineExecucao(alvoPriceLineRef, "ALVO", null, "#00ff88", 0);
 }
     setLinhaHorizontal(hotZoneTopRef, primeiroTime, ultimoTime, zonaHigh);
     setLinhaHorizontal(hotZoneBottomRef, primeiroTime, ultimoTime, zonaLow);
