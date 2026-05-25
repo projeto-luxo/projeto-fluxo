@@ -388,10 +388,15 @@ if (absorcao) {
     const zonaHigh = data.engine_zona_high ?? engine.engine_zona_high;
     const absorcao = data.engine_absorcao ?? engine.engine_absorcao;
 
+    const entradaBackend = data.entrada ?? data.sinal?.entrada ?? "AGUARDAR";
+
+    const temEntradaPainel =
+     entradaBackend.includes("COMPRA") ||
+     entradaBackend.includes("VENDA");
     const baseInfo = {
       score: engine.engine_score ?? data.score ?? data.forca ?? data.sinal?.forca, 
       sinal: data.sinal?.sinal ?? data.sinal ?? "SEM ENTRADA",
-      entrada: data.entrada ?? data.sinal?.entrada ?? "AGUARDAR",
+      entrada: entradaBackend,
       tendencia: data.tendencia ?? data.sinal?.tendencia ?? "NEUTRO",
 
       frequencia: data.frequencia_mercado ?? agressao.frequencia_mercado,
@@ -419,9 +424,9 @@ if (absorcao) {
       zonaLow,
       zonaHigh,
 
-      stop: data.stop,
-      parcial: data.parcial,
-      alvo: data.alvo,
+     stop: temEntradaPainel ? data.stop : null,
+parcial: temEntradaPainel ? data.parcial : null,
+alvo: temEntradaPainel ? data.alvo : null,
     };
 
     const contexto = calcularContextoInstitucional(baseInfo);
@@ -470,9 +475,14 @@ if (absorcao) {
     }
 
 const entradaAtual = baseInfo.entrada || "";
+const scoreAtual = Number(baseInfo.score || 0);
+
 const temEntradaReal =
-  entradaAtual.includes("COMPRA") ||
-  entradaAtual.includes("VENDA");
+  (
+    entradaAtual.includes("COMPRA") ||
+    entradaAtual.includes("VENDA")
+  ) &&
+  scoreAtual >= 5;
 
 if (temEntradaReal) {
   setLinhaHorizontal(stopLineRef, primeiroTime, ultimoTime, data.stop);
