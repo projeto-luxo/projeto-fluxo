@@ -140,10 +140,10 @@ def gerar_payload():
     entrada_institucional = "AGUARDAR"
 
     if explosao and tipo_explosao == "BUY EXPLOSION":
-        entrada_institucional = "SCALPING CONTROLADO"
+        entrada_institucional = "COMPRA SCALPING CONTROLADO"
 
     elif explosao and tipo_explosao == "SELL EXPLOSION":
-        entrada_institucional = "SCALPING CONTROLADO"
+        entrada_institucional = "VENDA SCALPING CONTROLADO"
 
     elif (
         engine_score >= 6
@@ -257,9 +257,9 @@ def gerar_payload():
         buffer = max(range_zona * 0.20, 0.15)
 
         if entrada_institucional in [
-            "COMPRA MODERADA",
-            "COMPRA CONSERVADORA",
-            "SCALPING CONTROLADO",
+           "COMPRA MODERADA",
+           "COMPRA CONSERVADORA",
+           "COMPRA SCALPING CONTROLADO",
         ] and engine_direcao == "COMPRA":
             stop = round(zona_low - buffer, 2)
             parcial = round(preco_entrada + range_zona, 2)
@@ -268,7 +268,7 @@ def gerar_payload():
         elif entrada_institucional in [
             "VENDA MODERADA",
             "VENDA CONSERVADORA",
-            "SCALPING CONTROLADO",
+            "VENDA SCALPING CONTROLADO",
         ] and engine_direcao == "VENDA":
             stop = round(zona_high + buffer, 2)
             parcial = round(preco_entrada - range_zona, 2)
