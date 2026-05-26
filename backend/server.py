@@ -32,6 +32,9 @@ aggression_engine = AggressionEngine()
 historico = []
 preco_atual = 100.0
 
+ultima_explosao_tipo = "SEM EXPLOSÃO"
+ultima_explosao_tempo = 0
+
 
 def gerar_candle():
     global preco_atual
@@ -114,9 +117,22 @@ def gerar_payload():
         memoria["score_agressao"],
         intensidade
     )
+    global ultima_explosao_tipo, ultima_explosao_tempo
+
+    agora = int(datetime.now().timestamp())
+
+    if explosao:
+        ultima_explosao_tipo = tipo_explosao
+        ultima_explosao_tempo = agora
+
+    tipo_explosao_painel = (
+        ultima_explosao_tipo
+        if agora - ultima_explosao_tempo <= 8
+        else "SEM EXPLOSÃO"
+    )
 
     atual["explosao_detectada"] = explosao
-    atual["tipo_explosao"] = tipo_explosao
+    atual["tipo_explosao"] = tipo_explosao_painel
 
     sinal_data = gerar_sinal(
         atual["saldo"],
@@ -257,22 +273,30 @@ def gerar_payload():
         buffer = max(range_zona * 0.20, 0.15)
 
         if entrada_institucional in [
-           "COMPRA MODERADA",
-           "COMPRA CONSERVADORA",
-           "COMPRA SCALPING CONTROLADO",
-        ] and engine_direcao == "COMPRA":
+            "COMPRA MODERADA",
+            "COMPRA CONSERVADORA",
+        ]:
             stop = round(zona_low - buffer, 2)
             parcial = round(preco_entrada + range_zona, 2)
             alvo = round(preco_entrada + (range_zona * 2), 2)
 
         elif entrada_institucional in [
-            "VENDA MODERADA",
-            "VENDA CONSERVADORA",
-            "VENDA SCALPING CONTROLADO",
-        ] and engine_direcao == "VENDA":
+             "VENDA MODERADA",
+             "VENDA CONSERVADORA",
+        ]:
             stop = round(zona_high + buffer, 2)
             parcial = round(preco_entrada - range_zona, 2)
             alvo = round(preco_entrada - (range_zona * 2), 2)
+       
+        elif entrada_institucional == "COMPRA SCALPING CONTROLADO":
+            stop = round(preco_entrada - 0.60, 2)
+            parcial = round(preco_entrada + 0.90, 2)
+            alvo = round(preco_entrada + 1.60, 2)
+
+        elif entrada_institucional == "VENDA SCALPING CONTROLADO":
+            stop = round(preco_entrada + 0.60, 2)
+            parcial = round(preco_entrada - 0.90, 2)
+            alvo = round(preco_entrada - 1.60, 2)
 
     sinal_data["stop"] = stop
     sinal_data["parcial"] = parcial
@@ -294,7 +318,7 @@ def gerar_payload():
             "intensidade_fluxo": intensidade,
             **memoria,
             "explosao_detectada": explosao,
-            "tipo_explosao": tipo_explosao,
+            "tipo_explosao": tipo_explosao_painel,
         },
 
         **sinal_data,

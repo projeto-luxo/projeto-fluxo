@@ -5,7 +5,7 @@
 # ===============================
 
 🟢 STATUS: OPERACIONAL / ESTÁVEL
-🏷 VERSÃO ATUAL: TRIN 5.8.1 WS STABLE
+🏷 VERSÃO ATUAL: TRIN 5.9.1 RC
 
 Frontend: React
 Backend: FastAPI
@@ -16,7 +16,13 @@ Branch Git:
 trin-4.2-visual
 
 Último checkpoint:
-Checkpoint TRIN 5.8.1 WS painel recuperado e estável
+Checkpoint TRIN 5.9.1 RC — backend scalping institutional alignment salvo no Git
+
+Commit:
+f6bf44
+
+Branch:
+trin-4.2-visual
 
 ---
 
@@ -26,12 +32,18 @@ Checkpoint TRIN 5.8.1 WS painel recuperado e estável
 
 ✅ GitHub sincronizado
 ✅ Commit salvo
+✅ Push concluído
 ✅ Branch protegida
 ✅ Frontend compilando
 ✅ Backend online
 ✅ WebSocket online
 ✅ Painel renderizando
+✅ App.js salvo no Git
 ✅ Estrutura protegida para evolução segura
+✅ Ghost execution eliminado
+✅ EXEC institucional validado visualmente
+✅ Backend/frontend semanticamente alinhados
+✅ Scalping institucional alinhado
 
 ---
 
@@ -47,6 +59,14 @@ Checkpoint TRIN 5.8.1 WS painel recuperado e estável
 ✅ JSON consistente
 ✅ histórico persistente
 ✅ backend sincronizado com frontend
+✅ STOP dinâmico
+✅ PARCIAL dinâmica
+✅ ALVO dinâmico
+✅ gestão institucional dinâmica ativa
+✅ scalping semântico alinhado
+✅ COMPRA SCALPING CONTROLADO
+✅ VENDA SCALPING CONTROLADO
+✅ backend/frontend semanticamente compatíveis
 
 ---
 
@@ -60,27 +80,32 @@ Checkpoint TRIN 5.8.1 WS painel recuperado e estável
 ✅ fase
 ✅ direção
 ✅ zona institucional
-
----
+✅ acumulação
+✅ distribuição
+✅ compressão
+✅ rompimento
+✅ entrada institucional moderada
+✅ entrada institucional conservadora
 
 ### VWAPEngine
 ✅ VWAP
 ✅ banda superior
 ✅ banda inferior
 
----
-
 ### CandleEngine
 ✅ candles
 ✅ reversão
-
----
 
 ### AggressionEngine
 ✅ frequência
 ✅ memória de agressão
 ✅ persistência
 ✅ explosão de fluxo
+✅ agressão compradora institucional
+✅ agressão vendedora institucional
+✅ agressão neutra contextual
+✅ BUY EXPLOSION
+✅ SELL EXPLOSION
 
 ---
 
@@ -90,15 +115,18 @@ Checkpoint TRIN 5.8.1 WS painel recuperado e estável
 
 ✅ App.js compilando
 ✅ WebSocket estável
+✅ reconnect inteligente
 ✅ WS ONLINE
 ✅ gráfico candlestick renderizando
 ✅ VWAP renderizando
 ✅ bandas VWAP renderizando
 ✅ reversões visuais
 ✅ explosões visuais
-✅ STOP visual
-✅ PARCIAL visual
-✅ ALVO visual
+✅ STOP visual no painel
+✅ PARCIAL visual no painel
+✅ ALVO visual no painel
+✅ STOP / PARCIAL / ALVO no gráfico
+✅ price lines institucionais com labels
 ✅ glow contextual
 ✅ radar institucional
 ✅ painel lateral institucional
@@ -106,119 +134,80 @@ Checkpoint TRIN 5.8.1 WS painel recuperado e estável
 ✅ hot zone operacional
 ✅ overlay institucional
 ✅ pressão institucional
-✅ heatmap básico
+✅ heatmap institucional
 ✅ contexto institucional funcional
+✅ quando ENTRADA = AGUARDAR, gestão fica vazia corretamente
+
+PENDENTE DE REFINO:
+
+[ ] Corrigir futuramente filtro de contexto:
+    contextoAtual deve usar contexto.texto
 
 ---
 
 # ===============================
-# TRIN 5.8.1 — ETAPA ATUAL
+# EVOLUÇÃO CONCLUÍDA NESTA FASE
 # ===============================
 
-## Estrutura visual concluída
-
-✅ HOT ZONE funcional
-✅ overlay HOT ZONE
-✅ heatmap institucional inicial
-✅ absorção visual
-✅ glow institucional
-✅ radar funcional
-✅ painel lateral institucional
-✅ top bar contextual
+✅ Context engine refinado
+✅ Trap engine refinado
+✅ Score engine refinado
+✅ Agressão contextual refinada
+✅ Entrada conservadora institucional
+✅ Entrada moderada institucional
+✅ Detecção de distribuição
+✅ Detecção de acumulação
+✅ Detecção de compressão
+✅ Detecção de rompimento
+✅ Painel contextual coerente
+✅ Backend estabilizado
+✅ Frontend estabilizado
+✅ WebSocket recovery
+✅ STOP / PARCIAL / ALVO dinâmicos
+✅ Gestão baseada na entrada institucional
+✅ Ghost execution removido
+✅ Execução visual protegida contra entrada falsa
+✅ TRIN 5.9 EXEC salvo no Git
+✅ backend scalping institutional alignment
+✅ compra institucional validada em tela real
+✅ venda institucional validada em tela real
+✅ TRIN 5.9.1 RC salvo no Git
 
 ---
 
-## Integração concluída
+# ===============================
+# VALIDAÇÃO REAL
+# ===============================
 
-✅ frontend/backend sincronizados
-✅ engine → frontend funcionando
-✅ zona institucional chegando no frontend
-✅ absorção chegando no frontend
-✅ websocket estável
+VALIDADO:
+
+✅ HOT ZONE dinâmica
+✅ absorção
+✅ trap
+✅ score
+✅ seq_delta
+✅ contexto institucional
+✅ leitura contextual
+✅ entradas institucionais
 ✅ renderização estável
+✅ integração backend/frontend
+✅ STOP / PARCIAL / ALVO chegando ao painel
+✅ STOP / PARCIAL / ALVO desenhados no gráfico
+✅ price lines institucionais funcionando
+✅ STOP / PARCIAL / ALVO validados em cenário real de COMPRA
+✅ STOP / PARCIAL / ALVO validados em cenário real de VENDA
+✅ quando ENTRADA = AGUARDAR, gestão fica vazia corretamente
+✅ quando contexto está em ABSORÇÃO / COMPRESSÃO / NEUTRO, sistema aguarda corretamente
+✅ WS ONLINE validado em tela real
+✅ painel lateral validado em tela real
+✅ gráfico validado em tela real
 
----
+PENDENTE DE REFINO:
 
-## Estabilidade concluída
-
-✅ App.js recuperado
-✅ duplicações removidas
-✅ hooks estabilizados
-✅ gráfico restaurado
-✅ histórico renderizando corretamente
-✅ resize funcionando
-✅ cleanup correto no unmount
-✅ refs estabilizadas
-✅ compilação React restaurada
-
----
-
-# ===============================
-# PENDÊNCIAS PARA FECHAR 5.8.1
-# ===============================
-
-## 1. Heatmap institucional refinado
-
-Falta:
-
-[ ] densidade visual mais forte
-[ ] diferenciação visual:
-    - defesa compradora
-    - defesa vendedora
-[ ] glow institucional mais sofisticado
-[ ] heatmap mais estilo institucional/ASG
-
----
-
-## 2. Contexto institucional visual
-
-Falta:
-
-[ ] acumulação vs distribuição
-[ ] continuidade vs exaustão
-[ ] contexto comprador real
-[ ] contexto vendedor real
-[ ] compressão institucional
-[ ] leitura contextual mais inteligente
-
----
-
-## 3. Trap refinement
-
-Falta:
-
-[ ] trap comprador visual melhor
-[ ] trap vendedor visual melhor
-[ ] indicação contextual no painel
-[ ] confirmação institucional real
-
----
-
-## 4. Painel institucional refinado
-
-Falta:
-
-[ ] força institucional
-[ ] probabilidade contextual
-[ ] resumo contextual mais inteligente
-[ ] leitura resumida mais útil
-[ ] coerência entre painel e gráfico
-
----
-
-## 5. Validação funcional
-
-Antes de fechar 5.8.1:
-
-[ ] validar STOP
-[ ] validar PARCIAL
-[ ] validar ALVO
-[ ] validar explosão
-[ ] validar HOT ZONE dinâmica
-[ ] validar absorção
-[ ] validar trap
-[ ] validar score
-[ ] validar seq_delta
+[ ] Validar COMPRA SCALPING CONTROLADO em cenário real
+[ ] Validar VENDA SCALPING CONTROLADO em cenário real
+[ ] Ajustar risco conforme volatilidade real no futuro
+[ ] Refinar filtro de contexto do EXEC no App.js com cautela
 
 ---
 
@@ -227,24 +216,29 @@ Antes de fechar 5.8.1:
 # ===============================
 
 Visual/UI:
-75%
+95%
 
 Infraestrutura:
-80%
+94%
 
 Integração:
-85%
+97%
 
 Inteligência institucional:
-40%
+89%
+
+Gestão operacional:
+91%
 
 ---
 
 Conclusão:
 
-O TRIN hoje já é um produto visual funcional.
+TRIN 5.9.1 RC possui motor institucional funcional, backend/frontend semanticamente alinhados, WebSocket estável, painel institucional operacional e gestão dinâmica validada em cenários reais de compra e venda.
 
-Ainda falta amadurecer o cérebro institucional.
+O ghost execution foi eliminado.
+
+A arquitetura está estável e protegida.
 
 ---
 
@@ -261,8 +255,7 @@ Ainda falta amadurecer o cérebro institucional.
 ✅ frontend depois
 ✅ integração por último
 ✅ se quebrar → parar imediatamente
-
----
+✅ proteger App.js salvo no Git
 
 ## REGRA DE SEGURANÇA CRÍTICA
 
@@ -276,8 +269,6 @@ Ainda falta amadurecer o cérebro institucional.
 - impacto arquitetural
 - risco da alteração
 
----
-
 ## PROIBIDO
 
 ❌ alterar backend + frontend + websocket juntos
@@ -287,16 +278,16 @@ Ainda falta amadurecer o cérebro institucional.
 ❌ patches parciais soltos
 ❌ regressão visual
 ❌ regressão funcional
-
----
+❌ mexer no App.js salvo sem necessidade real
 
 ## OBRIGATÓRIO
 
-✅ sempre entregar arquivo completo
+✅ sempre entregar arquivo completo quando alteração for grande
 ✅ checklist atualizado
 ✅ confirmar impacto antes de alterar
 ✅ testar após cada mudança
-✅ salvar checkpoint antes de próxima etapa
+✅ salvar checkpoint antes da próxima etapa
+✅ manter padrão TRIN conservador
 
 ---
 
@@ -304,39 +295,41 @@ Ainda falta amadurecer o cérebro institucional.
 # PRÓXIMA ETAPA IMEDIATA
 # ===============================
 
-Objetivo:
+OBJETIVO:
 
-FECHAR TRIN 5.8.1
+FECHAR TRIN 5.9.1 RC E DEFINIR PRÓXIMO CICLO
 
-Ordem:
+ORDEM:
 
-1. Context Engine refinement
-2. Trap Engine refinement
-3. Absorption refinement
-4. Score Engine refinement
-5. Entrada conservadora confiável
-6. Painel contextual mais inteligente
-
-SEM mexer layout grande ainda.
+1. atualizar checklist oficial
+2. validar COMPRA SCALPING CONTROLADO em cenário real
+3. validar VENDA SCALPING CONTROLADO em cenário real
+4. revisar filtro de contexto futuramente com cautela
+5. definir próximo checkpoint
+6. salvar Git
 
 ---
 
 # ===============================
-# TRIN 5.9 (BLOQUEADO)
+# TRIN 5.9.2 — PRÓXIMO CHECKPOINT
 # ===============================
 
-Liberado somente após conclusão do 5.8.1
+5.9.2 começa quando:
 
-Planejamento:
+[ ] COMPRA SCALPING CONTROLADO for validada em cenário real
+[ ] VENDA SCALPING CONTROLADO for validada em cenário real
+[ ] checklist atualizado
+[ ] arquitetura permanecer estável
+[ ] App.js continuar protegido
+[ ] novo checkpoint Git salvo
 
-[ ] painel estilo ASG
-[ ] tape reading visual
-[ ] footprint contextual
-[ ] detector avançado de armadilhas
-[ ] spoofing detector
-[ ] multi-timeframe
-[ ] multiativos
-[ ] replay mode
+Planejamento 5.9.2:
+
+[ ] validação completa do scalping
+[ ] refinamento do filtro EXEC
+[ ] risco/retorno visual futuro
+[ ] mini painel estratégico futuro
+[ ] evolução visual institucional controlada
 
 ---
 
@@ -355,21 +348,7 @@ Planejamento:
 [ ] backend online
 [ ] frontend online
 [ ] domínio próprio
-
----
-
-# ===============================
-# CHECKPOINT OBRIGATÓRIO
-# ===============================
-
-ANTES DE QUALQUER ALTERAÇÃO:
-
-✅ revisar checklist
-✅ salvar Git
-✅ validar impacto
-✅ testar isoladamente
-✅ validar integração
-✅ só então evoluir
+[ ] mini painel Elliott/Fibonacci estratégico
 
 ---
 

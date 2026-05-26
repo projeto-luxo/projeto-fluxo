@@ -411,8 +411,15 @@ if (absorcao) {
       compra: data.pressao_compra ?? agressao.persistencia_compra ?? 0,
       venda: data.pressao_venda ?? agressao.persistencia_venda ?? 0,
 
-      explosao: data.tipo_explosao ?? agressao.tipo_explosao ?? agressao.explosao ?? "SEM EXPLOSÃO",
-      explosaoDetectada: data.explosao_detectada ?? agressao.explosao_detectada,
+      explosao:
+        data.tipo_explosao ??
+        agressao.tipo_explosao ??
+        (data.explosao_detectada ? "EXPLOSÃO DETECTADA" : "SEM EXPLOSÃO"),
+
+      explosaoDetectada:
+        data.explosao_detectada ??
+        agressao.explosao_detectada ??
+        false,
 
       engineScore: data.engine_score ?? engine.engine_score,
       engineFase: data.engine_fase ?? engine.engine_fase,
@@ -480,15 +487,25 @@ const faseAtual = baseInfo.engineFase || "AGUARDANDO";
 const contextoAtual = baseInfo.contextoInstitucional || "";
 const direcaoAtual = baseInfo.engineDirecao || "NEUTRO";
 
+const ehScalping =
+  entradaAtual.includes("SCALPING");
+
 const temEntradaReal =
-  (
-    entradaAtual.includes("COMPRA") ||
-    entradaAtual.includes("VENDA")
-  ) &&
-  scoreAtual >= 5 &&
-  faseAtual !== "AGUARDANDO" &&
-  !contextoAtual.includes("NEUTRO") &&
-  direcaoAtual !== "NEUTRO";
+  ehScalping
+    ? (
+        entradaAtual.includes("COMPRA") ||
+        entradaAtual.includes("VENDA")
+      )
+    : (
+        (
+          entradaAtual.includes("COMPRA") ||
+          entradaAtual.includes("VENDA")
+        ) &&
+        scoreAtual >= 5 &&
+        faseAtual !== "AGUARDANDO" &&
+        !contextoAtual.includes("NEUTRO") &&
+        direcaoAtual !== "NEUTRO"
+      );
 
 if (temEntradaReal) {
   setLinhaHorizontal(stopLineRef, primeiroTime, ultimoTime, data.stop);
