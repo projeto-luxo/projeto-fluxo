@@ -19,7 +19,7 @@ class Engine:
         self.tipo_absorcao = None
 
     def detectar_absorcao(self, c):
-        delta = c.get("delta", 0)
+        delta = c.get("delta", 0) / 1000
         volume = c.get("volume", 0)
 
         abertura = c["open"]
@@ -35,7 +35,6 @@ class Engine:
             return False
 
         corpo_ratio = corpo / range_total
-
         pavio_superior = maxima - max(abertura, fechamento)
         pavio_inferior = min(abertura, fechamento) - minima
 
@@ -72,7 +71,7 @@ class Engine:
         if anterior is None:
             return None
 
-        delta = atual.get("delta", 0)
+        delta = atual.get("delta", 0) / 1000
 
         if (
             atual["high"] > anterior["high"]
@@ -91,7 +90,7 @@ class Engine:
         return None
 
     def atualizar_fluxo(self, c):
-        delta = c.get("delta", 0)
+        delta = c.get("delta", 0) / 1000
 
         if delta > 120:
             if self.seq_delta >= 0:
@@ -110,6 +109,12 @@ class Engine:
                 self.seq_delta -= 1
             elif self.seq_delta < 0:
                 self.seq_delta += 1
+
+        if self.seq_delta > 10:
+            self.seq_delta = 10
+
+        if self.seq_delta < -10:
+            self.seq_delta = -10
 
     def atualizar_zona(self, c, absorcao):
         if absorcao:
@@ -145,7 +150,7 @@ class Engine:
                 self.trap = None
 
     def atualizar_fase(self, c):
-        delta = c.get("delta", 0)
+        delta = c.get("delta", 0) / 1000
         volume = c.get("volume", 0)
 
         if abs(delta) > 280 and volume > 1000:
@@ -189,7 +194,7 @@ class Engine:
     def atualizar_score(self, c):
         score = 0
 
-        delta = abs(c.get("delta", 0))
+        delta = abs(c.get("delta", 0)) / 1000
         volume = c.get("volume", 0)
 
         if self.zona:
@@ -207,7 +212,7 @@ class Engine:
         if abs(self.seq_delta) >= 4:
             score += 2
 
-        if delta > 220:
+        if delta > 180:
             score += 2
 
         if volume > 850:

@@ -1,11 +1,13 @@
-# 🚀 TRIN — CHECKLIST OFICIAL DO PROJETO
+# 🚀 TRIN — CHECKLIST OFICIAL DO PROJETO    py -m uvicorn backend.server:app --reload
 
 # ===============================
+
 # STATUS OFICIAL
+
 # ===============================
 
-🟢 STATUS: OPERACIONAL / ESTÁVEL
-🏷 VERSÃO ATUAL: TRIN 5.9.1 RC
+🟢 STATUS: MARCO ZERO INSTITUCIONAL HOMOLOGADO
+🏷 VERSÃO ATUAL: TRIN 5.9.3 INSTITUCIONAL
 
 Frontend: React
 Backend: FastAPI
@@ -16,39 +18,144 @@ Branch Git:
 trin-4.2-visual
 
 Último checkpoint:
-Checkpoint TRIN 5.9.1 RC — backend scalping institutional alignment salvo no Git
 
-Commit:
-f6bf44
+MARCO ZERO INSTITUCIONAL HOMOLOGADO
 
-Branch:
-trin-4.2-visual
+Profit
+↓
+RTD
+↓
+Excel
+↓
+Python
+
+VALIDADO COM DADOS REAIS
 
 ---
 
 # ===============================
+
+# VALIDAÇÃO DE AMBIENTE
+
+# ===============================
+
+OBRIGATÓRIO ANTES DE QUALQUER TESTE
+
+[ ] Profit aberto
+[ ] Profit executado como Administrador
+[ ] Excel aberto
+[ ] Excel executado como Administrador
+[ ] MARCO_ZERO_INSTITUCIONAL.xlsx aberto
+[ ] RTD ativo
+[ ] Ativo WINM26 carregado
+[ ] Planilha recebendo dados
+[ ] Python executado como Administrador
+[ ] PowerShell executado como Administrador
+
+ANTES DE INVESTIGAR CÓDIGO VERIFICAR:
+
+[ ] Programa aberto
+[ ] Arquivo correto
+[ ] Aba correta
+[ ] Célula correta
+[ ] Fórmula correta
+[ ] Permissões corretas
+[ ] Modo Administrador ativo
+
+LIÇÃO OFICIAL Nº 001
+
+80% dos problemas complexos podem ser causados por detalhes simples de ambiente.
+
+---
+
+# ===============================
+
 # CHECKPOINT OFICIAL SALVO
+
 # ===============================
 
 ✅ GitHub sincronizado
 ✅ Commit salvo
 ✅ Push concluído
-✅ Branch protegida
 ✅ Frontend compilando
 ✅ Backend online
 ✅ WebSocket online
 ✅ Painel renderizando
-✅ App.js salvo no Git
-✅ Estrutura protegida para evolução segura
+✅ App.js protegido
+✅ Backend protegido
+✅ Estrutura estável
 ✅ Ghost execution eliminado
-✅ EXEC institucional validado visualmente
+✅ Compra validada
+✅ Venda validada
+✅ STOP / PARCIAL / ALVO funcionais
 ✅ Backend/frontend semanticamente alinhados
-✅ Scalping institucional alinhado
+✅ Base congelada
+
+✅ Profit RTD validado
+✅ Excel RTD validado
+✅ Profit → Excel validado
+✅ Excel → Python validado
+✅ Delta nativo homologado
+✅ VWAP homologado
+✅ Saldo homologado
+✅ Volume homologado
+✅ MARCO_ZERO_INSTITUCIONAL homologado
 
 ---
 
 # ===============================
+
+# MARCO ZERO INSTITUCIONAL
+
+# ===============================
+
+Data da homologação:
+
+02/06/2026
+
+Fluxo validado:
+
+Profit
+↓
+RTD
+↓
+Excel
+↓
+Python
+
+Campos homologados:
+
+✅ Ativo
+✅ Data
+✅ Hora
+✅ Último
+✅ Volume
+✅ TR Delta
+✅ TR Saldo Acumulado
+✅ TR Volume Compra
+✅ TR Volume Venda
+✅ VWAP
+
+Problema encontrado:
+
+Excel Administrador
+≠
+Python Administrador
+
+Correção aplicada:
+
+Profit + Excel + Python executados como Administrador
+
+Resultado:
+
+Leitura institucional homologada.
+
+---
+
+# ===============================
+
 # ARQUITETURA FUNCIONAL ATUAL
+
 # ===============================
 
 ## Backend
@@ -58,21 +165,29 @@ trin-4.2-visual
 ✅ WebSocket /ws funcional
 ✅ JSON consistente
 ✅ histórico persistente
-✅ backend sincronizado com frontend
-✅ STOP dinâmico
-✅ PARCIAL dinâmica
-✅ ALVO dinâmico
 ✅ gestão institucional dinâmica ativa
 ✅ scalping semântico alinhado
-✅ COMPRA SCALPING CONTROLADO
-✅ VENDA SCALPING CONTROLADO
-✅ backend/frontend semanticamente compatíveis
+✅ memória curta de explosão implementada
+✅ backend/frontend compatíveis
+
+PENDENTE:
+
+[ ] substituir gerador fake por leitura institucional
+[ ] conectar Excel ao backend
+[ ] validar payload institucional
+[ ] validar atualização contínua
+[ ] recalibrar engines com fluxo real
 
 ---
 
-## Engines
+# ===============================
 
-### Engine institucional
+# ENGINES
+
+# ===============================
+
+## Engine Institucional
+
 ✅ absorção
 ✅ trap
 ✅ seq_delta
@@ -84,166 +199,110 @@ trin-4.2-visual
 ✅ distribuição
 ✅ compressão
 ✅ rompimento
-✅ entrada institucional moderada
-✅ entrada institucional conservadora
+✅ entrada moderada
+✅ entrada conservadora
 
-### VWAPEngine
-✅ VWAP
+## VWAP Engine
+
+✅ VWAP funcional
 ✅ banda superior
 ✅ banda inferior
 
-### CandleEngine
+PENDENTE
+
+[ ] recalibrar com fluxo real
+
+## Candle Engine
+
 ✅ candles
 ✅ reversão
 
-### AggressionEngine
+## Aggression Engine
+
 ✅ frequência
 ✅ memória de agressão
 ✅ persistência
-✅ explosão de fluxo
-✅ agressão compradora institucional
-✅ agressão vendedora institucional
-✅ agressão neutra contextual
 ✅ BUY EXPLOSION
 ✅ SELL EXPLOSION
+
+PENDENTE
+
+[ ] validar explosão real
+[ ] recalibrar memória de agressão
+[ ] validar persistência real
 
 ---
 
 # ===============================
+
 # FRONTEND FUNCIONAL
+
 # ===============================
 
 ✅ App.js compilando
 ✅ WebSocket estável
 ✅ reconnect inteligente
-✅ WS ONLINE
-✅ gráfico candlestick renderizando
+✅ gráfico renderizando
 ✅ VWAP renderizando
-✅ bandas VWAP renderizando
+✅ bandas renderizando
 ✅ reversões visuais
-✅ explosões visuais
-✅ STOP visual no painel
-✅ PARCIAL visual no painel
-✅ ALVO visual no painel
-✅ STOP / PARCIAL / ALVO no gráfico
-✅ price lines institucionais com labels
+✅ markers preparados
+✅ STOP visual
+✅ PARCIAL visual
+✅ ALVO visual
+✅ price lines funcionais
 ✅ glow contextual
 ✅ radar institucional
 ✅ painel lateral institucional
 ✅ top bar operacional
 ✅ hot zone operacional
-✅ overlay institucional
-✅ pressão institucional
 ✅ heatmap institucional
 ✅ contexto institucional funcional
-✅ quando ENTRADA = AGUARDAR, gestão fica vazia corretamente
 
-PENDENTE DE REFINO:
+PENDENTE
 
-[ ] Corrigir futuramente filtro de contexto:
-    contextoAtual deve usar contexto.texto
-
----
-
-# ===============================
-# EVOLUÇÃO CONCLUÍDA NESTA FASE
-# ===============================
-
-✅ Context engine refinado
-✅ Trap engine refinado
-✅ Score engine refinado
-✅ Agressão contextual refinada
-✅ Entrada conservadora institucional
-✅ Entrada moderada institucional
-✅ Detecção de distribuição
-✅ Detecção de acumulação
-✅ Detecção de compressão
-✅ Detecção de rompimento
-✅ Painel contextual coerente
-✅ Backend estabilizado
-✅ Frontend estabilizado
-✅ WebSocket recovery
-✅ STOP / PARCIAL / ALVO dinâmicos
-✅ Gestão baseada na entrada institucional
-✅ Ghost execution removido
-✅ Execução visual protegida contra entrada falsa
-✅ TRIN 5.9 EXEC salvo no Git
-✅ backend scalping institutional alignment
-✅ compra institucional validada em tela real
-✅ venda institucional validada em tela real
-✅ TRIN 5.9.1 RC salvo no Git
+[ ] integrar dados reais
+[ ] validar atualização em tempo real
+[ ] validar replay
+[ ] validar mercado aberto
+[ ] refinamento visual estilo ASG
+[ ] desktop app
 
 ---
 
 # ===============================
-# VALIDAÇÃO REAL
+
+# VALIDAÇÃO FUNCIONAL
+
 # ===============================
 
-VALIDADO:
+VALIDADO
 
-✅ HOT ZONE dinâmica
-✅ absorção
-✅ trap
-✅ score
-✅ seq_delta
-✅ contexto institucional
-✅ leitura contextual
-✅ entradas institucionais
-✅ renderização estável
-✅ integração backend/frontend
-✅ STOP / PARCIAL / ALVO chegando ao painel
-✅ STOP / PARCIAL / ALVO desenhados no gráfico
-✅ price lines institucionais funcionando
-✅ STOP / PARCIAL / ALVO validados em cenário real de COMPRA
-✅ STOP / PARCIAL / ALVO validados em cenário real de VENDA
-✅ quando ENTRADA = AGUARDAR, gestão fica vazia corretamente
-✅ quando contexto está em ABSORÇÃO / COMPRESSÃO / NEUTRO, sistema aguarda corretamente
-✅ WS ONLINE validado em tela real
-✅ painel lateral validado em tela real
-✅ gráfico validado em tela real
+✅ Profit RTD
+✅ Excel RTD
+✅ Python institucional
+✅ Último
+✅ Volume
+✅ Delta
+✅ Saldo
+✅ VWAP
+✅ Compra
+✅ Venda
 
-PENDENTE DE REFINO:
+PENDENTE
 
-[ ] Validar COMPRA SCALPING CONTROLADO em cenário real
-[ ] Validar VENDA SCALPING CONTROLADO em cenário real
-[ ] Ajustar risco conforme volatilidade real no futuro
-[ ] Refinar filtro de contexto do EXEC no App.js com cautela
+[ ] leitura contínua em replay
+[ ] leitura contínua em mercado aberto
+[ ] integração backend real
+[ ] integração frontend real
+[ ] validação operacional completa
 
 ---
 
 # ===============================
-# DIAGNÓSTICO TÉCNICO REAL
-# ===============================
 
-Visual/UI:
-95%
-
-Infraestrutura:
-94%
-
-Integração:
-97%
-
-Inteligência institucional:
-89%
-
-Gestão operacional:
-91%
-
----
-
-Conclusão:
-
-TRIN 5.9.1 RC possui motor institucional funcional, backend/frontend semanticamente alinhados, WebSocket estável, painel institucional operacional e gestão dinâmica validada em cenários reais de compra e venda.
-
-O ghost execution foi eliminado.
-
-A arquitetura está estável e protegida.
-
----
-
-# ===============================
 # REGRAS OFICIAIS DE TRABALHO
+
 # ===============================
 
 ## PRINCÍPIOS
@@ -254,103 +313,107 @@ A arquitetura está estável e protegida.
 ✅ backend primeiro
 ✅ frontend depois
 ✅ integração por último
-✅ se quebrar → parar imediatamente
-✅ proteger App.js salvo no Git
+✅ se quebrar parar imediatamente
+✅ motor antes da estética
+✅ dados reais antes de calibragem
+✅ estabilidade antes de glamour
 
-## REGRA DE SEGURANÇA CRÍTICA
+## SEGURANÇA CRÍTICA
 
-✅ nunca substituir App.js inteiro por impulso
-✅ nunca colar bloco sem saber início/fim
-✅ toda alteração deve informar:
-
-- linha inicial
-- linha final
-- função afetada
-- impacto arquitetural
-- risco da alteração
+✅ informar função afetada
+✅ informar impacto
+✅ informar risco
+✅ informar local aproximado
 
 ## PROIBIDO
 
 ❌ alterar backend + frontend + websocket juntos
 ❌ refatorar por impulso
+❌ calibrar thresholds com dado fake
 ❌ adicionar IA cedo
 ❌ automação antes da leitura manual
-❌ patches parciais soltos
-❌ regressão visual
 ❌ regressão funcional
-❌ mexer no App.js salvo sem necessidade real
+❌ regressão visual
+❌ F5 com foco no Notepad
 
 ## OBRIGATÓRIO
 
-✅ sempre entregar arquivo completo quando alteração for grande
-✅ checklist atualizado
-✅ confirmar impacto antes de alterar
-✅ testar após cada mudança
-✅ salvar checkpoint antes da próxima etapa
-✅ manter padrão TRIN conservador
+✅ testar após cada alteração
+✅ salvar checkpoint
+✅ usar Git como cofre
+✅ revisar terminal antes de concluir
 
 ---
 
 # ===============================
+
 # PRÓXIMA ETAPA IMEDIATA
+
 # ===============================
 
-OBJETIVO:
+OBJETIVO
 
-FECHAR TRIN 5.9.1 RC E DEFINIR PRÓXIMO CICLO
+CONECTAR MARCO ZERO AO TRIN
 
-ORDEM:
+ORDEM
 
-1. atualizar checklist oficial
-2. validar COMPRA SCALPING CONTROLADO em cenário real
-3. validar VENDA SCALPING CONTROLADO em cenário real
-4. revisar filtro de contexto futuramente com cautela
-5. definir próximo checkpoint
-6. salvar Git
+1. congelar 5.9.3
+2. salvar Git
+3. conectar Excel ao backend
+4. substituir dados fake
+5. alimentar WebSocket com dados reais
+6. alimentar painel com dados reais
+7. validar replay
+8. validar mercado aberto
+9. recalibrar engines
 
 ---
 
 # ===============================
-# TRIN 5.9.2 — PRÓXIMO CHECKPOINT
+
+# TRIN 5.10
+
 # ===============================
 
-5.9.2 começa quando:
+TRIN 5.10 COMEÇA QUANDO
 
-[ ] COMPRA SCALPING CONTROLADO for validada em cenário real
-[ ] VENDA SCALPING CONTROLADO for validada em cenário real
-[ ] checklist atualizado
-[ ] arquitetura permanecer estável
-[ ] App.js continuar protegido
-[ ] novo checkpoint Git salvo
+[ ] backend lendo Excel real
+[ ] WebSocket recebendo dados reais
+[ ] painel recebendo dados reais
+[ ] replay validado
+[ ] mercado aberto validado
 
-Planejamento 5.9.2:
+Planejamento
 
-[ ] validação completa do scalping
-[ ] refinamento do filtro EXEC
-[ ] risco/retorno visual futuro
-[ ] mini painel estratégico futuro
-[ ] evolução visual institucional controlada
+[ ] integração institucional completa
+[ ] memória de agressão real
+[ ] validação contextual real
+[ ] recalibração institucional
+[ ] validação de explosões reais
 
 ---
 
 # ===============================
+
 # FUTURO — TRIN 6.x
+
 # ===============================
 
-[ ] integração Profit Pro
-[ ] integração NinjaTrader
+[ ] Profit Pro consolidado
+[ ] NinjaTrader
 [ ] DOM real
 [ ] fluxo real
-[ ] provedor real
 [ ] alertas sonoros
 [ ] IA comparativa
 [ ] classificação contextual IA
-[ ] backend online
-[ ] frontend online
-[ ] domínio próprio
-[ ] mini painel Elliott/Fibonacci estratégico
+[ ] painel ASG final
+[ ] desktop app
+[ ] Elliott/Fibonacci integrado
 
 ---
 
 TRIN FLOW PRO
+
 Projeto institucional em evolução controlada.
+
+MARCO ZERO INSTITUCIONAL HOMOLOGADO.

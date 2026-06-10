@@ -9,7 +9,7 @@ from core.engine import Engine
 from core.vwap_engine import VWAPEngine
 from core.candle_engine import CandleEngine
 from core.aggression_engine import AggressionEngine
-
+from backend.leitor_institucional import ler_dados_institucionais
 
 app = FastAPI(
     title="TRIN FLOW PRO",
@@ -37,33 +37,31 @@ ultima_explosao_tempo = 0
 
 
 def gerar_candle():
-    global preco_atual
+    try:
+        candle = ler_dados_institucionais()
+        return candle
 
-    abertura = preco_atual
-    fechamento = abertura + random.uniform(-0.8, 0.8)
+    except Exception as erro:
+        print("[LEITOR INSTITUCIONAL ERRO]", erro)
 
-    maxima = max(abertura, fechamento) + random.uniform(0, 1)
-    minima = min(abertura, fechamento) - random.uniform(0, 1)
+        global preco_atual
 
-    volume = random.randint(100, 1200)
-    delta = random.randint(-300, 300)
-    saldo = random.randint(-500, 500)
+        abertura = preco_atual
+        fechamento = abertura
 
-    candle = {
-        "time": int(datetime.now().timestamp()),
-        "open": round(abertura, 2),
-        "high": round(maxima, 2),
-        "low": round(minima, 2),
-        "close": round(fechamento, 2),
-        "volume": volume,
-        "delta": delta,
-        "saldo": saldo,
-        "reversao_detectada": False,
-    }
+        candle = {
+            "time": int(datetime.now().timestamp()),
+            "open": round(abertura, 2),
+            "high": round(abertura, 2),
+            "low": round(abertura, 2),
+            "close": round(fechamento, 2),
+            "volume": 0,
+            "delta": 0,
+            "saldo": 0,
+            "reversao_detectada": False,
+        }
 
-    preco_atual = fechamento
-    return candle
-
+        return candle
 
 def atualizar_historico():
     candle = gerar_candle()

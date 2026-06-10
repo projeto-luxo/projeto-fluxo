@@ -6,7 +6,11 @@ class AggressionEngine:
         self.memoria_agressao = []
 
     def calcular_frequencia(self, saldo_agressor, delta, volume):
-        intensidade = abs(saldo_agressor) + abs(delta) + (volume / 2)
+        intensidade = (
+            abs(saldo_agressor) / 1000 +
+            abs(delta) / 1000 +
+           (volume / 100)
+        )
 
         self.fluxo_recente.append(intensidade)
 
@@ -24,6 +28,13 @@ class AggressionEngine:
         return "FREQUÊNCIA BAIXA", "MERCADO LENTO", round(media, 2)
 
     def calcular_memoria_agressao(self, saldo_agressor, delta, volume):
+        print(
+            f"[TRIN DEBUG] "
+            f"SALDO={saldo_agressor} "
+            f"DELTA={delta} "
+            f"VOLUME={volume}"
+        )
+
         self.memoria_agressao.append({
             "saldo": saldo_agressor,
             "delta": delta,
@@ -43,9 +54,18 @@ class AggressionEngine:
             if item["saldo"] < 0 and item["delta"] < 0
         )
 
-        saldo_total = sum(item["saldo"] for item in self.memoria_agressao)
-        delta_total = sum(item["delta"] for item in self.memoria_agressao)
-        volume_total = sum(item["volume"] for item in self.memoria_agressao)
+        ultimo = self.memoria_agressao[-1]
+
+        saldo_total = ultimo["saldo"]
+        delta_total = ultimo["delta"]
+        volume_total = ultimo["volume"]
+
+        print(
+            f"[MEMORIA AJUSTADA] "
+            f"SALDO={saldo_total} "
+            f"DELTA={delta_total} "
+            f"VOLUME={volume_total}"
+        )
 
         persistencia_compra = round(
             (compras / len(self.memoria_agressao)) * 100,
@@ -57,7 +77,7 @@ class AggressionEngine:
             2
         )
 
-        volume_medio = volume_total / len(self.memoria_agressao)
+        volume_medio = volume_total
 
         direcao_fluxo = 0
 
@@ -71,8 +91,8 @@ class AggressionEngine:
             direcao_fluxo = -0.5
 
         score_base = (
-            (saldo_total / 120) +
-            (delta_total / 60)
+            (saldo_total / 10000) +
+            (delta_total / 10000)
         )
 
         peso_volume = min(volume_medio / 800, 2)
