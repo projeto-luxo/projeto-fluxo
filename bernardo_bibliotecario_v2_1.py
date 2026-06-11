@@ -29,7 +29,8 @@ ARQ_USO = os.path.join(INDICES, "memoria_uso.csv")
 ARQ_TIMELINE = os.path.join(INDICES, "linha_do_tempo.csv")
 ARQ_ESTATISTICAS = os.path.join(INDICES, "estatisticas_biblioteca.csv")
 ARQ_HIGIENIZACAO = os.path.join(INDICES, "relatorio_higienizacao.csv")
-
+ARQ_QUALIDADE = os.path.join(INDICES, "relatorio_qualidade.csv")
+ARQ_MEMORIA_ESTATISTICA = os.path.join(INDICES, "relatorio_memoria_estatistica.csv")
 
 def md5_arquivo(caminho):
     h = hashlib.md5()
@@ -97,6 +98,7 @@ def confiabilidade(origem, status):
         return 95
     return 80
 
+
 def limpar_numero(valor):
     if pd.isna(valor):
         return None
@@ -131,11 +133,7 @@ def ler_datas(df):
 
 
 def gerar_tags(ativo, fractal, origem, status, linhas):
-    tags = []
-
-    tags.append(ativo)
-    tags.append(fractal)
-    tags.append(origem)
+    tags = [ativo, fractal, origem]
 
     if status != "OK":
         tags.append("ALERTA")
@@ -201,8 +199,9 @@ def backup_recuperacao():
         ARQ_USO,
         ARQ_TIMELINE,
         ARQ_ESTATISTICAS,
-        ARQ_LOG,
         ARQ_HIGIENIZACAO,
+        ARQ_QUALIDADE,
+        ARQ_LOG,
     ]
 
     copiados = 0
@@ -369,6 +368,7 @@ def atualizar_memoria_uso(indice):
 
     uso.to_csv(ARQ_USO, sep=";", index=False, encoding="utf-8-sig")
 
+
 def gerar_status(indice):
     total = len(indice)
     linhas = int(indice["linhas"].sum()) if total else 0
@@ -397,7 +397,7 @@ def gerar_status(indice):
 
     texto = f"""
 ============================================================
-BIBLIOTECA HISTORICA TRIN - BERNARDO v2.2
+BIBLIOTECA HISTORICA TRIN - BERNARDO v2.3
 ============================================================
 Arquivos ............... {total}
 Registros .............. {linhas}
@@ -430,12 +430,11 @@ def detectar_duplicados(indice):
     duplicados = indice[indice.duplicated("hash_md5", keep=False)]
     duplicados.to_csv(ARQ_DUPLICADOS, sep=";", index=False, encoding="utf-8-sig")
 
-
 def detectar_eventos(indice_anterior, indice_novo):
     eventos = []
     agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     colunas_necessarias = ["arquivo", "hash_md5"]
-
+ 
     if (
         len(indice_anterior) == 0
         or any(coluna not in indice_anterior.columns for coluna in colunas_necessarias)
@@ -579,9 +578,152 @@ def gerar_relatorio_higienizacao(indice):
     return df
 
 
+def gerar_metricas_qualidade(indice):
+    metricas = []
+
+    for _, linha in indice.iterrows():
+        arquivo = str(linha.get("arquivo", ""))
+        ativo = str(linha.get("ativo", ""))
+        fractal = str(linha.get("fractal", ""))
+        status = str(linha.get("status", ""))
+        linhas = int(linha.get("linhas", 0))
+        colunas = int(linha.get("colunas", 0))
+        hash_md5 = str(linha.get("hash_md5", ""))
+        data_inicio = str(linha.get("data_inicio", "N/D"))
+        data_fim = str(linha.get("data_fim", "N/D"))
+
+        nota = 100
+        motivos = []
+
+        if status == "ERRO":
+            nota -= 100
+            motivos.append("ERRO_NO_ARQUIVO")
+
+        if status == "ALERTA":
+            nota -= 25
+            motivos.append("STATUS_ALERTA")
+
+        if ativo == "DESCONHECIDO":
+            nota -= 20
+            motivos.append("ATIVO_DESCONHECIDO")
+
+        if fractal == "DESCONHECIDO":
+            nota -= 20
+            motivos.append("FRACTAL_DESCONHECIDO")
+
+        if linhas == 0:
+            nota -= 40
+            motivos.append("ARQUIVO_VAZIO")
+
+        if colunas < 3:
+            nota -= 30
+            motivos.append("COLUNAS_INSUFICIENTES")
+
+        if hash_md5 in ["", "N/D", "nan"]:
+            nota -= 25
+            motivos.append("HASH_AUSENTE")
+
+        if data_inicio == "N/D" or data_fim == "N/D":
+            nota -= 15
+            motivos.append("DATA_INVALIDA")
+
+        if nota < 0:
+            nota = 0
+
+        if nota >= 95:
+            classificacao = "EXCELENTE"
+        elif nota >= 85:
+            classificacao = "BOA"
+        elif nota >= 70:
+            classificacao = "REGULAR"
+        elif nota >= 50:
+            classificacao = "FRACA"
+        else:
+            classificacao = "CRITICA"
+
+        metricas.append({
+            "arquivo": arquivo,
+            "ativo": ativo,
+            "fractal": fractal,
+            "nota_qualidade": nota,
+            "classificacao": classificacao,
+            "linhas": linhas,
+            "colunas": colunas,
+            "status": status,
+            "motivos": " | ".join(motivos) if motivos else "OK"
+        })
+
+    df = pd.DataFrame(metricas)
+    df.to_csv(ARQ_QUALIDADE, sep=";", index=False, encoding="utf-8-sig")
+
+    return df
+
+def gerar_memoria_estatistica(indice):
+    estatisticas = []
+
+    grupos = indice.groupby(["ativo", "fractal"])
+
+    for (ativo, fractal), grupo in grupos:
+        total_arquivos = len(grupo)
+        total_linhas = int(grupo["linhas"].sum())
+        tamanho_total_mb = round(grupo["tamanho_mb"].sum(), 3)
+
+        qualidade_media = "N/D"
+        if "nota_qualidade" in grupo.columns:
+            qualidade_media = round(grupo["nota_qualidade"].mean(), 2)
+
+        data_inicio = pd.to_datetime(
+            grupo["data_inicio"],
+            dayfirst=True,
+            errors="coerce"
+        ).dropna()
+
+        data_fim = pd.to_datetime(
+            grupo["data_fim"],
+            dayfirst=True,
+            errors="coerce"
+        ).dropna()
+
+        menor_data = data_inicio.min().strftime("%d/%m/%Y") if len(data_inicio) else "N/D"
+        maior_data = data_fim.max().strftime("%d/%m/%Y") if len(data_fim) else "N/D"
+
+        volume_medio = pd.to_numeric(
+            grupo["volume_medio"],
+            errors="coerce"
+        ).dropna()
+
+        range_medio = pd.to_numeric(
+            grupo["range_medio"],
+            errors="coerce"
+        ).dropna()
+
+        preco_medio = pd.to_numeric(
+            grupo["preco_medio"],
+            errors="coerce"
+        ).dropna()
+
+        estatisticas.append({
+            "ativo": ativo,
+            "fractal": fractal,
+            "total_arquivos": total_arquivos,
+            "total_linhas": total_linhas,
+            "tamanho_total_mb": tamanho_total_mb,
+            "menor_data": menor_data,
+            "maior_data": maior_data,
+            "volume_medio_geral": round(volume_medio.mean(), 2) if len(volume_medio) else "N/D",
+            "range_medio_geral": round(range_medio.mean(), 2) if len(range_medio) else "N/D",
+            "preco_medio_geral": round(preco_medio.mean(), 2) if len(preco_medio) else "N/D",
+            "qualidade_media": qualidade_media
+        })
+
+    df = pd.DataFrame(estatisticas)
+    df.to_csv(ARQ_MEMORIA_ESTATISTICA, sep=";", index=False, encoding="utf-8-sig")
+
+    return df
+
 def main():
     print("\n" + "=" * 60)
-    print("BERNARDO BIBLIOTECARIO v2.2 - MODULOS 15 E 16")
+    print("BERNARDO BIBLIOTECARIO v2.3 - MODULOS 15, 16 E 17")
     print("=" * 60)
 
     backup_indice()
@@ -650,6 +792,8 @@ def main():
     detectar_duplicados(indice)
 
     relatorio_higienizacao = gerar_relatorio_higienizacao(indice)
+    relatorio_qualidade = gerar_metricas_qualidade(indice)
+    relatorio_memoria_estatistica = gerar_memoria_estatistica(indice)
 
     eventos = detectar_eventos(indice_anterior, indice)
     registrar_timeline(eventos)
@@ -678,12 +822,24 @@ def main():
     print(ARQ_TIMELINE)
     print(ARQ_ESTATISTICAS)
     print(ARQ_HIGIENIZACAO)
+    print(ARQ_QUALIDADE)
+    print(ARQ_MEMORIA_ESTATISTICA)
     print("=" * 60)
 
     print("Resumo higienizacao:")
     print(relatorio_higienizacao["gravidade"].value_counts().to_string())
     print("=" * 60)
 
+    print("Resumo qualidade:")
+    print(relatorio_qualidade["classificacao"].value_counts().to_string())
+    print("=" * 60)
+   
+    print("Resumo memoria estatistica:")
+    print(relatorio_memoria_estatistica[["ativo", "fractal", "total_arquivos",                                     
+    "total_linhas"]].to_string(index=False))
+    print("=" * 60)
 
 if __name__ == "__main__":
     main()
+
+

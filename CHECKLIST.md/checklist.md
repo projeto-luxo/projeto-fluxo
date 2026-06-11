@@ -1,286 +1,166 @@
-# 🚀 TRIN — CHECKLIST OFICIAL DO PROJETO    py -m uvicorn backend.server:app --reload
+# 🏛️ TRIN FLOW PRO — CHECKLIST OFICIAL DO PROJETO
 
-# ===============================
+```
+cd "C:\Users\User\projeto_fluxo"
+```
+
+## CHECKPOINT GERAL — JUNHO/2026
+
+---
 
 # STATUS OFICIAL
 
-# ===============================
+🟢 STATUS: ARQUITETURA HISTÓRICA HOMOLOGADA
 
-🟢 STATUS: MARCO ZERO INSTITUCIONAL HOMOLOGADO
-🏷 VERSÃO ATUAL: TRIN 5.9.3 INSTITUCIONAL
+🏷 VERSÃO ATUAL:
+
+**TRIN 5.9.3 INSTITUCIONAL + BIBLIOTECA HISTÓRICA v2.4**
 
 Frontend: React
+
 Backend: FastAPI
+
 Gráfico: lightweight-charts
-Comunicação: WebSocket tempo real
 
-Branch Git:
-trin-4.2-visual
+Comunicação: WebSocket Tempo Real
 
-Último checkpoint:
+Biblioteca: Bernardo Bibliotecário v2.4
 
-MARCO ZERO INSTITUCIONAL HOMOLOGADO
-
-Profit
-↓
-RTD
-↓
-Excel
-↓
-Python
-
-VALIDADO COM DADOS REAIS
+Engenharia Temporal: Zé do Eucrázio
 
 ---
 
-# ===============================
+# FILOSOFIA OFICIAL DO PROJETO
+
+Arquitetura antes do código.
+
+Estabilidade antes da velocidade.
+
+Memória organizada antes da inteligência.
+
+Conhecimento antes da IA.
+
+O TRIN não bloqueia operações.
+
+O TRIN mede a qualidade das oportunidades.
+
+O operador continua sendo o responsável pela decisão.
+
+---
+
+# ARQUITETURA OFICIAL
+
+```
+Mercado
+   ↓
+Profit
+   ↓
+RTD
+   ↓
+Excel
+   ↓
+Python
+   ↓
+Gravador
+   ↓
+Biblioteca Histórica
+   ↓
+Zé do Eucrázio
+   ↓
+Bernardo
+   ↓
+Motor de Confluência
+   ↓
+Historiador
+   ↓
+Aprendizagem
+   ↓
+TRIN
+   ↓
+Operador
+```
+
+---
 
 # VALIDAÇÃO DE AMBIENTE
 
-# ===============================
-
 OBRIGATÓRIO ANTES DE QUALQUER TESTE
 
+```
 [ ] Profit aberto
-[ ] Profit executado como Administrador
+[ ] Profit Administrador
 [ ] Excel aberto
-[ ] Excel executado como Administrador
-[ ] MARCO_ZERO_INSTITUCIONAL.xlsx aberto
+[ ] Excel Administrador
+[ ] Python Administrador
+[ ] PowerShell Administrador
 [ ] RTD ativo
-[ ] Ativo WINM26 carregado
-[ ] Planilha recebendo dados
-[ ] Python executado como Administrador
-[ ] PowerShell executado como Administrador
-
-ANTES DE INVESTIGAR CÓDIGO VERIFICAR:
-
-[ ] Programa aberto
-[ ] Arquivo correto
-[ ] Aba correta
-[ ] Célula correta
-[ ] Fórmula correta
-[ ] Permissões corretas
-[ ] Modo Administrador ativo
-
-LIÇÃO OFICIAL Nº 001
-
-80% dos problemas complexos podem ser causados por detalhes simples de ambiente.
+[ ] Planilha aberta
+[ ] Ativo correto
+[ ] Dados atualizando
+[ ] Backend online
+[ ] Frontend online
+[ ] WebSocket online
+```
 
 ---
 
-# ===============================
+# LIÇÃO OFICIAL Nº 001
 
-# CHECKPOINT OFICIAL SALVO
+Antes de investigar código verificar:
 
-# ===============================
+```
+Programa correto
+Arquivo correto
+Pasta correta
+Aba correta
+Permissão correta
+Modo Administrador
+Arquivo salvo
+Git atualizado
+```
 
-✅ GitHub sincronizado
+Mais de 80% dos problemas podem estar no ambiente.
+
+---
+
+# CHECKPOINT GITHUB
+
+```
+✅ Git sincronizado
+
 ✅ Commit salvo
-✅ Push concluído
-✅ Frontend compilando
-✅ Backend online
-✅ WebSocket online
-✅ Painel renderizando
-✅ App.js protegido
-✅ Backend protegido
-✅ Estrutura estável
-✅ Ghost execution eliminado
-✅ Compra validada
-✅ Venda validada
-✅ STOP / PARCIAL / ALVO funcionais
-✅ Backend/frontend semanticamente alinhados
-✅ Base congelada
 
-✅ Profit RTD validado
-✅ Excel RTD validado
-✅ Profit → Excel validado
-✅ Excel → Python validado
-✅ Delta nativo homologado
-✅ VWAP homologado
-✅ Saldo homologado
-✅ Volume homologado
-✅ MARCO_ZERO_INSTITUCIONAL homologado
+✅ Push concluído
+
+✅ Base protegida
+
+✅ Checkpoint criado
+```
+
+GitHub é o cofre oficial do projeto.
 
 ---
-
-# ===============================
 
 # MARCO ZERO INSTITUCIONAL
 
-# ===============================
+Fluxo homologado
 
-Data da homologação:
-
-02/06/2026
-
-Fluxo validado:
-
+```
 Profit
-↓
+   ↓
 RTD
-↓
+   ↓
 Excel
-↓
+   ↓
 Python
+```
 
-Campos homologados:
+Campos homologados
 
+```
 ✅ Ativo
 ✅ Data
 ✅ Hora
-✅ Último
-✅ Volume
-✅ TR Delta
-✅ TR Saldo Acumulado
-✅ TR Volume Compra
-✅ TR Volume Venda
-✅ VWAP
-
-Problema encontrado:
-
-Excel Administrador
-≠
-Python Administrador
-
-Correção aplicada:
-
-Profit + Excel + Python executados como Administrador
-
-Resultado:
-
-Leitura institucional homologada.
-
----
-
-# ===============================
-
-# ARQUITETURA FUNCIONAL ATUAL
-
-# ===============================
-
-## Backend
-
-✅ FastAPI operacional
-✅ endpoint /data funcional
-✅ WebSocket /ws funcional
-✅ JSON consistente
-✅ histórico persistente
-✅ gestão institucional dinâmica ativa
-✅ scalping semântico alinhado
-✅ memória curta de explosão implementada
-✅ backend/frontend compatíveis
-
-PENDENTE:
-
-[ ] substituir gerador fake por leitura institucional
-[ ] conectar Excel ao backend
-[ ] validar payload institucional
-[ ] validar atualização contínua
-[ ] recalibrar engines com fluxo real
-
----
-
-# ===============================
-
-# ENGINES
-
-# ===============================
-
-## Engine Institucional
-
-✅ absorção
-✅ trap
-✅ seq_delta
-✅ score
-✅ fase
-✅ direção
-✅ zona institucional
-✅ acumulação
-✅ distribuição
-✅ compressão
-✅ rompimento
-✅ entrada moderada
-✅ entrada conservadora
-
-## VWAP Engine
-
-✅ VWAP funcional
-✅ banda superior
-✅ banda inferior
-
-PENDENTE
-
-[ ] recalibrar com fluxo real
-
-## Candle Engine
-
-✅ candles
-✅ reversão
-
-## Aggression Engine
-
-✅ frequência
-✅ memória de agressão
-✅ persistência
-✅ BUY EXPLOSION
-✅ SELL EXPLOSION
-
-PENDENTE
-
-[ ] validar explosão real
-[ ] recalibrar memória de agressão
-[ ] validar persistência real
-
----
-
-# ===============================
-
-# FRONTEND FUNCIONAL
-
-# ===============================
-
-✅ App.js compilando
-✅ WebSocket estável
-✅ reconnect inteligente
-✅ gráfico renderizando
-✅ VWAP renderizando
-✅ bandas renderizando
-✅ reversões visuais
-✅ markers preparados
-✅ STOP visual
-✅ PARCIAL visual
-✅ ALVO visual
-✅ price lines funcionais
-✅ glow contextual
-✅ radar institucional
-✅ painel lateral institucional
-✅ top bar operacional
-✅ hot zone operacional
-✅ heatmap institucional
-✅ contexto institucional funcional
-
-PENDENTE
-
-[ ] integrar dados reais
-[ ] validar atualização em tempo real
-[ ] validar replay
-[ ] validar mercado aberto
-[ ] refinamento visual estilo ASG
-[ ] desktop app
-
----
-
-# ===============================
-
-# VALIDAÇÃO FUNCIONAL
-
-# ===============================
-
-VALIDADO
-
-✅ Profit RTD
-✅ Excel RTD
-✅ Python institucional
 ✅ Último
 ✅ Volume
 ✅ Delta
@@ -288,132 +168,451 @@ VALIDADO
 ✅ VWAP
 ✅ Compra
 ✅ Venda
+```
 
-PENDENTE
-
-[ ] leitura contínua em replay
-[ ] leitura contínua em mercado aberto
-[ ] integração backend real
-[ ] integração frontend real
-[ ] validação operacional completa
+Leitura institucional validada.
 
 ---
 
-# ===============================
+# BIBLIOTECA HISTÓRICA
 
-# REGRAS OFICIAIS DE TRABALHO
+Status atual
 
-# ===============================
+```
+Arquivos.............111
 
-## PRINCÍPIOS
+Registros............737.456
 
-✅ não mexer no que funciona
-✅ salvar Git antes de alterar
+Integridade..........100%
+
+Alertas..............0
+
+Erros................0
+
+Qualidade............EXCELENTE (111 arquivos)
+
+Memória Estatística..HOMOLOGADA
+```
+
+Biblioteca oficial homologada.
+
+---
+
+# ZÉ DO EUCRÁZIO
+
+Cargo
+
+Engenheiro Temporal do TRIN
+
+Homologado
+
+Executa
+
+```
+✅ Fractal 2 minutos
+✅ Fractal 3 minutos
+✅ Reconhecimento Profit
+✅ Reconhecimento Memória Viva
+```
+
+Próxima missão
+
+Gerador Universal de Fractais.
+
+---
+
+# BERNARDO
+
+Cargo
+
+Guardião Oficial da Biblioteca Histórica
+
+Status
+
+✅ HOMOLOGADO
+
+---
+
+# MÓDULOS DO BERNARDO
+
+```
+✅ 01 Catálogo Mestre
+
+✅ 02 Auditoria de Integridade
+
+✅ 03 Período Real
+
+✅ 04 Metadados
+
+✅ 05 Hash MD5
+
+✅ 06 Estatísticas Gerais
+
+✅ 07 Central de Alertas
+
+✅ 08 Log Operacional
+
+🔲 09 Motor de Consulta
+
+🔲 10 Atualização Incremental
+
+✅ 11 Diagnóstico
+
+🔲 12 Interface Oficial da IA
+
+✅ 13 Versionamento
+
+✅ 14 Linha do Tempo
+
+✅ 15 Recuperação Automática
+
+✅ 16 Higienização Inteligente
+
+✅ 17 Métricas de Qualidade
+
+✅ 18 Indexação Semântica
+
+✅ 19 Memória Estatística
+
+🔲 20 Curadoria Automática
+
+✅ 21 Memória de Uso
+```
+
+---
+
+# SITUAÇÃO DA MEMÓRIA
+
+```
+✅ Backup automático
+
+✅ Recuperação
+
+✅ Versionamento
+
+✅ Higienização
+
+✅ Hash
+
+✅ Timeline
+
+✅ Memória de uso
+
+✅ Estatísticas
+
+✅ Integridade
+
+✅ Diagnóstico
+
+✅ Métricas de qualidade
+
+✅ Memória estatística
+
+✅ Indexação semântica
+```
+
+Bernardo tornou-se a API oficial da memória do TRIN.
+
+Fluxo obrigatório
+
+```
+IA
+ ↓
+Bernardo
+ ↓
+Biblioteca
+ ↓
+Resposta
+```
+
+---
+
+# MOTOR DE CONFLUÊNCIA
+
+Cada módulo soma pontos.
+
+Nunca bloqueia operações.
+
+```
+VWAP
++
+Delta
++
+Absorção
++
+Fluxo
++
+Fractal
++
+Horário
++
+Memória Histórica
++
+Contexto
++
+Tendência
+=
+Score Final
+```
+
+---
+
+# FILOSOFIA DO SCORE
+
+```
+Score 06 → Observação
+
+Score 10 → Atenção
+
+Score 15 → Boa oportunidade
+
+Score 20 → Institucional
+
+Score 25 → Premium
+
+Score 30+ → Confluência Máxima
+```
+
+---
+
+# ENGINES
+
+## Engine Institucional
+
+```
+✅ absorção
+
+✅ trap
+
+✅ sequência delta
+
+✅ score
+
+✅ direção
+
+✅ fase
+
+✅ zona institucional
+
+✅ acumulação
+
+✅ distribuição
+
+✅ rompimento
+```
+
+## VWAP Engine
+
+```
+✅ VWAP
+
+✅ banda superior
+
+✅ banda inferior
+```
+
+## Candle Engine
+
+```
+✅ candles
+
+✅ reversão
+```
+
+## Aggression Engine
+
+```
+✅ frequência
+
+✅ memória
+
+✅ persistência
+
+✅ BUY EXPLOSION
+
+✅ SELL EXPLOSION
+```
+
+---
+
+# FRONTEND
+
+```
+✅ gráfico
+
+✅ WebSocket
+
+✅ reconnect
+
+✅ VWAP
+
+✅ bandas
+
+✅ reversão
+
+✅ radar
+
+✅ glow
+
+✅ painel lateral
+
+✅ top bar
+
+✅ heatmap
+
+✅ hot zone
+
+✅ contexto institucional
+
+✅ stop
+
+✅ parcial
+
+✅ alvo
+```
+
+---
+
+# REGRAS OFICIAIS
+
+```
 ✅ uma alteração por vez
+
 ✅ backend primeiro
+
 ✅ frontend depois
+
 ✅ integração por último
-✅ se quebrar parar imediatamente
-✅ motor antes da estética
-✅ dados reais antes de calibragem
+
+✅ salvar Git antes
+
+✅ testar antes de continuar
+
 ✅ estabilidade antes de glamour
 
-## SEGURANÇA CRÍTICA
+✅ motor antes da estética
 
-✅ informar função afetada
-✅ informar impacto
-✅ informar risco
-✅ informar local aproximado
+✅ memória antes da IA
+```
 
-## PROIBIDO
+---
 
-❌ alterar backend + frontend + websocket juntos
+# PROIBIDO
+
+```
+❌ alterar vários módulos simultaneamente
+
 ❌ refatorar por impulso
-❌ calibrar thresholds com dado fake
-❌ adicionar IA cedo
-❌ automação antes da leitura manual
-❌ regressão funcional
-❌ regressão visual
+
+❌ calibrar com dados fake
+
+❌ quebrar versão homologada
+
+❌ IA antes da memória organizada
+
 ❌ F5 com foco no Notepad
-
-## OBRIGATÓRIO
-
-✅ testar após cada alteração
-✅ salvar checkpoint
-✅ usar Git como cofre
-✅ revisar terminal antes de concluir
+```
 
 ---
 
-# ===============================
+# PRÓXIMA FILA OFICIAL
 
-# PRÓXIMA ETAPA IMEDIATA
+```
+🔲 20 Curadoria Automática
 
-# ===============================
+↓
 
-OBJETIVO
+🔲 Bernardo 100%
 
-CONECTAR MARCO ZERO AO TRIN
+↓
 
-ORDEM
+🔲 Motor de Consulta
 
-1. congelar 5.9.3
-2. salvar Git
-3. conectar Excel ao backend
-4. substituir dados fake
-5. alimentar WebSocket com dados reais
-6. alimentar painel com dados reais
-7. validar replay
-8. validar mercado aberto
-9. recalibrar engines
+↓
 
----
+🔲 Atualização Incremental
 
-# ===============================
+↓
 
-# TRIN 5.10
+🔲 Interface Oficial da IA
 
-# ===============================
+↓
 
-TRIN 5.10 COMEÇA QUANDO
+🔲 Historiador
 
-[ ] backend lendo Excel real
-[ ] WebSocket recebendo dados reais
-[ ] painel recebendo dados reais
-[ ] replay validado
-[ ] mercado aberto validado
+↓
 
-Planejamento
+🔲 Motor de Confluência Histórica
 
-[ ] integração institucional completa
-[ ] memória de agressão real
-[ ] validação contextual real
-[ ] recalibração institucional
-[ ] validação de explosões reais
+↓
+
+🔲 Motor Geral de Pontuação
+
+↓
+
+🔲 Pesos Dinâmicos
+
+↓
+
+🔲 Índice de Confiança TRIN
+```
 
 ---
 
-# ===============================
+# VISÃO FINAL
 
-# FUTURO — TRIN 6.x
-
-# ===============================
-
-[ ] Profit Pro consolidado
-[ ] NinjaTrader
-[ ] DOM real
-[ ] fluxo real
-[ ] alertas sonoros
-[ ] IA comparativa
-[ ] classificação contextual IA
-[ ] painel ASG final
-[ ] desktop app
-[ ] Elliott/Fibonacci integrado
+```
+Mercado
+ ↓
+RTD
+ ↓
+Gravador
+ ↓
+Biblioteca Histórica
+ ↓
+Zé do Eucrázio
+ ↓
+Bernardo
+ ↓
+Motor de Confluência
+ ↓
+Historiador
+ ↓
+Aprendizagem
+ ↓
+TRIN
+ ↓
+Operador
+```
 
 ---
 
-TRIN FLOW PRO
+# FRASE OFICIAL
 
-Projeto institucional em evolução controlada.
+> "O TRIN não procura operações perfeitas. Ele mede a qualidade de cada oportunidade através da convergência de múltiplas evidências históricas, permitindo que o operador decida conscientemente o risco que deseja assumir."
 
-MARCO ZERO INSTITUCIONAL HOMOLOGADO.
+---
+
+# DOUTRINA TRIN
+
+**Arquitetura antes do código.**
+
+**Estabilidade antes da velocidade.**
+
+**Memória organizada antes da inteligência.**
+
+**Conhecimento antes da IA.**
+
+**Uma alteração por vez.**
+
+**GitHub é o cofre oficial do projeto.**
+
+---
+
+# CHECKPOINT OFICIAL
+
+🏛️ **BERNARDO BIBLIOTECÁRIO v2.4**
+
+**Módulos homologados:** 01, 02, 03, 04, 05, 06, 07, 08, 11, 13, 14, 15, 16, 17, 18, 19 e 21.
+
+**Biblioteca Histórica TRIN homologada com integridade de 100%, qualidade excelente e memória estatística operacional, tornando-se a base oficial de conhecimento para as futuras IAs e para o Motor de Confluência do TRIN.**
