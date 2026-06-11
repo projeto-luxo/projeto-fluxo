@@ -32,6 +32,7 @@ ARQ_HIGIENIZACAO = os.path.join(INDICES, "relatorio_higienizacao.csv")
 ARQ_QUALIDADE = os.path.join(INDICES, "relatorio_qualidade.csv")
 ARQ_MEMORIA_ESTATISTICA = os.path.join(INDICES, "relatorio_memoria_estatistica.csv")
 ARQ_CURADORIA = os.path.join(INDICES, "relatorio_curadoria.csv")
+ARQ_CONSULTA = os.path.join(INDICES, "relatorio_consulta.csv")
 
 def md5_arquivo(caminho):
     h = hashlib.md5()
@@ -202,6 +203,9 @@ def backup_recuperacao():
         ARQ_ESTATISTICAS,
         ARQ_HIGIENIZACAO,
         ARQ_QUALIDADE,
+        ARQ_MEMORIA_ESTATISTICA,
+        ARQ_CURADORIA,
+        ARQ_CONSULTA,
         ARQ_LOG,
     ]
 
@@ -398,7 +402,7 @@ def gerar_status(indice):
 
     texto = f"""
 ============================================================
-BIBLIOTECA HISTORICA TRIN - BERNARDO v2.3
+BIBLIOTECA HISTORICA TRIN - BERNARDO v2.5
 ============================================================
 Arquivos ............... {total}
 Registros .............. {linhas}
@@ -821,9 +825,89 @@ def gerar_curadoria_automatica(indice, relatorio_higienizacao, relatorio_qualida
 
     return df
 
+
+def montar_tabela_consulta(indice, relatorio_qualidade):
+    tabela = indice.copy()
+
+    colunas_qualidade = [
+        "arquivo",
+        "nota_qualidade",
+        "classificacao",
+        "motivos"
+    ]
+
+    if all(coluna in relatorio_qualidade.columns for coluna in colunas_qualidade):
+        tabela = tabela.merge(
+            relatorio_qualidade[colunas_qualidade],
+            on="arquivo",
+            how="left"
+        )
+
+    colunas_base = [
+        "arquivo",
+        "ativo",
+        "fractal",
+        "data_inicio",
+        "data_fim",
+        "linhas",
+        "colunas",
+        "status",
+        "confiabilidade",
+        "nota_qualidade",
+        "classificacao",
+        "tags",
+        "origem",
+        "caminho",
+    ]
+
+    colunas_existentes = [coluna for coluna in colunas_base if coluna in tabela.columns]
+    tabela = tabela[colunas_existentes]
+
+    tabela.to_csv(ARQ_CONSULTA, sep=";", index=False, encoding="utf-8-sig")
+
+    return tabela
+
+
+def consultar_biblioteca(
+    tabela_consulta,
+    ativo=None,
+    fractal=None,
+    status=None,
+    classificacao=None,
+    texto=None,
+    minimo_linhas=None
+):
+    resultado = tabela_consulta.copy()
+
+    if ativo:
+        resultado = resultado[resultado["ativo"].astype(str).str.upper() == str(ativo).upper()]
+
+    if fractal:
+        resultado = resultado[resultado["fractal"].astype(str).str.upper() == str(fractal).upper()]
+
+    if status:
+        resultado = resultado[resultado["status"].astype(str).str.upper() == str(status).upper()]
+
+    if classificacao and "classificacao" in resultado.columns:
+        resultado = resultado[resultado["classificacao"].astype(str).str.upper() == str(classificacao).upper()]
+
+    if texto:
+        termo = str(texto).upper()
+        mascara = resultado.apply(
+            lambda linha: termo in " ".join(linha.astype(str)).upper(),
+            axis=1
+        )
+        resultado = resultado[mascara]
+
+    if minimo_linhas is not None and "linhas" in resultado.columns:
+        resultado = resultado[pd.to_numeric(resultado["linhas"], errors="coerce") >= minimo_linhas]
+
+    return resultado
+
+
 def main():
     print("\n" + "=" * 60)
-    print("BERNARDO BIBLIOTECARIO v2.3 - MODULOS 15, 16 E 17")
+    print("BERNARDO BIBLIOTECARIO v2.5 - MODULOS 09, 15, 16, 17, 19 E 20")
     print("=" * 60)
 
     backup_indice()
@@ -895,11 +979,12 @@ def main():
     relatorio_qualidade = gerar_metricas_qualidade(indice)
     relatorio_memoria_estatistica = gerar_memoria_estatistica(indice)
     relatorio_curadoria = gerar_curadoria_automatica(
-       indice,
-       relatorio_higienizacao,
-       relatorio_qualidade,
-       relatorio_memoria_estatistica
-)
+        indice,
+        relatorio_higienizacao,
+        relatorio_qualidade,
+        relatorio_memoria_estatistica
+    )
+    tabela_consulta = montar_tabela_consulta(indice, relatorio_qualidade)
 
     eventos = detectar_eventos(indice_anterior, indice)
     registrar_timeline(eventos)
@@ -931,6 +1016,7 @@ def main():
     print(ARQ_QUALIDADE)
     print(ARQ_MEMORIA_ESTATISTICA)
     print(ARQ_CURADORIA)
+    print(ARQ_CONSULTA)
     print("=" * 60)
 
     print("Resumo higienizacao:")
@@ -942,11 +1028,35 @@ def main():
     print("=" * 60)
    
     print("Resumo memoria estatistica:")
-    print(relatorio_memoria_estatistica[["ativo", "fractal", "total_arquivos",                                     
-    "total_linhas"]].to_string(index=False))
+    print(
+        relatorio_memoria_estatistica[
+            ["ativo", "fractal", "total_arquivos", "total_linhas"]
+        ].to_string(index=False)
+    )
     print("=" * 60)
+
+    print("Resumo curadoria:")
+    print(
+        relatorio_curadoria[
+            ["item", "situacao"]
+        ].to_string(index=False)
+    )
+    print("=" * 60)
+
+    print("Resumo consulta:")
+    print(f"Tabela de consulta gerada com {len(tabela_consulta)} registros")
+    print("Exemplo WIN 5_MIN:")
+    exemplo = consultar_biblioteca(tabela_consulta, ativo="WIN", fractal="5_MIN")
+    if len(exemplo):
+        colunas_exemplo = [
+            coluna for coluna in ["arquivo", "ativo", "fractal", "linhas", "classificacao"]
+            if coluna in exemplo.columns
+        ]
+        print(exemplo[colunas_exemplo].head(10).to_string(index=False))
+    else:
+        print("Nenhum registro encontrado")
+    print("=" * 60)
+
 
 if __name__ == "__main__":
     main()
-
-

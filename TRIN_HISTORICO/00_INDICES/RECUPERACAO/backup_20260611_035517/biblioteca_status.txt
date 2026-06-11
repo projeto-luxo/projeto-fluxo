@@ -14,7 +14,5 @@ Menor arquivo .......... WDO_SEMANAL_2026_2026.csv
 Alertas ................ 0
 Erros .................. 0
 Integridade ............ 100.0%
-Ultima atualizacao ..... 11/06/2026 04:02:05
+Ultima atualizacao ..... 11/06/2026 03:43:47
 ============================================================
-
-Biblioteca pronta para IA: SIM
