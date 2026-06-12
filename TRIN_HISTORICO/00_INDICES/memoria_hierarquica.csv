@@ -1,0 +1,29 @@
+﻿nivel_1;nivel_2;nivel_3;item;tipo;detalhe
+MERCADO;ATIVO;WDO;WDO;ATIVO;Ativo catalogado na Biblioteca Historica
+MERCADO;ATIVO;WIN;WIN;ATIVO;Ativo catalogado na Biblioteca Historica
+TEMPO;MACRO;10_MIN;10_MIN;FRACTAL;Escala temporal disponivel para consulta
+TEMPO;MACRO;15_MIN;15_MIN;FRACTAL;Escala temporal disponivel para consulta
+TEMPO;MICRO;1_MIN;1_MIN;FRACTAL;Escala temporal disponivel para consulta
+TEMPO;MICRO;2_MIN;2_MIN;FRACTAL;Escala temporal disponivel para consulta
+TEMPO;MACRO;30_MIN;30_MIN;FRACTAL;Escala temporal disponivel para consulta
+TEMPO;MICRO;3_MIN;3_MIN;FRACTAL;Escala temporal disponivel para consulta
+TEMPO;MICRO;5_MIN;5_MIN;FRACTAL;Escala temporal disponivel para consulta
+TEMPO;MACRO;60_MIN;60_MIN;FRACTAL;Escala temporal disponivel para consulta
+TEMPO;MACRO;DIARIO;DIARIO;FRACTAL;Escala temporal disponivel para consulta
+TEMPO;MACRO;SEMANAL;SEMANAL;FRACTAL;Escala temporal disponivel para consulta
+ORIGEM;PROFIT;DADOS;PROFIT;ORIGEM_DADOS;Fonte produtora ou organizadora do arquivo
+ORIGEM;ZE_DO_EUCRAZIO;DADOS;ZE_DO_EUCRAZIO;ORIGEM_DADOS;Fonte produtora ou organizadora do arquivo
+PADROES;REVERSAO;R001;REVERSAO_VWAP;PADRAO_OFICIAL;Reversao proxima da VWAP com perda de agressao contraria
+PADROES;REVERSAO;R002;REVERSAO_EXTREMO;PADRAO_OFICIAL;Reversao apos afastamento excessivo da media
+PADROES;REVERSAO;R003;FALSO_ROMPIMENTO;PADRAO_OFICIAL;Rompimento sem sustentacao e retorno para dentro da regiao
+PADROES;REVERSAO;R004;ABSORCAO_COMPRADORA;PADRAO_OFICIAL;Agressao vendedora absorvida sem continuidade de queda
+PADROES;REVERSAO;R005;ABSORCAO_VENDEDORA;PADRAO_OFICIAL;Agressao compradora absorvida sem continuidade de alta
+PADROES;REVERSAO;R006;EXAUSTAO_COMPRA;PADRAO_OFICIAL;Compra agressiva perde eficiencia perto de resistencia
+PADROES;REVERSAO;R007;EXAUSTAO_VENDA;PADRAO_OFICIAL;Venda agressiva perde eficiencia perto de suporte
+PADROES;REVERSAO;R008;ROMPIMENTO_COM_FLUXO;PADRAO_OFICIAL;Rompimento acompanhado por delta, volume e saldo favoraveis
+PADROES;REVERSAO;R009;COMPRESSAO_PRE_EXPLOSAO;PADRAO_OFICIAL;Reducao de range antes de expansao direcional
+PADROES;REVERSAO;R010;PULLBACK_INSTITUCIONAL;PADRAO_OFICIAL;Reteste de regiao rompida com defesa de fluxo
+PADROES;SCALPING;S001;SCALPING_EXPLOSAO;PADRAO_OFICIAL;Movimento curto de forte aceleracao e alta frequencia
+PADROES;SCALPING;S002;SCALPING_REJEICAO;PADRAO_OFICIAL;Rejeicao rapida em nivel historico ou VWAP
+PADROES;CONTEXTO;C001;CONTEXTO_ABERTURA;PADRAO_OFICIAL;Padrao exclusivo de abertura do pregao
+PADROES;CONTEXTO;C002;CONTEXTO_FECHAMENTO;PADRAO_OFICIAL;Padrao exclusivo de fechamento ou zeragem
