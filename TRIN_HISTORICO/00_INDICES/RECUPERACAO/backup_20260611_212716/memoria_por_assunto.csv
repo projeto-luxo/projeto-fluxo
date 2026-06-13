@@ -1,0 +1,9 @@
+﻿assunto;categoria;descricao;termos_chave;arquivos_relacionados;padroes_relacionados;relacoes_grafo;densidade_conhecimento;maturidade_assunto
+VWAP;PRECO_VALOR;Memoria relacionada a preco medio institucional, bandas e retorno a valor;VWAP,MEDIA,VALOR,PRECO;0;3;31;34;ALTA
+DELTA;FLUXO;Memoria relacionada a diferenca entre agressao compradora e vendedora;DELTA,AGRESSAO,FLUXO;0;5;1;6;BAIXA
+SALDO;FLUXO;Memoria relacionada ao saldo acumulado de agressao;SALDO,ACUMULADO,AGRESSAO;0;4;0;4;BAIXA
+REVERSAO;PADRAO;Memoria relacionada a mudanca de direcao e rejeicao de preco;REVERSAO,REJEICAO,EXTREMO,VWAP;0;3;3;6;BAIXA
+ROMPIMENTO;PADRAO;Memoria relacionada a rompimentos com ou sem confirmacao de fluxo;ROMPIMENTO,EXPLOSAO,FLUXO;0;5;4;9;BAIXA
+ABSORCAO;PADRAO;Memoria relacionada a absorcao institucional compradora ou vendedora;ABSORCAO,DEFESA,INSTITUCIONAL;0;3;3;6;BAIXA
+SCALPING;PERFIL_OPERACIONAL;Memoria relacionada a oportunidades rapidas e explosoes de fluxo;SCALPING,EXPLOSAO,REJEICAO;0;3;3;6;BAIXA
+CONTEXTO;AMBIENTE;Memoria relacionada a abertura, fechamento, volatilidade e eventos externos;ABERTURA,FECHAMENTO,COPOM,PAYROLL,FOMC;0;2;2;4;BAIXA

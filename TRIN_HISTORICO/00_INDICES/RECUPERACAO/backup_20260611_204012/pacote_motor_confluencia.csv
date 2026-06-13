@@ -1,0 +1,31 @@
+﻿tipo;nome;categoria;maturidade;peso_inicial_sugerido;uso
+ASSUNTO;VWAP;PRECO_VALOR;ALTA;3;Motor de Confluencia pode usar como eixo de evidencia
+ASSUNTO;DELTA;FLUXO;BAIXA;2;Motor de Confluencia pode usar como eixo de evidencia
+ASSUNTO;SALDO;FLUXO;BAIXA;2;Motor de Confluencia pode usar como eixo de evidencia
+ASSUNTO;REVERSAO;PADRAO;BAIXA;2;Motor de Confluencia pode usar como eixo de evidencia
+ASSUNTO;ROMPIMENTO;PADRAO;BAIXA;2;Motor de Confluencia pode usar como eixo de evidencia
+ASSUNTO;ABSORCAO;PADRAO;BAIXA;2;Motor de Confluencia pode usar como eixo de evidencia
+ASSUNTO;SCALPING;PERFIL_OPERACIONAL;BAIXA;2;Motor de Confluencia pode usar como eixo de evidencia
+ASSUNTO;CONTEXTO;AMBIENTE;BAIXA;2;Motor de Confluencia pode usar como eixo de evidencia
+PADRAO;REVERSAO_VWAP;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;REVERSAO_EXTREMO;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;FALSO_ROMPIMENTO;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;ABSORCAO_COMPRADORA;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;ABSORCAO_VENDEDORA;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;EXAUSTAO_COMPRA;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;EXAUSTAO_VENDA;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;ROMPIMENTO_COM_FLUXO;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;COMPRESSAO_PRE_EXPLOSAO;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;PULLBACK_INSTITUCIONAL;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;SCALPING_EXPLOSAO;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;SCALPING_REJEICAO;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;CONTEXTO_ABERTURA;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+PADRAO;CONTEXTO_FECHAMENTO;;CATALOGADO;2;Historiador, Motor de Confluencia, Score de Qualidade
+ASSUNTO;VWAP;PRECO_VALOR;ALTA;2;Busca semantica, IA, Pacote de contexto
+ASSUNTO;DELTA;FLUXO;BAIXA;2;Busca semantica, IA, Pacote de contexto
+ASSUNTO;SALDO;FLUXO;BAIXA;2;Busca semantica, IA, Pacote de contexto
+ASSUNTO;REVERSAO;PADRAO;BAIXA;2;Busca semantica, IA, Pacote de contexto
+ASSUNTO;ROMPIMENTO;PADRAO;BAIXA;2;Busca semantica, IA, Pacote de contexto
+ASSUNTO;ABSORCAO;PADRAO;BAIXA;2;Busca semantica, IA, Pacote de contexto
+ASSUNTO;SCALPING;PERFIL_OPERACIONAL;BAIXA;2;Busca semantica, IA, Pacote de contexto
+ASSUNTO;CONTEXTO;AMBIENTE;BAIXA;2;Busca semantica, IA, Pacote de contexto

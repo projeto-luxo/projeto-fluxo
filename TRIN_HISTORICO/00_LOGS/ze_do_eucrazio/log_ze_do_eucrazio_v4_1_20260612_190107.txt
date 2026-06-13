@@ -1,0 +1,35 @@
+================================================================================
+ZÉ DO EUCRÁZIO 4.1 — LOG OPERACIONAL
+================================================================================
+Regra oficial: Zé gera fractais determinísticos. Fiscal Temporal certifica.
+Status certificação: AGUARDANDO_FISCAL_TEMPORAL
+Base: C:\Users\User\projeto_fluxo\TRIN_HISTORICO
+Origem: C:\Users\User\projeto_fluxo\TRIN_HISTORICO\01_1_MIN\win
+Manifesto: C:\Users\User\projeto_fluxo\TRIN_HISTORICO\00_MANIFESTOS\ze_do_eucrazio\manifesto_ze_do_eucrazio_v4_1_20260612_190107.json
+
+--------------------------------------------------------------------------------
+Origem: C:\Users\User\projeto_fluxo\TRIN_HISTORICO\01_1_MIN\win\WIN_1min_2026_2026.csv
+Hash origem: 7a6e8c5bf8f74dc33c8d9452543b1ea7899f731a62da1dec704b5f17ef4d1b3f
+Tipo: HISTORICO_PROFIT
+Linhas origem: 51486
+Status: CONCLUIDO
+Fractais:
+    2 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+    3 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+    4 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+    5 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+    6 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+    7 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+    8 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+    9 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+   10 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+   12 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+   15 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+   20 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+   30 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+   45 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+   60 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+   90 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+  120 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+  180 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       
+  240 min | PULADO_ARQUIVO_EXISTENTE | linhas=0        completos=0        parciais=0       

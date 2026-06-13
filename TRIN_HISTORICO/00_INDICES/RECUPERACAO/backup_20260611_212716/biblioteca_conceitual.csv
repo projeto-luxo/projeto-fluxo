@@ -1,0 +1,23 @@
+﻿codigo;nome;tipo;categoria;descricao;relacoes_semanticas;maturidade;uso_futuro
+R001;REVERSAO_VWAP;PADRAO;;Reversao proxima da VWAP com perda de agressao contraria;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+R002;REVERSAO_EXTREMO;PADRAO;;Reversao apos afastamento excessivo da media;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+R003;FALSO_ROMPIMENTO;PADRAO;;Rompimento sem sustentacao e retorno para dentro da regiao;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+R004;ABSORCAO_COMPRADORA;PADRAO;;Agressao vendedora absorvida sem continuidade de queda;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+R005;ABSORCAO_VENDEDORA;PADRAO;;Agressao compradora absorvida sem continuidade de alta;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+R006;EXAUSTAO_COMPRA;PADRAO;;Compra agressiva perde eficiencia perto de resistencia;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+R007;EXAUSTAO_VENDA;PADRAO;;Venda agressiva perde eficiencia perto de suporte;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+R008;ROMPIMENTO_COM_FLUXO;PADRAO;;Rompimento acompanhado por delta, volume e saldo favoraveis;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+R009;COMPRESSAO_PRE_EXPLOSAO;PADRAO;;Reducao de range antes de expansao direcional;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+R010;PULLBACK_INSTITUCIONAL;PADRAO;;Reteste de regiao rompida com defesa de fluxo;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+S001;SCALPING_EXPLOSAO;PADRAO;;Movimento curto de forte aceleracao e alta frequencia;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+S002;SCALPING_REJEICAO;PADRAO;;Rejeicao rapida em nivel historico ou VWAP;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+C001;CONTEXTO_ABERTURA;PADRAO;;Padrao exclusivo de abertura do pregao;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+C002;CONTEXTO_FECHAMENTO;PADRAO;;Padrao exclusivo de fechamento ou zeragem;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
+ASSUNTO_VWAP;VWAP;ASSUNTO;PRECO_VALOR;Memoria relacionada a preco medio institucional, bandas e retorno a valor;31;ALTA;Busca semantica, IA, Pacote de contexto
+ASSUNTO_DELTA;DELTA;ASSUNTO;FLUXO;Memoria relacionada a diferenca entre agressao compradora e vendedora;1;BAIXA;Busca semantica, IA, Pacote de contexto
+ASSUNTO_SALDO;SALDO;ASSUNTO;FLUXO;Memoria relacionada ao saldo acumulado de agressao;0;BAIXA;Busca semantica, IA, Pacote de contexto
+ASSUNTO_REVERSAO;REVERSAO;ASSUNTO;PADRAO;Memoria relacionada a mudanca de direcao e rejeicao de preco;3;BAIXA;Busca semantica, IA, Pacote de contexto
+ASSUNTO_ROMPIMENTO;ROMPIMENTO;ASSUNTO;PADRAO;Memoria relacionada a rompimentos com ou sem confirmacao de fluxo;4;BAIXA;Busca semantica, IA, Pacote de contexto
+ASSUNTO_ABSORCAO;ABSORCAO;ASSUNTO;PADRAO;Memoria relacionada a absorcao institucional compradora ou vendedora;3;BAIXA;Busca semantica, IA, Pacote de contexto
+ASSUNTO_SCALPING;SCALPING;ASSUNTO;PERFIL_OPERACIONAL;Memoria relacionada a oportunidades rapidas e explosoes de fluxo;3;BAIXA;Busca semantica, IA, Pacote de contexto
+ASSUNTO_CONTEXTO;CONTEXTO;ASSUNTO;AMBIENTE;Memoria relacionada a abertura, fechamento, volatilidade e eventos externos;2;BAIXA;Busca semantica, IA, Pacote de contexto
