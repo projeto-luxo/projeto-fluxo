@@ -1,0 +1,40 @@
+﻿item;situacao;detalhe
+STATUS_BIBLIOTECA;ATENCAO;Revisar alertas e higienizacao
+TOTAL_ARQUIVOS;161;Total de arquivos catalogados
+ALERTAS;13;Quantidade de arquivos em alerta
+ERROS;0;Quantidade de arquivos com erro
+QUALIDADE_EXCELENTE;148;Arquivos classificados como EXCELENTE
+PROBLEMAS_HIGIENIZACAO;56;Ocorrencias encontradas na higienizacao
+FRACTAIS_AUSENTES;NENHUM;Fractais esperados ainda nao encontrados
+ATIVOS_AUSENTES;NENHUM;Ativos esperados ainda nao encontrados
+COBERTURA_DESCONHECIDO_DESCONHECIDO;9 arquivos / 215 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WDO_10_MIN;5 arquivos / 50000 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WDO_15_MIN;4 arquivos / 52696 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WDO_1_MIN;2 arquivos / 97040 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WDO_30_MIN;7 arquivos / 50000 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WDO_5_MIN;4 arquivos / 78078 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WDO_60_MIN;8 arquivos / 32648 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WDO_DIARIO;13 arquivos / 4970 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WDO_SEMANAL;10 arquivos / 890 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_10_MIN;7 arquivos / 55297 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_120_MIN;4 arquivos / 1102 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_12_MIN;2 arquivos / 4442 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_15_MIN;6 arquivos / 59584 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_180_MIN;4 arquivos / 918 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_1_MIN;1 arquivos / 51486 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_20_MIN;2 arquivos / 2741 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_240_MIN;4 arquivos / 736 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_2_MIN;1 arquivos / 25801 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_30_MIN;9 arquivos / 55312 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_3_MIN;1 arquivos / 17232 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_45_MIN;2 arquivos / 1281 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_4_MIN;2 arquivos / 13022 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_5_MIN;6 arquivos / 88270 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_60_MIN;10 arquivos / 33552 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_6_MIN;2 arquivos / 8732 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_7_MIN;3 arquivos / 7580 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_8_MIN;2 arquivos / 6575 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_90_MIN;2 arquivos / 733 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_9_MIN;2 arquivos / 5846 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_DIARIO;14 arquivos / 5463 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_WIN_SEMANAL;13 arquivos / 1184 linhas;Cobertura estatistica por ativo e fractal

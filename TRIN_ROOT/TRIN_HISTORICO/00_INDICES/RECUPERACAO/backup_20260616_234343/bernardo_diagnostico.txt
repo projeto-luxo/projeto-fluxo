@@ -1,0 +1,20 @@
+
+============================================================
+BIBLIOTECA HISTORICA TRIN - BERNARDO v4.0
+============================================================
+Arquivos ............... 161
+Registros .............. 813426
+WIN .................... 99
+WDO .................... 53
+Fractais ............... 10_MIN, 120_MIN, 12_MIN, 15_MIN, 180_MIN, 1_MIN, 20_MIN, 240_MIN, 2_MIN, 30_MIN, 3_MIN, 45_MIN, 4_MIN, 5_MIN, 60_MIN, 6_MIN, 7_MIN, 8_MIN, 90_MIN, 9_MIN, DESCONHECIDO, DIARIO, SEMANAL
+Data inicial ........... 17/05/2005
+Data final ............. 05/06/2026
+Maior arquivo .......... WDO_1min_2026_2026.csv
+Menor arquivo .......... duplicidades_fractais_20260612_204049.csv
+Alertas ................ 13
+Erros .................. 0
+Integridade ............ 91.93%
+Ultima atualizacao ..... 13/06/2026 21:08:53
+============================================================
+
+Biblioteca pronta para IA: SIM

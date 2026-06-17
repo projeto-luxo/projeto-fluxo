@@ -1,0 +1,6 @@
+﻿data_hora;arquivo;existe;linhas;colunas;status;observacao
+17/06/2026 00:37:00;indice_geral.csv;SIM;162;22;OK;CSV legivel
+17/06/2026 00:37:00;indice_win.csv;SIM;99;22;OK;CSV legivel
+17/06/2026 00:37:00;indice_wdo.csv;SIM;53;22;OK;CSV legivel
+17/06/2026 00:37:00;relatorio_integridade.csv;SIM;162;9;OK;CSV legivel
+17/06/2026 00:37:00;biblioteca_status.txt;SIM;18;N/A;OK;Arquivo texto legivel

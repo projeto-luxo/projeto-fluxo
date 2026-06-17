@@ -1,0 +1,2 @@
+﻿data_hora;arquivo;ativo_detectado;fractal;origem;destino;acao;resultado;motivo
+07/06/2026 18:41:08;WIN_DIARIO_2017_2019.csv;WDO;09_DIARIO;C:\Users\User\projeto_fluxo\TRIN_HISTORICO\09_DIARIO\win\WIN_DIARIO_2017_2019.csv;C:\Users\User\projeto_fluxo\TRIN_HISTORICO\09_DIARIO\wdo\WIN_DIARIO_2017_2019.csv;MOVER;EXECUTADO;Movido com base no conteudo do CSV

@@ -3,6 +3,14 @@ import time
 from pathlib import Path
 import win32com.client
 
+TRIN_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(TRIN_ROOT))
+
+from core.confluence_engine import ConfluenceEngine
+from core.memory_writer import MemoryWriter
+
+engine = ConfluenceEngine()
+writer = MemoryWriter()
 # ==========================
 # GARANTIR IMPORT DO CORE
 # ==========================
@@ -11,12 +19,14 @@ TRIN_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TRIN_ROOT))
 
 from core.confluence_engine import ConfluenceEngine
+from core.memory_writer import MemoryWriter
 
-print("=== TRIN DETECTOR + CONFLUÊNCIA ===")
+print("=== TRIN DETECTOR + CONFLUÊNCIA + WRITER ===")
 
 ARQUIVO_ALVO = "MARCO_ZERO_INSTITUCIONAL.xlsx"
 
 engine = ConfluenceEngine()
+writer = MemoryWriter()
 
 try:
     excel = win32com.client.GetActiveObject("Excel.Application")
@@ -68,22 +78,35 @@ while True:
         hora = ws.Range("C2").Value
 
         ultimo = numero(ws.Range("D2").Value)
+        abertura = numero(ws.Range("E2").Value)
+        maximo = numero(ws.Range("F2").Value)
+        minimo = numero(ws.Range("G2").Value)
         volume = numero(ws.Range("H2").Value)
         delta = numero(ws.Range("I2").Value)
         saldo = numero(ws.Range("J2").Value)
         agressao_compra = numero(ws.Range("K2").Value)
+        agressao_saldo = numero(ws.Range("L2").Value)
         agressao_venda = numero(ws.Range("M2").Value)
         vwap = numero(ws.Range("N2").Value)
 
         tick = {
+            "ativo": ativo,
+            "data": data,
+            "hora": hora,
             "ultimo": ultimo,
+            "abertura": abertura,
+            "maximo": maximo,
+            "minimo": minimo,
             "volume": volume,
             "delta": delta,
             "saldo": saldo,
             "vwap": vwap,
             "agressao_compra": agressao_compra,
+            "agressao_saldo": agressao_saldo,
             "agressao_venda": agressao_venda,
         }
+
+        writer.write(tick)
 
         resultado = engine.process(tick)
 
