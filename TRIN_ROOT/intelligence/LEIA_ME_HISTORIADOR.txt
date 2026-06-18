@@ -1,0 +1,21 @@
+COMO USAR
+
+Copie estes arquivos para:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence
+
+Depois rode:
+cd C:\Users\User\projeto_fluxo\TRIN_ROOT
+python intelligence\historiador_v1_0.py
+
+Saidas esperadas em:
+TRIN_HISTORICO\00_CONHECIMENTO
+
+Arquivos gerados:
+- estatistica_biblioteca.csv
+- cobertura_temporal.csv
+- distribuicao_fractais.csv
+- estatistica_delta.csv
+- estatistica_volume.csv
+- catalogo_padroes_historiador.csv
+- contexto_historiador.csv
+- relatorio_historiador.txt

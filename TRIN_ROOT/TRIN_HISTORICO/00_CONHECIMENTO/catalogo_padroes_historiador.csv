@@ -1,0 +1,7 @@
+﻿codigo;padrao;descricao;status;origem
+HP001;REVERSAO_VWAP;Reversao perto da VWAP apos perda de agressao contraria;PREPARADO_PARA_MINERACAO;HISTORIADOR_v1_0
+HP002;EXAUSTAO_COMPRA;Compra agressiva perde eficiencia perto de maxima/regiao extrema;PREPARADO_PARA_MINERACAO;HISTORIADOR_v1_0
+HP003;EXAUSTAO_VENDA;Venda agressiva perde eficiencia perto de minima/regiao extrema;PREPARADO_PARA_MINERACAO;HISTORIADOR_v1_0
+HP004;ABSORCAO;Fluxo agressivo aparece sem deslocamento proporcional do preco;PREPARADO_PARA_MINERACAO;HISTORIADOR_v1_0
+HP005;ROMPIMENTO_COM_FLUXO;Rompimento acompanhado de volume, delta e saldo favoraveis;PREPARADO_PARA_MINERACAO;HISTORIADOR_v1_0
+HP006;FALSO_ROMPIMENTO;Rompimento sem continuidade com retorno para dentro da regiao;PREPARADO_PARA_MINERACAO;HISTORIADOR_v1_0

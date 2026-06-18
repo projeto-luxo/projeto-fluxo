@@ -1,0 +1,6 @@
+﻿contexto;hora_inicio;hora_fim;descricao;status
+ABERTURA;09:00;10:30;Maior disputa inicial de fluxo;CATALOGADO
+MEIO_PREGAO;10:31;15:30;Desenvolvimento do movimento e zonas de valor;CATALOGADO
+FECHAMENTO;15:31;18:20;Zeragem, ajuste, defesa e distorcoes finais;CATALOGADO
+VENCIMENTO;N/D;N/D;Vencimento de contratos pode distorcer historico;CATALOGADO
+ROLAGEM;N/D;N/D;Periodo de transicao de contrato exige marcacao futura;CATALOGADO
