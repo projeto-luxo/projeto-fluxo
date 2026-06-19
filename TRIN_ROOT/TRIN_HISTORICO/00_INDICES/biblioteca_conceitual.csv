@@ -14,7 +14,7 @@ S002;SCALPING_REJEICAO;PADRAO;SCALPING;Rejeicao rapida em nivel historico ou VWA
 C001;CONTEXTO_ABERTURA;PADRAO;CONTEXTO;Padrao exclusivo de abertura do pregao;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
 C002;CONTEXTO_FECHAMENTO;PADRAO;CONTEXTO;Padrao exclusivo de fechamento ou zeragem;1;CATALOGADO;Historiador, Motor de Confluencia, Score de Qualidade
 ASSUNTO_VWAP;VWAP;ASSUNTO;PRECO_VALOR;Memoria relacionada a preco medio institucional, bandas e retorno a valor;153;ALTA;Busca semantica, IA, Pacote de contexto
-ASSUNTO_DELTA;DELTA;ASSUNTO;FLUXO;Memoria relacionada a diferenca entre agressao compradora e vendedora;1;BAIXA;Busca semantica, IA, Pacote de contexto
+ASSUNTO_DELTA;DELTA;ASSUNTO;FLUXO;Memoria relacionada a diferenca entre agressao compradora e vendedora;2;BAIXA;Busca semantica, IA, Pacote de contexto
 ASSUNTO_SALDO;SALDO;ASSUNTO;FLUXO;Memoria relacionada ao saldo acumulado de agressao;0;BAIXA;Busca semantica, IA, Pacote de contexto
 ASSUNTO_REVERSAO;REVERSAO;ASSUNTO;PADRAO;Memoria relacionada a mudanca de direcao e rejeicao de preco;11;MEDIA;Busca semantica, IA, Pacote de contexto
 ASSUNTO_ROMPIMENTO;ROMPIMENTO;ASSUNTO;PADRAO;Memoria relacionada a rompimentos com ou sem confirmacao de fluxo;4;BAIXA;Busca semantica, IA, Pacote de contexto

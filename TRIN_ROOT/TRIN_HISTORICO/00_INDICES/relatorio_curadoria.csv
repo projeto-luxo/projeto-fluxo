@@ -1,13 +1,13 @@
 ﻿item;situacao;detalhe
 STATUS_BIBLIOTECA;ATENCAO;Revisar alertas e higienizacao
-TOTAL_ARQUIVOS;162;Total de arquivos catalogados
-ALERTAS;14;Quantidade de arquivos em alerta
+TOTAL_ARQUIVOS;179;Total de arquivos catalogados
+ALERTAS;31;Quantidade de arquivos em alerta
 ERROS;0;Quantidade de arquivos com erro
 QUALIDADE_EXCELENTE;148;Arquivos classificados como EXCELENTE
-PROBLEMAS_HIGIENIZACAO;62;Ocorrencias encontradas na higienizacao
+PROBLEMAS_HIGIENIZACAO;132;Ocorrencias encontradas na higienizacao
 FRACTAIS_AUSENTES;NENHUM;Fractais esperados ainda nao encontrados
 ATIVOS_AUSENTES;NENHUM;Ativos esperados ainda nao encontrados
-COBERTURA_DESCONHECIDO_DESCONHECIDO;10 arquivos / 239 linhas;Cobertura estatistica por ativo e fractal
+COBERTURA_DESCONHECIDO_DESCONHECIDO;27 arquivos / 1082 linhas;Cobertura estatistica por ativo e fractal
 COBERTURA_WDO_10_MIN;5 arquivos / 50000 linhas;Cobertura estatistica por ativo e fractal
 COBERTURA_WDO_15_MIN;4 arquivos / 52696 linhas;Cobertura estatistica por ativo e fractal
 COBERTURA_WDO_1_MIN;2 arquivos / 97040 linhas;Cobertura estatistica por ativo e fractal

@@ -1,6 +1,6 @@
 HISTORIADOR v1.0 - RELATORIO OFICIAL
 ============================================================
-Data/hora: 17/06/2026 21:31:45
+Data/hora: 18/06/2026 03:19:30
 Status: CONCLUIDO
 Missao: transformar indices do Bernardo em conhecimento inicial.
 Arquivos gerados:

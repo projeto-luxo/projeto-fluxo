@@ -1,0 +1,16 @@
+data;tipo;negociavel;inicio;fim;motivo;fonte
+2026-01-01;FERIADO_B3;NAO;;;Confraternizacao Universal;B3
+2026-02-16;FERIADO_B3;NAO;;;Carnaval;B3
+2026-02-17;FERIADO_B3;NAO;;;Carnaval;B3
+2026-02-18;HORARIO_ESPECIAL;SIM;13:00;18:00;Quarta-feira de Cinzas;B3
+2026-04-03;FERIADO_B3;NAO;;;Sexta-feira Santa;B3
+2026-04-21;FERIADO_B3;NAO;;;Tiradentes;B3
+2026-05-01;FERIADO_B3;NAO;;;Dia do Trabalho;B3
+2026-06-04;FERIADO_B3;NAO;;;Corpus Christi;B3
+2026-09-07;FERIADO_B3;NAO;;;Independencia do Brasil;B3
+2026-10-12;FERIADO_B3;NAO;;;Nossa Senhora Aparecida;B3
+2026-11-02;FERIADO_B3;NAO;;;Finados;B3
+2026-11-20;FERIADO_B3;NAO;;;Consciencia Negra;B3
+2026-12-24;FERIADO_B3;NAO;;;Vespera de Natal;B3
+2026-12-25;FERIADO_B3;NAO;;;Natal;B3
+2026-12-31;FERIADO_B3;NAO;;;Vespera de Ano Novo;B3

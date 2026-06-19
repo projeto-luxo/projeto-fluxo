@@ -1,0 +1,44 @@
+
+============================================================
+FISCAL TEMPORAL v4.2 - LAUDO OFICIAL
+============================================================
+
+Data/hora: 18/06/2026 19:06:51
+
+Arquivos analisados        : 120
+Certificados               : 97
+Aprovados com ressalvas    : 3
+Reprovados                 : 20
+
+Criticas                   : 0
+Altas                      : 38
+Medias                     : 6
+Baixas                     : 0
+Informativas               : 0
+
+STATUS FINAL:
+REPROVADO_COM_PENDENCIAS
+
+ARQUIVOS GERADOS:
+- certificado_temporal.csv
+- alertas_temporais.csv
+- ordens_para_bernardo.csv
+- ordens_para_ze.csv
+- ordens_operador.csv
+- certificado_sha256.csv
+- trilha_auditoria_temporal.csv
+- registro_protocolos_fiscal.csv
+- resumo_por_motivo.csv
+- resumo_por_arquivo.csv
+
+REGRA v4.1:
+- O Fiscal nao corrige.
+- O Fiscal nao cria calendario; apenas consulta CalendarioB3 externo.
+- Lacunas justificadas pelo calendario B3 viram informativo e nao geram ordem.
+- Horarios especiais ou cruzamento de calendario viram ressalva controlada.
+- Ordem decrescente do Profit nao derruba certificacao.
+- Informativo nao derruba certificacao.
+- Ordens sao emitidas apenas para pendencias reais.
+- IDs de ocorrencia sao persistidos em registro_protocolos_fiscal.csv.
+
+============================================================
