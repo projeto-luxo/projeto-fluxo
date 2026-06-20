@@ -11,3 +11,7 @@ node_modules/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# TRIN - memoria e historico locais fora do Git
+memoria/
+TRIN_HISTORICO/
