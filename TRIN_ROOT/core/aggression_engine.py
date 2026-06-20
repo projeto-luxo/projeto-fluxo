@@ -28,12 +28,7 @@ class AggressionEngine:
         return "FREQUÊNCIA BAIXA", "MERCADO LENTO", round(media, 2)
 
     def calcular_memoria_agressao(self, saldo_agressor, delta, volume):
-        print(
-            f"[TRIN DEBUG] "
-            f"SALDO={saldo_agressor} "
-            f"DELTA={delta} "
-            f"VOLUME={volume}"
-        )
+        
 
         self.memoria_agressao.append({
             "saldo": saldo_agressor,
@@ -60,12 +55,7 @@ class AggressionEngine:
         delta_total = ultimo["delta"]
         volume_total = ultimo["volume"]
 
-        print(
-            f"[MEMORIA AJUSTADA] "
-            f"SALDO={saldo_total} "
-            f"DELTA={delta_total} "
-            f"VOLUME={volume_total}"
-        )
+     
 
         persistencia_compra = round(
             (compras / len(self.memoria_agressao)) * 100,

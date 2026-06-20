@@ -1,0 +1,12 @@
+{
+  "pacote": "TRIN_FRONTEND_OFICIAL_INTEGRADO_8001",
+  "origem_zip": "projeto_fluxo(3).zip",
+  "origem_frontend": "projeto_fluxo/frontend",
+  "app_oficial": "frontend/src/App.js",
+  "backend_alvo": "http://127.0.0.1:8001",
+  "websocket_alvo": "ws://<host>:8001/ws",
+  "node_modules_incluido": false,
+  "motivo_node_modules": "omitido para reduzir tamanho; reconstruir com npm install",
+  "correcao": "Removido frontend/App.js da raiz. App oficial fica somente em frontend/src/App.js.",
+  "app_raiz_removido": true
+}
