@@ -1,4 +1,4 @@
-﻿// frontend/src/App.js
+// frontend/src/App.js
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
 import {
@@ -493,6 +493,34 @@ if (absorcao) {
       qtdEvidenciasConfluencia:
         evidenciasConfluencia.length,
 
+      contratoAtivo:
+        data.contrato_ativo || {},
+
+      contratoAtivoStatus:
+        data.contrato_ativo_status ||
+        data.contrato_ativo?.status_validacao ||
+        "SEM STATUS",
+
+      contratoAtivoMotivo:
+        data.contrato_ativo_motivo ||
+        data.contrato_ativo?.motivo ||
+        "",
+
+      contratoAtivoBloqueio:
+        Boolean(
+          data.contrato_ativo_bloqueio ||
+          data.contrato_ativo?.bloqueio_operacional
+        ),
+
+      contratoExcelRtd:
+        data.contrato_ativo?.contrato_excel_rtd || "-",
+
+      contratoEsperadoRtd:
+        data.contrato_ativo?.contrato_esperado_rtd || "-",
+
+      contratoResolverStatus:
+        data.contrato_ativo?.resolver_status || "-",
+
       justificativaConfluencia:
         data.justificativa_confluencia ??
         confluencia.justificativa ??
@@ -924,6 +952,14 @@ if (temEntradaReal) {
         </Box>
         <Box color={dataInfo.bloqueioCognitivo ? "#b71c1c" : "#1b5e20"}>
           FISCAL: {dataInfo.fiscalStatus || "DESCONHECIDO"}
+        </Box>
+
+        <Box color={dataInfo.contratoAtivoBloqueio ? "#7f0000" : "#263238"}>
+          CONTRATO: {dataInfo.contratoExcelRtd || "-"} | {dataInfo.contratoAtivoStatus || "SEM STATUS"}
+        </Box>
+
+        <Box color="#263238">
+          BASTIAO CONTRATO: {dataInfo.contratoResolverStatus || "-"}
         </Box>
         <Box color="#37474f">
           BERNARDO: {dataInfo.bernardoStatus || "SEM BERNARDO"} | SIM: {dataInfo.bernardoSimilaridade}

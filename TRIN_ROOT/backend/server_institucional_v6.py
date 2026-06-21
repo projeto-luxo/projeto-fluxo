@@ -24,6 +24,7 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
+from pathlib import Path
 import asyncio
 
 # ------------------------------------------------------------
@@ -68,6 +69,13 @@ from core.candle_engine import CandleEngine
 from core.aggression_engine import AggressionEngine
 from core.confluence_engine import ConfluenceEngineV2
 
+try:
+    from orchestration.contrato_ativo_resolver import ContratoAtivoResolver
+    from orchestration.bastiao_contrato_ativo import BastiaoContratoAtivo
+except ModuleNotFoundError:
+    ContratoAtivoResolver = None
+    BastiaoContratoAtivo = None
+
 app = FastAPI(
     title="TRIN FLOW PRO INSTITUCIONAL",
     version="5.9.3 + Confluence v2.2"
@@ -85,6 +93,20 @@ vwap_engine = VWAPEngine()
 candle_engine = CandleEngine()
 aggression_engine = AggressionEngine()
 motor_confluencia = ConfluenceEngineV2()
+
+TRIN_ROOT_DIR = Path(__file__).resolve().parents[1]
+CALENDARIO_CONTRATOS_B3 = TRIN_ROOT_DIR / "config" / "calendarios" / "calendario_contratos_b3.csv"
+
+try:
+    contrato_resolver = (
+        ContratoAtivoResolver(CALENDARIO_CONTRATOS_B3)
+        if ContratoAtivoResolver else None
+    )
+    bastiao_contrato = BastiaoContratoAtivo() if BastiaoContratoAtivo else None
+except Exception as erro:
+    print("[BASTIAO CONTRATO INIT ERRO]", erro)
+    contrato_resolver = None
+    bastiao_contrato = None
 
 historico = []
 preco_atual = 100.0
@@ -107,6 +129,96 @@ def _num(valor, default=0.0):
         return float(texto)
     except Exception:
         return default
+
+
+
+def _ativo_base_from_ativo(ativo):
+    texto = str(ativo or "WIN").upper().strip()
+    if len(texto) >= 3:
+        return texto[:3]
+    return "WIN"
+
+
+def _contrato_rtd_from_ativo(ativo):
+    texto = str(ativo or "").upper().strip()
+
+    if not texto:
+        return None
+
+    if texto.endswith("_F_0"):
+        return texto
+
+    return f"{texto}_F_0"
+
+
+def _validar_contrato_ativo(atual):
+    """
+    Valida contrato ativo como telemetria institucional.
+
+    Nesta fase, NAO bloqueia o painel quando calendario oficial ainda estiver vazio.
+    Bloqueio operacional so deve ser aplicado depois da homologacao B3/Bastiao.
+    """
+    contrato_excel_visual = atual.get("ativo", "WIN")
+    contrato_excel_rtd = _contrato_rtd_from_ativo(contrato_excel_visual)
+    contrato_backend_rtd = contrato_excel_rtd
+    ativo_base = _ativo_base_from_ativo(contrato_excel_visual)
+
+    base = {
+        "ativo_base": ativo_base,
+        "contrato_excel_visual": contrato_excel_visual,
+        "contrato_excel_rtd": contrato_excel_rtd,
+        "contrato_backend_rtd": contrato_backend_rtd,
+        "contrato_esperado_rtd": None,
+        "resolver_status": "NAO_EXECUTADO",
+        "status_validacao": "NAO_DISPONIVEL",
+        "motivo": "Bastiao/Resolver ainda nao disponivel no backend.",
+        "bloqueio_operacional": False,
+    }
+
+    if contrato_resolver is None or bastiao_contrato is None:
+        return base
+
+    try:
+        resolvido = contrato_resolver.resolver(ativo_base)
+    except Exception as erro:
+        base.update({
+            "resolver_status": "ERRO_RESOLVER",
+            "status_validacao": "ERRO",
+            "motivo": f"Erro ao resolver contrato ativo: {erro}",
+            "bloqueio_operacional": False,
+        })
+        return base
+
+    base.update({
+        "contrato_esperado_rtd": resolvido.contrato_rtd_esperado,
+        "contrato_esperado_visual": resolvido.contrato_visual_esperado,
+        "resolver_status": resolvido.status_resolucao,
+        "resolver_motivo": resolvido.motivo,
+        "data_referencia": resolvido.data_referencia,
+        "criterio_usado": resolvido.criterio_usado,
+    })
+
+    if resolvido.status_resolucao != "RESOLVIDO":
+        base.update({
+            "status_validacao": "AGUARDANDO_CALENDARIO_OFICIAL",
+            "motivo": resolvido.motivo,
+            "bloqueio_operacional": False,
+        })
+        return base
+
+    validacao = bastiao_contrato.validar(
+        contrato_esperado_rtd=resolvido.contrato_rtd_esperado,
+        contrato_excel_rtd=contrato_excel_rtd,
+        contrato_backend_rtd=contrato_backend_rtd,
+    )
+
+    base.update({
+        "status_validacao": validacao.status_validacao,
+        "motivo": validacao.motivo,
+        "bloqueio_operacional": validacao.bloqueio_operacional,
+    })
+
+    return base
 
 
 def gerar_candle():
@@ -213,6 +325,8 @@ def gerar_payload():
 
     anterior = historico[-2]
     atual = historico[-1]
+
+    contrato_ativo = _validar_contrato_ativo(atual)
 
     try:
        engine_data = engine.processar(atual, anterior)
@@ -466,6 +580,11 @@ def gerar_payload():
         "justificativa_confluencia": resultado_confluencia.get("justificativa"),
         "evidencias_confluencia": resultado_confluencia.get("evidencias", []),
         "bloqueio_cognitivo": resultado_confluencia.get("qualidade") == "BLOQUEADO_POR_CERTIFICACAO",
+
+        "contrato_ativo": contrato_ativo,
+        "contrato_ativo_status": contrato_ativo.get("status_validacao"),
+        "contrato_ativo_motivo": contrato_ativo.get("motivo"),
+        "contrato_ativo_bloqueio": contrato_ativo.get("bloqueio_operacional", False),
 
         **sinal_data,
     }
