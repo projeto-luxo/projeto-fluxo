@@ -122,10 +122,23 @@ def gerar_candle():
 
         # Normalizacao minima de contrato para engines e frontend.
         candle["time"] = int(_num(candle.get("time"), int(datetime.now().timestamp())))
-        candle["open"] = _num(candle.get("open", candle.get("abertura", candle.get("close", preco_atual))))
-        candle["high"] = _num(candle.get("high", candle.get("maximo", candle.get("close", preco_atual))))
-        candle["low"] = _num(candle.get("low", candle.get("minimo", candle.get("close", preco_atual))))
-        candle["close"] = _num(candle.get("close", candle.get("ultimo", preco_atual)))
+        # RTD entrega snapshot de sessao:
+        # abertura/maximo/minimo sao da sessao, nao do candle.
+        # Para o grafico em tempo real, montamos candle por variacao do ultimo preco.
+        ultimo_preco = _num(
+            candle.get("ultimo", candle.get("close", preco_atual)),
+            preco_atual
+        )
+
+        open_tick = (
+            _num(historico[-1].get("close", ultimo_preco), ultimo_preco)
+            if historico else ultimo_preco
+        )
+
+        candle["open"] = round(open_tick, 2)
+        candle["high"] = round(max(open_tick, ultimo_preco), 2)
+        candle["low"] = round(min(open_tick, ultimo_preco), 2)
+        candle["close"] = round(ultimo_preco, 2)
         candle["volume"] = _num(candle.get("volume"), 0)
         candle["delta"] = _num(candle.get("delta"), 0)
         candle["saldo"] = _num(candle.get("saldo", candle.get("saldo_agressor")), 0)
