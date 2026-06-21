@@ -15,3 +15,6 @@ Thumbs.db
 # TRIN - memoria e historico locais fora do Git
 memoria/
 TRIN_HISTORICO/
+
+# TRIN - planilha viva RTD local fora do Git
+MARCO_ZERO_INSTITUCIONAL.xlsx
