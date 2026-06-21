@@ -43,3 +43,33 @@ Histórico 1_MIN, Registro Oficial de Fractais, padrões da governança.
 ## Auditoria obrigatória
 
 Todo uso estrutural deste contrato deve passar por checklist de teste e Auditoria HARD.
+
+---
+
+## Atualizacao de governanca — 2026-06-21
+
+### Classificacao atual
+HOMOLOGADO PARA INTEGRACAO
+
+### Observacao
+Ze do Eucrazio permanece como engenheiro temporal responsavel por gerar fractais deterministicos a partir da base oficial.
+
+### Responsabilidade preservada
+Ze gera reconstrucoes temporais/fractais padronizados e rastreaveis.
+
+### Relacao com Fiscal Temporal
+Ze nao certifica integridade final.
+A certificacao temporal definitiva permanece responsabilidade do Fiscal Temporal.
+
+### O que permanece proibido
+- Certificar dados finais.
+- Gerar sinais operacionais.
+- Substituir o Fiscal Temporal.
+- Alterar dados brutos originais.
+- Atualizar Bernardo sem certificacao adequada.
+
+### Ressalvas
+- Aprovado em teste controlado.
+- Homologado para integracao com Fiscal Temporal.
+- Nao congelado definitivamente.
+- Auditoria HARD final ainda pendente.

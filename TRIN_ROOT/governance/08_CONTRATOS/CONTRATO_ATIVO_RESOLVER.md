@@ -90,3 +90,48 @@ O Bastiao certifica.
 O Atualizador Excel aplica.
 O Leitor RTD le.
 O Painel exibe.
+
+---
+
+## Atualizacao de governanca — 2026-06-21
+
+### Classificacao atual
+APROVADO COM RESSALVAS
+
+### Observacao
+ContratoAtivoResolver foi criado, testado e integrado ao Bastiao para resolver o contrato ativo esperado com base no calendario B3 de contratos.
+
+### Responsabilidade preservada
+Resolver qual contrato futuro deveria estar ativo em uma data operacional, sem alterar Excel, sem ler Profit diretamente e sem liberar operacao.
+
+### Resultado observado
+O resolvedor identificou corretamente:
+
+- 2026-06-17 -> WINM26_F_0
+- 2026-06-18 -> WINQ26_F_0
+- 2026-06-21 -> WINQ26_F_0
+- 2026-08-13 -> WINV26_F_0
+
+### Integracao atual
+Fluxo integrado:
+
+Calendario B3
+-> ContratoAtivoResolver
+-> Bastiao valida
+-> Backend entrega
+-> Painel exibe
+
+### O que permanece proibido
+- Alterar Excel.
+- Trocar formulas RTD.
+- Ler Profit diretamente.
+- Decidir entrada operacional.
+- Gerar sinal.
+- Substituir Bastiao.
+- Inventar calendario quando fonte oficial estiver ausente.
+
+### Ressalvas
+- Calendario de feriados/sessoes B3 ainda nao integrado.
+- Auditoria HARD pendente.
+- Termo de homologacao pendente.
+- Deve continuar recusando calendario ausente, incompleto ou fora de cobertura.

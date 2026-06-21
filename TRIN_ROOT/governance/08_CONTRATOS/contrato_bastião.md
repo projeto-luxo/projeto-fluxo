@@ -41,3 +41,25 @@ Todos os módulos, GOVERNANCA_TRIN e relatórios de auditoria.
 ## Auditoria obrigatória
 
 Todo uso estrutural deste contrato deve passar por checklist de teste e Auditoria HARD.
+
+---
+
+## Atualizacao de governanca — 2026-06-21
+
+### Classificacao atual
+EM PROJETO / COM ADENDO APROVADO COM RESSALVAS
+
+### Adendo vinculado
+ADENDO_BASTIAO_CONTRATO_ATIVO.md
+
+### Observacao
+O Bastiao permanece como modulo de governanca e supervisao arquitetural.
+
+A validacao de contrato ativo foi registrada como adendo especifico, sem alterar a responsabilidade principal deste contrato.
+
+O Bastiao nao troca formulas RTD, nao le Profit diretamente, nao executa ordem e nao toma decisao operacional.
+
+### Ressalvas
+- Auditoria HARD pendente.
+- Termo de homologacao pendente.
+- Bloqueio operacional real ainda deve ser tratado com cautela.

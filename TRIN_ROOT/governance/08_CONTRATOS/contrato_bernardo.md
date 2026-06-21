@@ -41,3 +41,30 @@ Biblioteca Histórica, Fiscal Temporal, Zé do Eucrázio, Gravador, curadorias e
 ## Auditoria obrigatória
 
 Todo uso estrutural deste contrato deve passar por checklist de teste e Auditoria HARD.
+
+---
+
+## Atualizacao de governanca — 2026-06-21
+
+### Classificacao atual
+CONGELADO ARQUITETURALMENTE
+
+### Observacao
+Bernardo permanece como camada oficial de persistencia cognitiva e organizacao da memoria do TRIN.
+
+Consumidores futuros devem acessar memoria por fluxo oficial/API do Bernardo, e nao por leitura direta de CSV bruto.
+
+### Responsabilidade preservada
+Bernardo organiza, protege, cataloga e fornece memoria validada.
+
+### O que permanece proibido
+- Gerar fractais.
+- Certificar tempo no lugar do Fiscal Temporal.
+- Produzir sinais operacionais.
+- Substituir o Historiador.
+- Permitir consumo direto de CSV bruto por inteligencias futuras.
+
+### Ressalvas
+- Integracoes futuras devem respeitar DA-001.
+- Toda nova leitura de memoria deve passar pela camada oficial Bernardo/API do Bernardo.
+- Auditorias futuras devem verificar se nenhum modulo esta burlando Bernardo.
