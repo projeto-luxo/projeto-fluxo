@@ -512,6 +512,21 @@ if (absorcao) {
           data.contrato_ativo?.bloqueio_operacional
         ),
 
+      painelTemporal: data.painel_temporal || {},
+      painelRegua:
+        data.painel_temporal?.regua_painel ||
+        data.painel_temporal?.tipo_candle ||
+        "DESCONHECIDA",
+      painelTimeframe:
+        data.painel_temporal?.timeframe_painel ||
+        "DESCONHECIDO",
+      painelOrigemTemporal:
+        data.painel_temporal?.origem ||
+        "DESCONHECIDA",
+      painelFractalOficial:
+        data.painel_temporal?.fractal_oficial ||
+        "NAO_INFORMADO",
+
       contratoExcelRtd:
         data.contrato_ativo?.contrato_excel_rtd || "-",
 
@@ -960,6 +975,12 @@ if (temEntradaReal) {
 
         <Box color="#263238">
           BASTIAO CONTRATO: {dataInfo.contratoResolverStatus || "-"}
+        </Box>
+        <Box color="#37474f">
+          REGUA PAINEL: {dataInfo.painelRegua || "DESCONHECIDA"}
+        </Box>
+        <Box color="#37474f">
+          TIMEFRAME PAINEL: {dataInfo.painelTimeframe || "DESCONHECIDO"}
         </Box>
         <Box color="#37474f">
           BERNARDO: {dataInfo.bernardoStatus || "SEM BERNARDO"} | SIM: {dataInfo.bernardoSimilaridade}

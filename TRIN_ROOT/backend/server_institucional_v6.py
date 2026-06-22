@@ -581,6 +581,16 @@ def gerar_payload():
         "evidencias_confluencia": resultado_confluencia.get("evidencias", []),
         "bloqueio_cognitivo": resultado_confluencia.get("qualidade") == "BLOQUEADO_POR_CERTIFICACAO",
 
+        "painel_temporal": {
+            "origem": "RTD_EXCEL_SNAPSHOT",
+            "tipo_candle": "CANDLE_OPERACIONAL_TEMPO_REAL",
+            "regua_painel": "SNAPSHOT_RTD",
+            "timeframe_painel": "TEMPO_REAL_NAO_HOMOLOGADO",
+            "fractal_oficial": "NAO_APLICAVEL",
+            "profit_timeframe_visual": "NAO_INTEGRADO",
+            "observacao": "Painel TRIN usa snapshot RTD/Excel em tempo real; nao representa automaticamente o timeframe visual do Profit nem fractal certificado do Ze."
+        },
+
         "contrato_ativo": contrato_ativo,
         "contrato_ativo_status": contrato_ativo.get("status_validacao"),
         "contrato_ativo_motivo": contrato_ativo.get("motivo"),
