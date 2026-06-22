@@ -9,9 +9,9 @@ try:
 except ImportError:
     from intelligence.calendario_b3 import CalendarioB3
 # ============================================================
-# FISCAL TEMPORAL v4.2 — CARTÓRIO TEMPORAL DO TRIN
+# FISCAL TEMPORAL v4.2.1 — CARTÓRIO TEMPORAL DO TRIN
 #
-# BASEADO NO v4.1 ATUAL.
+# BASEADO NO v4.2 COM PATCH CONTROLADO v4.2.1.
 #
 # MELHORIAS v4.2:
 # - ID de ocorrência estável e persistente
@@ -272,6 +272,7 @@ def salvar_protocolos():
     )
 
 
+
 def definir_criticidade(motivo):
     criticas = {
         "TIMESTAMP_DUPLICADO",
@@ -288,6 +289,8 @@ def definir_criticidade(motivo):
         "LACUNA_CANDLE_AUSENTE",
         "VOLUME_NEGATIVO",
         "ERRO_LEITURA",
+        "CALENDARIO_B3_INDISPONIVEL",
+        "LACUNA_LONGA_SEM_CALENDARIO",
     }
 
     medias = {
@@ -304,6 +307,7 @@ def definir_criticidade(motivo):
         "LACUNA_JUSTIFICADA_FIM_DE_SEMANA",
         "LACUNA_JUSTIFICADA_FERIADO_B3",
         "LACUNA_JUSTIFICADA_CALENDARIO_B3",
+        "LACUNA_LONGA_ENTRE_SESSOES",
     }
 
     if motivo in criticas:
@@ -327,6 +331,9 @@ def definir_dependencia(motivo, responsavel):
 
     if responsavel == "ZE_DO_EUCRAZIO":
         return "ZE_REGENERAR_OU_RECALCULAR -> FISCAL_RECERTIFICAR"
+
+    if responsavel == "OPERADOR_CALENDARIO_B3":
+        return "OPERADOR_ATUALIZAR_CALENDARIO_B3 -> FISCAL_RECERTIFICAR"
 
     return "NENHUMA"
 
@@ -399,7 +406,7 @@ def criar_ocorrencia(
         "dependencia": definir_dependencia(motivo, responsavel),
         "certificacao": certificacao,
         "data_emissao": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-        "fiscal_temporal": "v4.2",
+        "fiscal_temporal": "v4.2.1",
     }
 
 
@@ -496,7 +503,7 @@ def avaliar_lacuna_com_calendario(inicio, fim, minutos):
             "responsavel": None,
             "acao": None,
             "certificacao": None,
-            "justificativa": "Calendario B3 indisponivel. Fiscal aplicara regra conservadora v4.1.",
+            "justificativa": "Calendario B3 indisponivel. Fiscal aplicara regra conservadora v4.2.1.",
         }
 
     datas = intervalo_datas(inicio, fim)
@@ -590,6 +597,7 @@ def avaliar_lacuna_com_calendario(inicio, fim, minutos):
 
 
 
+
 def classificar_lacunas(timestamps, minutos, arquivo, caminho, respostas):
     ts = timestamps.dropna().sort_values()
 
@@ -612,31 +620,102 @@ def classificar_lacunas(timestamps, minutos, arquivo, caminho, respostas):
             continue
 
         horas = segundos / 3600
-
-        # Lacunas muito longas representam virada de sessão,
-        # fim de semana, corte de arquivo ou troca natural de período.
-        # O Fiscal NÃO deve gerar milhares de ressalvas por isso.
-        if horas >= 12:
-            anterior = atual
-            continue
-
         contexto = avaliar_lacuna_com_calendario(anterior, atual, minutos)
 
         inicio_txt = anterior.strftime("%d/%m/%Y %H:%M:%S")
         fim_txt = atual.strftime("%d/%m/%Y %H:%M:%S")
 
-        # Lacuna justificada pelo calendário: registra como contexto interno
-        # do Fiscal, mas não derruba certificação nem gera ordem.
-        if contexto["status"] == "INFORMATIVO":
+        # Calendario indisponivel: nao jogar culpa em Bernardo ou Ze.
+        if contexto.get("tem_calendario") is False:
+            motivo = "LACUNA_LONGA_SEM_CALENDARIO" if horas >= 12 else "CALENDARIO_B3_INDISPONIVEL"
+            descricao = (
+                f"Lacuna de {horas:.2f} horas entre {inicio_txt} e {fim_txt}. "
+                "Calendario B3 indisponivel; nao e possivel concluir se a lacuna e de mercado, sessao ou arquivo."
+            )
+
+            lacunas.append(criar_ocorrencia(
+                arquivo,
+                caminho,
+                "APROVADO_COM_RESSALVAS",
+                motivo,
+                descricao,
+                "OPERADOR_CALENDARIO_B3",
+                "CARREGAR_OU_CORRIGIR_CALENDARIO_B3",
+                "PENDENTE_DE_INFRAESTRUTURA",
+                respostas
+            ))
+
             anterior = atual
             continue
 
-        # Contextos especiais do calendário só viram ressalva se forem lacunas
-        # curtas, porque lacunas longas já foram ignoradas acima.
-        if contexto["status"] == "APROVADO_COM_RESSALVAS" and horas < 2:
+        # Lacunas longas agora deixam trilha cartorial, sem virar ordem quando justificadas.
+        if horas >= 12:
+            if contexto.get("status") == "INFORMATIVO":
+                descricao = (
+                    f"Lacuna longa de {horas:.2f} horas entre {inicio_txt} e {fim_txt}. "
+                    f"{contexto.get('justificativa', '')}"
+                )
+
+                lacunas.append(criar_ocorrencia(
+                    arquivo,
+                    caminho,
+                    "INFORMATIVO",
+                    contexto.get("motivo") or "LACUNA_LONGA_ENTRE_SESSOES",
+                    descricao,
+                    contexto.get("responsavel") or "CALENDARIO_B3",
+                    contexto.get("acao") or "NENHUMA_ACAO_OPERACIONAL",
+                    contexto.get("certificacao") or "JUSTIFICADA",
+                    respostas
+                ))
+
+            else:
+                descricao = (
+                    f"Lacuna longa de {horas:.2f} horas entre {inicio_txt} e {fim_txt}. "
+                    "Registrada como contexto temporal longo entre sessoes/arquivos."
+                )
+
+                lacunas.append(criar_ocorrencia(
+                    arquivo,
+                    caminho,
+                    "INFORMATIVO",
+                    "LACUNA_LONGA_ENTRE_SESSOES",
+                    descricao,
+                    "CALENDARIO_B3",
+                    "NENHUMA_ACAO_OPERACIONAL",
+                    "JUSTIFICADA_COM_RESSALVA",
+                    respostas
+                ))
+
+            anterior = atual
+            continue
+
+        # Lacuna justificada pelo calendario: registra, mas nao derruba certificacao nem gera ordem.
+        if contexto.get("status") == "INFORMATIVO":
             descricao = (
                 f"Lacuna de {horas:.2f} horas entre {inicio_txt} e {fim_txt}. "
-                f"{contexto['justificativa']}"
+                f"{contexto.get('justificativa', '')}"
+            )
+
+            lacunas.append(criar_ocorrencia(
+                arquivo,
+                caminho,
+                "INFORMATIVO",
+                contexto.get("motivo") or "LACUNA_JUSTIFICADA_CALENDARIO_B3",
+                descricao,
+                contexto.get("responsavel") or "CALENDARIO_B3",
+                contexto.get("acao") or "NENHUMA_ACAO_OPERACIONAL",
+                contexto.get("certificacao") or "JUSTIFICADA",
+                respostas
+            ))
+
+            anterior = atual
+            continue
+
+        # Contextos especiais do calendario viram ressalva controlada se forem lacunas curtas.
+        if contexto.get("status") == "APROVADO_COM_RESSALVAS" and horas < 2:
+            descricao = (
+                f"Lacuna de {horas:.2f} horas entre {inicio_txt} e {fim_txt}. "
+                f"{contexto.get('justificativa', '')}"
             )
 
             lacunas.append(criar_ocorrencia(
@@ -654,11 +733,11 @@ def classificar_lacunas(timestamps, minutos, arquivo, caminho, respostas):
             anterior = atual
             continue
 
-        # Lacuna média: possível corte de sessão/arquivo.
+        # Lacuna media: possivel corte de sessao/arquivo.
         if horas >= 2:
             descricao = (
                 f"Lacuna de {horas:.2f} horas entre {inicio_txt} e {fim_txt}. "
-                "Janela sensível. Pode indicar corte de sessão ou arquivo."
+                "Janela sensivel. Pode indicar corte de sessao ou arquivo."
             )
 
             lacunas.append(criar_ocorrencia(
@@ -673,11 +752,11 @@ def classificar_lacunas(timestamps, minutos, arquivo, caminho, respostas):
                 respostas
             ))
 
-        # Lacuna curta: possível candle ausente dentro do pregão/fractal.
+        # Lacuna curta: possivel candle ausente dentro do pregao/fractal.
         else:
             descricao = (
                 f"Lacuna de {horas:.2f} horas entre {inicio_txt} e {fim_txt}. "
-                "Possível candle ausente dentro da sequência temporal."
+                "Possivel candle ausente dentro da sequencia temporal."
             )
 
             lacunas.append(criar_ocorrencia(
@@ -695,6 +774,7 @@ def classificar_lacunas(timestamps, minutos, arquivo, caminho, respostas):
         anterior = atual
 
     return lacunas
+
 
 def analisar_arquivo(caminho, pasta, respostas):
     tipo_fractal, minutos = detectar_tipo_fractal(pasta, caminho.name)
@@ -1001,7 +1081,7 @@ def salvar_resumos(registros, ocorrencias):
 
 def main():
     print("\n" + "=" * 70)
-    print("FISCAL TEMPORAL v4.2 - CARTORIO TEMPORAL DO TRIN")
+    print("FISCAL TEMPORAL v4.2.1 - CARTORIO TEMPORAL DO TRIN")
     print("=" * 70)
 
     if not BASE_PATH.exists():
@@ -1065,7 +1145,7 @@ def main():
                 "status": r["status"],
                 "certificacao": r["certificacao"],
                 "data_certificacao": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                "fiscal_temporal": "v4.2",
+                "fiscal_temporal": "v4.2.1",
             }
             for r in registros
         ],
@@ -1076,14 +1156,14 @@ def main():
     for o in ocorrencias:
         trilha.append({
             "id_ocorrencia": o["id_ocorrencia"],
-            "evento": "ORDEM_EMITIDA",
+            "evento": "CONTEXTO_REGISTRADO" if o["status_certificacao"] == "INFORMATIVO" else "ORDEM_EMITIDA",
             "arquivo": o["arquivo"],
             "responsavel": o["responsavel"],
             "status_ordem": o["status_ordem"],
             "criticidade": o["criticidade"],
             "motivo": o["motivo"],
             "data_evento": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-            "fiscal_temporal": "v4.2",
+            "fiscal_temporal": "v4.2.1",
         })
 
     salvar_csv(trilha, ARQUIVO_TRILHA)
@@ -1110,7 +1190,7 @@ def main():
 
     laudo = f"""
 ============================================================
-FISCAL TEMPORAL v4.2 - LAUDO OFICIAL
+FISCAL TEMPORAL v4.2.1 - LAUDO OFICIAL
 ============================================================
 
 Data/hora: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
@@ -1141,7 +1221,7 @@ ARQUIVOS GERADOS:
 - resumo_por_motivo.csv
 - resumo_por_arquivo.csv
 
-REGRA v4.1:
+REGRA v4.2.1:
 - O Fiscal nao corrige.
 - O Fiscal nao cria calendario; apenas consulta CalendarioB3 externo.
 - Lacunas justificadas pelo calendario B3 viram informativo e nao geram ordem.
@@ -1157,7 +1237,7 @@ REGRA v4.1:
     ARQUIVO_LAUDO.write_text(laudo, encoding="utf-8")
 
     print("\n" + "=" * 70)
-    print("RESUMO FISCAL TEMPORAL v4.2")
+    print("RESUMO FISCAL TEMPORAL v4.2.1")
     print("=" * 70)
     print(f"Arquivos analisados     : {total}")
     print(f"Certificados            : {certificados}")
