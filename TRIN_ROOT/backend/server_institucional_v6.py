@@ -109,6 +109,31 @@ except Exception as erro:
     bastiao_contrato = None
 
 historico = []
+
+# ============================================================
+# CONFIGURACAO DE TIMEFRAME DO PAINEL
+# Etapa 1: apenas registra opcoes e endpoint.
+# Ainda nao altera o historico do grafico.
+# Uso atual previsto: 15s ate 60_MIN.
+# DIARIO e SEMANAL reservados por governanca.
+# ============================================================
+
+painel_timeframe_atual = "2_MIN"
+
+TIMEFRAMES_PAINEL_SEGUNDOS = {
+    "15s": 15,
+    "30s": 30,
+    "1_MIN": 60,
+    "2_MIN": 120,
+    "5_MIN": 300,
+    "10_MIN": 600,
+    "15_MIN": 900,
+    "30_MIN": 1800,
+    "60_MIN": 3600,
+}
+
+TIMEFRAMES_PAINEL_RESERVADOS = ["DIARIO", "SEMANAL"]
+
 preco_atual = 100.0
 
 ultima_explosao_tipo = "SEM EXPLOSÃO"
@@ -275,6 +300,42 @@ def gerar_candle():
         }
 
         return candle
+
+
+def normalizar_timeframe_painel(valor):
+    texto = str(valor or "").strip().upper().replace(" ", "").replace("-", "_")
+
+    aliases = {
+        "15S": "15s",
+        "30S": "30s",
+        "1M": "1_MIN",
+        "1MIN": "1_MIN",
+        "1_MIN": "1_MIN",
+        "2M": "2_MIN",
+        "2MIN": "2_MIN",
+        "2_MIN": "2_MIN",
+        "5M": "5_MIN",
+        "5MIN": "5_MIN",
+        "5_MIN": "5_MIN",
+        "10M": "10_MIN",
+        "10MIN": "10_MIN",
+        "10_MIN": "10_MIN",
+        "15M": "15_MIN",
+        "15MIN": "15_MIN",
+        "15_MIN": "15_MIN",
+        "30M": "30_MIN",
+        "30MIN": "30_MIN",
+        "30_MIN": "30_MIN",
+        "60M": "60_MIN",
+        "60MIN": "60_MIN",
+        "60_MIN": "60_MIN",
+        "DIARIO": "DIARIO",
+        "D": "DIARIO",
+        "SEMANAL": "SEMANAL",
+        "W": "SEMANAL",
+    }
+
+    return aliases.get(texto)
 
 
 def atualizar_historico():
@@ -635,6 +696,51 @@ def gerar_payload():
     }
 
     return payload
+
+
+
+@app.get("/painel/timeframes")
+async def painel_timeframes():
+    return {
+        "timeframe_atual": painel_timeframe_atual,
+        "operacionais": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()),
+        "reservados": TIMEFRAMES_PAINEL_RESERVADOS,
+        "disponiveis": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()) + TIMEFRAMES_PAINEL_RESERVADOS,
+        "status": "ETAPA_1_ENDPOINTS_SEM_AGREGACAO",
+    }
+
+
+@app.get("/painel/timeframe/{timeframe}")
+async def alterar_timeframe_painel(timeframe: str):
+    global painel_timeframe_atual
+
+    normalizado = normalizar_timeframe_painel(timeframe)
+
+    if normalizado in TIMEFRAMES_PAINEL_RESERVADOS:
+        return {
+            "ok": False,
+            "timeframe_solicitado": timeframe,
+            "timeframe_normalizado": normalizado,
+            "status": "BLOQUEADO_POR_GOVERNANCA",
+            "motivo": "DIARIO e SEMANAL estao planejados, mas ainda nao homologados para uso atual.",
+        }
+
+    if normalizado not in TIMEFRAMES_PAINEL_SEGUNDOS:
+        return {
+            "ok": False,
+            "timeframe_solicitado": timeframe,
+            "status": "TIMEFRAME_INVALIDO",
+            "permitidos": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()) + TIMEFRAMES_PAINEL_RESERVADOS,
+        }
+
+    painel_timeframe_atual = normalizado
+
+    return {
+        "ok": True,
+        "timeframe_painel_configurado": painel_timeframe_atual,
+        "status": "CONFIGURADO_SEM_AGREGACAO_AINDA",
+        "observacao": "Etapa 1 concluida. O grafico ainda nao foi alterado.",
+    }
 
 
 @app.get("/data")
