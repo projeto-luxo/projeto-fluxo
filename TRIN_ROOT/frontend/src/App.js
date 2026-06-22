@@ -526,6 +526,15 @@ if (absorcao) {
       painelFractalOficial:
         data.painel_temporal?.fractal_oficial ||
         "NAO_INFORMADO",
+      painelStatus:
+        data.painel_temporal?.status_painel ||
+        "DESCONHECIDO",
+      painelTimeframesDisponiveis:
+        data.painel_temporal?.timeframes_disponiveis ||
+        ["15s", "30s", "1_MIN", "2_MIN", "5_MIN", "10_MIN", "15_MIN", "30_MIN", "60_MIN", "DIARIO", "SEMANAL"],
+      painelTimeframesReservados:
+        data.painel_temporal?.timeframes_reservados ||
+        ["DIARIO", "SEMANAL"],
 
       contratoExcelRtd:
         data.contrato_ativo?.contrato_excel_rtd || "-",
@@ -853,6 +862,39 @@ if (temEntradaReal) {
     };
   }, [processarDados]);
 
+  async function alterarTimeframePainel(timeframe) {
+    try {
+      const resposta = await fetch(`http://127.0.0.1:8001/painel/timeframe/${timeframe}`);
+      const resultado = await resposta.json();
+
+      if (!resultado.ok) {
+        alert(`${resultado.status || "TIMEFRAME_NAO_APLICADO"}: ${resultado.motivo || "Timeframe nao liberado."}`);
+        return;
+      }
+
+      carregouHistoricoRef.current = false;
+
+      if (candleSeriesRef.current) {
+        candleSeriesRef.current.setData([]);
+      }
+
+      if (vwapLineRef.current) {
+        vwapLineRef.current.setData([]);
+      }
+
+      if (vwapSuperiorRef.current) {
+        vwapSuperiorRef.current.setData([]);
+      }
+
+      if (vwapInferiorRef.current) {
+        vwapInferiorRef.current.setData([]);
+      }
+    } catch (erro) {
+      console.error("Erro ao alterar timeframe do painel:", erro);
+      alert("Erro ao alterar timeframe do painel.");
+    }
+  }
+
   const statusVisual = dataInfo.volume !== undefined ? "ONLINE" : wsStatus;
 
   const scoreAgressao = Number(dataInfo.scoreAgressao || 0);
@@ -981,6 +1023,29 @@ if (temEntradaReal) {
         </Box>
         <Box color="#37474f">
           TIMEFRAME PAINEL: {dataInfo.painelTimeframe || "DESCONHECIDO"}
+        </Box>
+        <Box color="#263238">
+          SELETOR TIMEFRAME PAINEL:
+          <select
+            value={dataInfo.painelTimeframe || "2_MIN"}
+            onChange={(e) => alterarTimeframePainel(e.target.value)}
+            style={{
+              width: "100%",
+              marginTop: "6px",
+              padding: "6px",
+              borderRadius: "6px",
+              background: "#071923",
+              color: "#ffffff",
+              border: "1px solid #00d9ff",
+              fontWeight: "bold"
+            }}
+          >
+            {(dataInfo.painelTimeframesDisponiveis || ["15s", "30s", "1_MIN", "2_MIN", "5_MIN", "10_MIN", "15_MIN", "30_MIN", "60_MIN", "DIARIO", "SEMANAL"]).map((tf) => (
+              <option key={tf} value={tf}>
+                {tf}{(dataInfo.painelTimeframesReservados || []).includes(tf) ? " ? RESERVADO" : ""}
+              </option>
+            ))}
+          </select>
         </Box>
         <Box color="#37474f">
           BERNARDO: {dataInfo.bernardoStatus || "SEM BERNARDO"} | SIM: {dataInfo.bernardoSimilaridade}
