@@ -134,6 +134,9 @@ TIMEFRAMES_PAINEL_SEGUNDOS = {
 
 TIMEFRAMES_PAINEL_RESERVADOS = ["DIARIO", "SEMANAL"]
 
+MAX_HISTORICO_RAW = 7200
+MAX_HISTORICO_PAINEL = 300
+
 preco_atual = 100.0
 
 ultima_explosao_tipo = "SEM EXPLOSÃO"
@@ -338,6 +341,83 @@ def normalizar_timeframe_painel(valor):
     return aliases.get(texto)
 
 
+def _bucket_time_painel(timestamp, timeframe):
+    segundos = TIMEFRAMES_PAINEL_SEGUNDOS.get(timeframe)
+    if not segundos:
+        return None
+
+    try:
+        t = int(float(timestamp))
+    except Exception:
+        return None
+
+    return int(t // segundos) * segundos
+
+
+def agregar_historico_painel(historico_raw, timeframe):
+    """
+    Agrega snapshots RTD/Excel em candles operacionais para visualizacao do painel.
+    Nao substitui o historico raw usado pelo motor.
+    Nao gera fractal oficial.
+    Nao certifica candle.
+    """
+    if timeframe in TIMEFRAMES_PAINEL_RESERVADOS:
+        return []
+
+    if timeframe not in TIMEFRAMES_PAINEL_SEGUNDOS:
+        return []
+
+    agregados = {}
+
+    for candle in historico_raw:
+        bucket = _bucket_time_painel(candle.get("time"), timeframe)
+        if bucket is None:
+            continue
+
+        if bucket not in agregados:
+            novo = dict(candle)
+            novo["time"] = bucket
+            novo["timeframe_painel"] = timeframe
+            novo["regua_painel"] = "RTD_AGREGADO"
+            novo["status_painel"] = "OPERACIONAL_NAO_CERTIFICADO"
+            agregados[bucket] = novo
+            continue
+
+        atual = agregados[bucket]
+
+        atual["high"] = max(
+            _num(atual.get("high"), candle.get("high")),
+            _num(candle.get("high"), candle.get("high")),
+        )
+        atual["low"] = min(
+            _num(atual.get("low"), candle.get("low")),
+            _num(candle.get("low"), candle.get("low")),
+        )
+        atual["close"] = candle.get("close")
+        atual["volume"] = candle.get("volume")
+        atual["timeframe_painel"] = timeframe
+        atual["regua_painel"] = "RTD_AGREGADO"
+        atual["status_painel"] = "OPERACIONAL_NAO_CERTIFICADO"
+
+        for chave in [
+            "volume_real",
+            "delta",
+            "saldo",
+            "ativo",
+            "vwap_real",
+            "volume_compra",
+            "volume_venda",
+            "volume_saldo",
+            "reversao_detectada",
+            "explosao_detectada",
+            "tipo_explosao",
+        ]:
+            if chave in candle:
+                atual[chave] = candle[chave]
+
+    return list(agregados.values())[-MAX_HISTORICO_PAINEL:]
+
+
 def atualizar_historico():
     candle = gerar_candle()
 
@@ -382,7 +462,7 @@ def atualizar_historico():
 
     historico.append(candle)
 
-    if len(historico) > 100:
+    if len(historico) > MAX_HISTORICO_RAW:
         historico.pop(0)
 
     return candle
@@ -651,7 +731,7 @@ def gerar_payload():
     )
 
     payload = {
-        "historico": historico,
+        "historico": agregar_historico_painel(historico, painel_timeframe_atual) or historico,
         "engine": engine_data,
 
         "vwap": vwap,
@@ -678,13 +758,17 @@ def gerar_payload():
         "bloqueio_cognitivo": resultado_confluencia.get("qualidade") == "BLOQUEADO_POR_CERTIFICACAO",
 
         "painel_temporal": {
-            "origem": "RTD_EXCEL_SNAPSHOT",
-            "tipo_candle": "CANDLE_OPERACIONAL_TEMPO_REAL",
-            "regua_painel": "SNAPSHOT_RTD",
-            "timeframe_painel": "TEMPO_REAL_NAO_HOMOLOGADO",
+            "origem": "RTD_EXCEL_AGREGADO",
+            "tipo_candle": "CANDLE_OPERACIONAL_INTRADAY",
+            "regua_painel": "RTD_AGREGADO",
+            "timeframe_painel": painel_timeframe_atual,
+            "status_painel": "OPERACIONAL_NAO_CERTIFICADO",
             "fractal_oficial": "NAO_APLICAVEL",
             "profit_timeframe_visual": "NAO_INTEGRADO",
-            "observacao": "Painel TRIN usa snapshot RTD/Excel em tempo real; nao representa automaticamente o timeframe visual do Profit nem fractal certificado do Ze."
+            "timeframes_operacionais": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()),
+            "timeframes_reservados": TIMEFRAMES_PAINEL_RESERVADOS,
+            "timeframes_disponiveis": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()) + TIMEFRAMES_PAINEL_RESERVADOS,
+            "observacao": "Painel TRIN agrega snapshot RTD/Excel para visualizacao. Uso atual liberado ate 60_MIN. DIARIO e SEMANAL permanecem reservados por governanca."
         },
 
         "contrato_ativo": contrato_ativo,
@@ -706,7 +790,7 @@ async def painel_timeframes():
         "operacionais": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()),
         "reservados": TIMEFRAMES_PAINEL_RESERVADOS,
         "disponiveis": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()) + TIMEFRAMES_PAINEL_RESERVADOS,
-        "status": "ETAPA_1_ENDPOINTS_SEM_AGREGACAO",
+        "status": "OPERACIONAL_ATE_60_MIN",
     }
 
 
@@ -738,8 +822,8 @@ async def alterar_timeframe_painel(timeframe: str):
     return {
         "ok": True,
         "timeframe_painel_configurado": painel_timeframe_atual,
-        "status": "CONFIGURADO_SEM_AGREGACAO_AINDA",
-        "observacao": "Etapa 1 concluida. O grafico ainda nao foi alterado.",
+        "status": "OPERACIONAL_NAO_CERTIFICADO",
+        "observacao": "Timeframe configurado. Grafico passa a usar agregacao operacional nao certificada.",
     }
 
 
