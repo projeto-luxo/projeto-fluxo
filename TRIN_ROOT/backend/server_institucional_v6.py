@@ -284,6 +284,41 @@ def atualizar_historico():
     candle["reversao_detectada"] = candle_engine.calcular_reversao()
 
     vwap_engine.adicionar_candle(candle)
+    # Regra v6.1: nao duplicar timestamp no historico do painel.
+    # O painel usa snapshot RTD/Excel em tempo real; se houver nova leitura no mesmo segundo,
+    # atualiza o candle atual em vez de criar outro candle com o mesmo time.
+    if historico and historico[-1].get("time") == candle.get("time"):
+        ultimo = historico[-1]
+
+        ultimo["high"] = max(
+            _num(ultimo.get("high"), candle.get("high")),
+            _num(candle.get("high"), candle.get("high"))
+        )
+        ultimo["low"] = min(
+            _num(ultimo.get("low"), candle.get("low")),
+            _num(candle.get("low"), candle.get("low"))
+        )
+        ultimo["close"] = candle.get("close")
+        ultimo["volume"] = candle.get("volume")
+
+        for chave in [
+            "volume_real",
+            "delta",
+            "saldo",
+            "ativo",
+            "vwap_real",
+            "volume_compra",
+            "volume_venda",
+            "volume_saldo",
+            "reversao_detectada",
+            "explosao_detectada",
+            "tipo_explosao",
+        ]:
+            if chave in candle:
+                ultimo[chave] = candle[chave]
+
+        return ultimo
+
     historico.append(candle)
 
     if len(historico) > 100:
