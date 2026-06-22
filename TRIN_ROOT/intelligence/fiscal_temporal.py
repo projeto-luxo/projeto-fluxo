@@ -9,9 +9,9 @@ try:
 except ImportError:
     from intelligence.calendario_b3 import CalendarioB3
 # ============================================================
-# FISCAL TEMPORAL v4.2.1 — CARTÓRIO TEMPORAL DO TRIN
+# FISCAL TEMPORAL v4.2.2 — CARTÓRIO TEMPORAL DO TRIN
 #
-# BASEADO NO v4.2 COM PATCH CONTROLADO v4.2.1.
+# BASEADO NO v4.2 COM PATCH CONTROLADO v4.2.2.
 #
 # MELHORIAS v4.2:
 # - ID de ocorrência estável e persistente
@@ -406,7 +406,7 @@ def criar_ocorrencia(
         "dependencia": definir_dependencia(motivo, responsavel),
         "certificacao": certificacao,
         "data_emissao": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-        "fiscal_temporal": "v4.2.1",
+        "fiscal_temporal": "v4.2.2",
     }
 
 
@@ -503,7 +503,7 @@ def avaliar_lacuna_com_calendario(inicio, fim, minutos):
             "responsavel": None,
             "acao": None,
             "certificacao": None,
-            "justificativa": "Calendario B3 indisponivel. Fiscal aplicara regra conservadora v4.2.1.",
+            "justificativa": "Calendario B3 indisponivel. Fiscal aplicara regra conservadora v4.2.2.",
         }
 
     datas = intervalo_datas(inicio, fim)
@@ -606,6 +606,7 @@ def classificar_lacunas(timestamps, minutos, arquivo, caminho, respostas):
 
     esperado = minutos * 60
     lacunas = []
+    lacunas_longas_consolidadas = {}
     anterior = None
 
     for atual in ts:
@@ -648,43 +649,39 @@ def classificar_lacunas(timestamps, minutos, arquivo, caminho, respostas):
             anterior = atual
             continue
 
-        # Lacunas longas agora deixam trilha cartorial, sem virar ordem quando justificadas.
+        # Lacunas longas informativas ficam consolidadas por arquivo/motivo.
+        # Regra v4.2.2: o Fiscal registra o contexto, mas nao abre uma ocorrencia por cada vao longo.
         if horas >= 12:
             if contexto.get("status") == "INFORMATIVO":
-                descricao = (
-                    f"Lacuna longa de {horas:.2f} horas entre {inicio_txt} e {fim_txt}. "
-                    f"{contexto.get('justificativa', '')}"
-                )
-
-                lacunas.append(criar_ocorrencia(
-                    arquivo,
-                    caminho,
-                    "INFORMATIVO",
-                    contexto.get("motivo") or "LACUNA_LONGA_ENTRE_SESSOES",
-                    descricao,
-                    contexto.get("responsavel") or "CALENDARIO_B3",
-                    contexto.get("acao") or "NENHUMA_ACAO_OPERACIONAL",
-                    contexto.get("certificacao") or "JUSTIFICADA",
-                    respostas
-                ))
-
+                motivo = contexto.get("motivo") or "LACUNA_LONGA_ENTRE_SESSOES"
+                responsavel = contexto.get("responsavel") or "CALENDARIO_B3"
+                acao = contexto.get("acao") or "NENHUMA_ACAO_OPERACIONAL"
+                certificacao = contexto.get("certificacao") or "JUSTIFICADA"
+                justificativa = contexto.get("justificativa", "")
             else:
-                descricao = (
-                    f"Lacuna longa de {horas:.2f} horas entre {inicio_txt} e {fim_txt}. "
-                    "Registrada como contexto temporal longo entre sessoes/arquivos."
-                )
+                motivo = "LACUNA_LONGA_ENTRE_SESSOES"
+                responsavel = "CALENDARIO_B3"
+                acao = "NENHUMA_ACAO_OPERACIONAL"
+                certificacao = "JUSTIFICADA_COM_RESSALVA"
+                justificativa = "Registrada como contexto temporal longo entre sessoes/arquivos."
 
-                lacunas.append(criar_ocorrencia(
-                    arquivo,
-                    caminho,
-                    "INFORMATIVO",
-                    "LACUNA_LONGA_ENTRE_SESSOES",
-                    descricao,
-                    "CALENDARIO_B3",
-                    "NENHUMA_ACAO_OPERACIONAL",
-                    "JUSTIFICADA_COM_RESSALVA",
-                    respostas
-                ))
+            chave = (motivo, responsavel, acao, certificacao)
+            resumo = lacunas_longas_consolidadas.setdefault(chave, {
+                "qtd": 0,
+                "horas_total": 0.0,
+                "maior_horas": 0.0,
+                "primeira": inicio_txt,
+                "ultima": fim_txt,
+                "justificativas": [],
+            })
+
+            resumo["qtd"] += 1
+            resumo["horas_total"] += horas
+            resumo["maior_horas"] = max(resumo["maior_horas"], horas)
+            resumo["ultima"] = fim_txt
+
+            if justificativa and len(resumo["justificativas"]) < 3:
+                resumo["justificativas"].append(justificativa)
 
             anterior = atual
             continue
@@ -772,6 +769,28 @@ def classificar_lacunas(timestamps, minutos, arquivo, caminho, respostas):
             ))
 
         anterior = atual
+
+    for (motivo, responsavel, acao, certificacao), resumo in lacunas_longas_consolidadas.items():
+        detalhes = " | ".join(resumo["justificativas"]) if resumo["justificativas"] else "Contexto temporal longo consolidado."
+        descricao = (
+            f"{resumo['qtd']} lacunas longas consolidadas neste arquivo. "
+            f"Primeira: {resumo['primeira']}. Ultima: {resumo['ultima']}. "
+            f"Horas totais aproximadas: {resumo['horas_total']:.2f}. "
+            f"Maior lacuna: {resumo['maior_horas']:.2f} horas. "
+            f"{detalhes}"
+        )
+
+        lacunas.append(criar_ocorrencia(
+            arquivo,
+            caminho,
+            "INFORMATIVO",
+            motivo,
+            descricao,
+            responsavel,
+            acao,
+            certificacao,
+            respostas
+        ))
 
     return lacunas
 
@@ -1081,7 +1100,7 @@ def salvar_resumos(registros, ocorrencias):
 
 def main():
     print("\n" + "=" * 70)
-    print("FISCAL TEMPORAL v4.2.1 - CARTORIO TEMPORAL DO TRIN")
+    print("FISCAL TEMPORAL v4.2.2 - CARTORIO TEMPORAL DO TRIN")
     print("=" * 70)
 
     if not BASE_PATH.exists():
@@ -1145,7 +1164,7 @@ def main():
                 "status": r["status"],
                 "certificacao": r["certificacao"],
                 "data_certificacao": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                "fiscal_temporal": "v4.2.1",
+                "fiscal_temporal": "v4.2.2",
             }
             for r in registros
         ],
@@ -1163,7 +1182,7 @@ def main():
             "criticidade": o["criticidade"],
             "motivo": o["motivo"],
             "data_evento": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-            "fiscal_temporal": "v4.2.1",
+            "fiscal_temporal": "v4.2.2",
         })
 
     salvar_csv(trilha, ARQUIVO_TRILHA)
@@ -1190,7 +1209,7 @@ def main():
 
     laudo = f"""
 ============================================================
-FISCAL TEMPORAL v4.2.1 - LAUDO OFICIAL
+FISCAL TEMPORAL v4.2.2 - LAUDO OFICIAL
 ============================================================
 
 Data/hora: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
@@ -1221,7 +1240,7 @@ ARQUIVOS GERADOS:
 - resumo_por_motivo.csv
 - resumo_por_arquivo.csv
 
-REGRA v4.2.1:
+REGRA v4.2.2:
 - O Fiscal nao corrige.
 - O Fiscal nao cria calendario; apenas consulta CalendarioB3 externo.
 - Lacunas justificadas pelo calendario B3 viram informativo e nao geram ordem.
@@ -1237,7 +1256,7 @@ REGRA v4.2.1:
     ARQUIVO_LAUDO.write_text(laudo, encoding="utf-8")
 
     print("\n" + "=" * 70)
-    print("RESUMO FISCAL TEMPORAL v4.2.1")
+    print("RESUMO FISCAL TEMPORAL v4.2.2")
     print("=" * 70)
     print(f"Arquivos analisados     : {total}")
     print(f"Certificados            : {certificados}")
