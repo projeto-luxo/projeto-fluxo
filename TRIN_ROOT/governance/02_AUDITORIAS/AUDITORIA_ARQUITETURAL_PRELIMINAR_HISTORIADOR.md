@@ -134,3 +134,148 @@ Depois auditar:
 
 ## Parecer final
 O Historiador tem estrutura inicial promissora, mas nao deve ser evoluido nem executado como modulo oficial antes de resolver sua origem de dados, dependencia do Fiscal Temporal e contrato de saida de conhecimento.
+
+---
+
+# COMPLEMENTO — AUDITORIA DOS SCRIPTS DO HISTORIADOR
+
+## Data
+2026-06-21
+
+## Status consolidado
+PLANEJADO / EM AUDITORIA ARQUITETURAL
+
+APROVADO COMO ESQUELETO INICIAL
+
+REPROVADO PARA HOMOLOGACAO OFICIAL
+
+## Arquivos auditados
+
+- intelligence/historiador_v1_0.py
+- intelligence/historiador_temporal.py
+- intelligence/historiador_estatistico.py
+- intelligence/historiador_delta.py
+- intelligence/historiador_volume.py
+- intelligence/historiador_padroes.py
+- intelligence/historiador_contextual.py
+- intelligence/historiador_adapter.py
+
+## Parecer por arquivo
+
+### historiador_v1_0.py
+Orquestrador inicial do Historiador.
+
+Classificacao:
+APROVADO COMO ORQUESTRADOR INICIAL.
+
+Ressalvas:
+- Nao valida se indice_geral.csv e saida oficial do Bernardo.
+- Nao valida certificacao Fiscal antes de executar.
+- Nao gera manifesto formal.
+- Nao deve ser tratado como execucao oficial homologada.
+
+### historiador_temporal.py
+Gera cobertura temporal e distribuicao de fractais.
+
+Classificacao:
+APROVADO COMO LEITOR ESTATISTICO INICIAL.
+
+Ressalvas:
+- Depende de indice_geral.csv.
+- Nao deve certificar tempo no lugar do Fiscal Temporal.
+- Precisa registrar origem, status de confianca e base fiscal utilizada.
+
+### historiador_estatistico.py
+Gera estatistica geral da biblioteca por ativo/fractal.
+
+Classificacao:
+APROVADO COMO GERADOR ESTATISTICO INICIAL.
+
+Ressalvas:
+- Assume status/confiabilidade do indice.
+- Precisa de contrato de entrada do indice.
+- Precisa de manifesto de saida.
+
+### historiador_delta.py
+Resume delta quando delta_medio existir no indice.
+
+Classificacao:
+APROVADO COMO RESUMO INICIAL VIA INDICE.
+
+Ressalvas:
+- Futuras leituras detalhadas de CSV historico nao podem ocorrer diretamente.
+- Qualquer v1.1 deve passar por Bernardo/API ou memoria certificada.
+
+### historiador_volume.py
+Resume volume quando volume_medio existir no indice.
+
+Classificacao:
+APROVADO COMO RESUMO INICIAL VIA INDICE.
+
+Ressalvas:
+- Futuras leituras detalhadas de CSV historico nao podem ocorrer diretamente.
+- Qualquer v1.1 deve passar por Bernardo/API ou memoria certificada.
+
+### historiador_padroes.py
+Cria catalogo inicial de padroes preparados para mineracao.
+
+Classificacao:
+APROVADO COMO CATALOGO INICIAL.
+
+Ressalvas:
+- Nao prova padroes reais.
+- Nao deve gerar score operacional.
+- Padroes estao apenas preparados para mineracao futura.
+
+### historiador_contextual.py
+Cria contexto inicial por horario/evento.
+
+Classificacao:
+APROVADO COMO CONTEXTO INICIAL.
+
+Ressalvas:
+- VENCIMENTO e ROLAGEM ainda precisam de ligacao futura com Calendario B3 e ContratoAtivoResolver.
+- Contextos nao devem ser tratados como conhecimento minerado.
+
+### historiador_adapter.py
+Adapter entre conhecimento produzido e Motor de Confluencia.
+
+Classificacao:
+APROVADO COMO ADAPTER FRACO / INFORMATIVO.
+
+Ressalvas:
+- score_historico 0.25/0.35 deve ser tratado como evidencia fraca.
+- PADRAO_CATALOGADO nao equivale a padrao historico comprovado.
+- COBERTURA_ENCONTRADA nao equivale a confluencia operacional.
+- Adapter nao e Historiador completo.
+- Adapter nao pode substituir Motor de Confluencia.
+
+## Risco arquitetural central
+O Historiador depende de:
+
+TRIN_HISTORICO/00_INDICES/indice_geral.csv
+
+Este indice precisa ser formalizado como saida oficial do Bernardo.
+
+Sem essa formalizacao, existe risco de violar a norma:
+
+Nenhuma inteligencia consome CSV bruto diretamente.
+
+## Decisao preliminar
+Aceitar os scripts atuais apenas como esqueleto inicial e transicao controlada.
+
+Nao executar o Historiador como modulo oficial de producao antes de:
+
+1. Formalizar indice_geral.csv como saida oficial do Bernardo.
+2. Validar dependencia do Fiscal Temporal.
+3. Definir contrato de saida de 00_CONHECIMENTO.
+4. Definir manifesto de execucao do Historiador.
+5. Definir peso fraco do HistoriadorAdapter no Motor de Confluencia.
+6. Executar Auditoria HARD antes de qualquer homologacao.
+
+## Parecer final
+O Historiador esta bem estruturado como modulo inicial, mas ainda nao esta pronto para homologacao.
+
+Pode permanecer como PLANEJADO / EM AUDITORIA ARQUITETURAL.
+
+A proxima acao recomendada e criar contratos de entrada e saida do Historiador antes de qualquer patch de codigo.
