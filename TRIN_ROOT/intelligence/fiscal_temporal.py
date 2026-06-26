@@ -36,6 +36,9 @@ TRIN_ROOT = Path(__file__).resolve().parents[1]
 BASE_PATH = TRIN_ROOT / "TRIN_HISTORICO"
 
 PASTA_CERTIFICACOES = BASE_PATH / "00_CERTIFICACOES"
+ARQUIVO_CANDLES_INEXISTENTES_LEILAO = PASTA_CERTIFICACOES / "candles_inexistentes_por_leilao.csv"
+ARQUIVO_CANDLES_INEXISTENTES_LEILAO_GOV = TRIN_ROOT / "governance" / "09_PADROES" / "candles_inexistentes_por_leilao.csv"
+CADASTRO_CANDLES_INEXISTENTES_LEILAO = None
 PASTA_CERTIFICACOES.mkdir(parents=True, exist_ok=True)
 
 ARQUIVO_CERTIFICADO = PASTA_CERTIFICACOES / "certificado_temporal.csv"
@@ -308,6 +311,8 @@ def definir_criticidade(motivo):
         "LACUNA_JUSTIFICADA_FERIADO_B3",
         "LACUNA_JUSTIFICADA_CALENDARIO_B3",
         "LACUNA_LONGA_ENTRE_SESSOES",
+        "CANDLE_INEXISTENTE_POR_LEILAO",
+        "LACUNA_HERDADA_JUSTIFICADA_POR_LEILAO",
     }
 
     if motivo in criticas:
@@ -491,6 +496,111 @@ def hora_em_janela(dt, inicio_txt, fim_txt):
     except Exception:
         return False
 
+
+
+def carregar_candles_inexistentes_por_leilao():
+    global CADASTRO_CANDLES_INEXISTENTES_LEILAO
+
+    if CADASTRO_CANDLES_INEXISTENTES_LEILAO is not None:
+        return CADASTRO_CANDLES_INEXISTENTES_LEILAO
+
+    candidatos = [
+        ARQUIVO_CANDLES_INEXISTENTES_LEILAO,
+        ARQUIVO_CANDLES_INEXISTENTES_LEILAO_GOV,
+    ]
+
+    for arquivo in candidatos:
+        try:
+            if arquivo.exists():
+                df = pd.read_csv(arquivo, sep=";", engine="python", dtype=str).fillna("")
+                CADASTRO_CANDLES_INEXISTENTES_LEILAO = df
+                return df
+        except Exception as erro:
+            print(f"AVISO: falha ao carregar cadastro de candles inexistentes por leilao: {arquivo} -> {erro}")
+
+    CADASTRO_CANDLES_INEXISTENTES_LEILAO = pd.DataFrame()
+    return CADASTRO_CANDLES_INEXISTENTES_LEILAO
+
+
+def _arquivo_compativel_com_evento_leilao(nome_arquivo, linha):
+    nome = str(nome_arquivo).upper()
+    ativo_base = str(linha.get("ativo_base", "")).upper()
+    contrato = str(linha.get("contrato_operacional", "")).upper()
+
+    if nome.startswith("WIN") and (ativo_base.startswith("WIN") or contrato.startswith("WIN")):
+        return True
+
+    if nome.startswith("WDO") and (ativo_base.startswith("WDO") or contrato.startswith("WDO")):
+        return True
+
+    return False
+
+
+def _parse_datetime_evento(data_txt, hora_txt):
+    try:
+        return pd.to_datetime(
+            f"{data_txt} {hora_txt}",
+            format="%d/%m/%Y %H:%M:%S",
+            errors="coerce"
+        )
+    except Exception:
+        return pd.NaT
+
+
+def avaliar_lacuna_com_leilao(anterior, atual, minutos, arquivo):
+    cadastro = carregar_candles_inexistentes_por_leilao()
+
+    if cadastro.empty:
+        return {"justificada": False}
+
+    linhas_compativeis = []
+
+    for _, linha in cadastro.iterrows():
+        if not _arquivo_compativel_com_evento_leilao(arquivo, linha):
+            continue
+
+        data_txt = str(linha.get("data", "")).strip()
+        hora_txt = str(linha.get("hora", "")).strip()
+
+        candle_ts = _parse_datetime_evento(data_txt, hora_txt)
+        if pd.isna(candle_ts):
+            continue
+
+        inicio_evento = _parse_datetime_evento(data_txt, str(linha.get("inicio_evento", "")).strip())
+        fim_evento = _parse_datetime_evento(data_txt, str(linha.get("fim_evento", "")).strip())
+
+        dentro_da_lacuna = anterior < candle_ts < atual
+        evento_sobrepoe = (
+            not pd.isna(inicio_evento)
+            and not pd.isna(fim_evento)
+            and inicio_evento < atual
+            and fim_evento > anterior
+        )
+
+        if dentro_da_lacuna or evento_sobrepoe:
+            linhas_compativeis.append(linha)
+
+    if not linhas_compativeis:
+        return {"justificada": False}
+
+    motivo = "CANDLE_INEXISTENTE_POR_LEILAO" if minutos == 1 else "LACUNA_HERDADA_JUSTIFICADA_POR_LEILAO"
+
+    eventos = []
+    for linha in linhas_compativeis[:5]:
+        eventos.append(
+            f"{linha.get('data', '')} {linha.get('hora', '')} "
+            f"({linha.get('inicio_evento', '')}-{linha.get('fim_evento', '')}) "
+            f"fonte={linha.get('fonte', '')}"
+        )
+
+    return {
+        "justificada": True,
+        "motivo": motivo,
+        "responsavel": "EVENTO_MERCADO",
+        "acao": "NENHUMA_ACAO_CORRETIVA",
+        "certificacao": "JUSTIFICADO_POR_EVENTO_DE_MERCADO",
+        "justificativa": "Ausencia temporal justificada por leilao cadastrado. Eventos: " + " | ".join(eventos),
+    }
 
 def avaliar_lacuna_com_calendario(inicio, fim, minutos):
     calendario = obter_calendario_b3()
@@ -724,6 +834,29 @@ def classificar_lacunas(timestamps, minutos, arquivo, caminho, respostas):
                 contexto["responsavel"],
                 contexto["acao"],
                 contexto["certificacao"],
+                respostas
+            ))
+
+            anterior = atual
+            continue
+
+        contexto_leilao = avaliar_lacuna_com_leilao(anterior, atual, minutos, arquivo)
+
+        if contexto_leilao.get("justificada"):
+            descricao = (
+                f"Lacuna de {horas:.2f} horas entre {inicio_txt} e {fim_txt}. "
+                f"{contexto_leilao.get('justificativa', '')}"
+            )
+
+            lacunas.append(criar_ocorrencia(
+                arquivo,
+                caminho,
+                "INFORMATIVO",
+                contexto_leilao["motivo"],
+                descricao,
+                contexto_leilao["responsavel"],
+                contexto_leilao["acao"],
+                contexto_leilao["certificacao"],
                 respostas
             ))
 

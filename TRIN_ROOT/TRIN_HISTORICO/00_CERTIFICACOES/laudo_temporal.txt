@@ -1,20 +1,20 @@
 
 ============================================================
-FISCAL TEMPORAL v4.2 - LAUDO OFICIAL
+FISCAL TEMPORAL v4.2.2 - LAUDO OFICIAL
 ============================================================
 
-Data/hora: 18/06/2026 19:06:51
+Data/hora: 26/06/2026 11:35:58
 
-Arquivos analisados        : 120
-Certificados               : 97
-Aprovados com ressalvas    : 3
-Reprovados                 : 20
+Arquivos analisados        : 122
+Certificados               : 118
+Aprovados com ressalvas    : 0
+Reprovados                 : 4
 
 Criticas                   : 0
-Altas                      : 38
-Medias                     : 6
+Altas                      : 6
+Medias                     : 0
 Baixas                     : 0
-Informativas               : 0
+Informativas               : 112
 
 STATUS FINAL:
 REPROVADO_COM_PENDENCIAS
@@ -31,7 +31,7 @@ ARQUIVOS GERADOS:
 - resumo_por_motivo.csv
 - resumo_por_arquivo.csv
 
-REGRA v4.1:
+REGRA v4.2.2:
 - O Fiscal nao corrige.
 - O Fiscal nao cria calendario; apenas consulta CalendarioB3 externo.
 - Lacunas justificadas pelo calendario B3 viram informativo e nao geram ordem.
