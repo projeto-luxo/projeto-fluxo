@@ -1,0 +1,5 @@
+﻿ativo_base;contrato_operacional;data;hora;motivo;inicio_evento;fim_evento;fonte;status;observacao
+WINFUT;WINQ26_F_0;22/01/2026;12:41:00;CANDLE_INEXISTENTE_POR_LEILAO;12:40:21;12:42:21;NELOGICA;JUSTIFICADO_POR_EVENTO_DE_MERCADO;Ativo em leilao no intervalo informado pela Nelogica, sem formacao de candle no minuto 12:41.
+WINFUT;WINQ26_F_0;26/01/2026;11:31:00;CANDLE_INEXISTENTE_POR_LEILAO;11:30:41;11:33:10;NELOGICA;JUSTIFICADO_POR_EVENTO_DE_MERCADO;Ativo em leilao no intervalo informado pela Nelogica, sem formacao de candle no minuto 11:31.
+WINFUT;WINQ26_F_0;26/01/2026;11:32:00;CANDLE_INEXISTENTE_POR_LEILAO;11:30:41;11:33:10;NELOGICA;JUSTIFICADO_POR_EVENTO_DE_MERCADO;Ativo em leilao no intervalo informado pela Nelogica, sem formacao de candle no minuto 11:32.
+WINFUT;WINQ26_F_0;26/01/2026;11:34:00;CANDLE_INEXISTENTE_POR_LEILAO;11:33:16;11:35:16;NELOGICA;JUSTIFICADO_POR_EVENTO_DE_MERCADO;Ativo em leilao no intervalo informado pela Nelogica, sem formacao de candle no minuto 11:34.
