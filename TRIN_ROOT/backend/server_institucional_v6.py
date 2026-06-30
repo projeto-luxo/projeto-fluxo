@@ -26,6 +26,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from pathlib import Path
 import asyncio
+import json
 
 # ------------------------------------------------------------
 # Imports com fallback para compatibilidade entre:
@@ -825,6 +826,54 @@ async def alterar_timeframe_painel(timeframe: str):
         "status": "OPERACIONAL_NAO_CERTIFICADO",
         "observacao": "Timeframe configurado. Grafico passa a usar agregacao operacional nao certificada.",
     }
+
+
+# ============================================================
+# TT RAW - DIAGNOSTICO EXPERIMENTAL
+# Le apenas o status organizado da captura Times & Trades RTD.
+# Nao alimenta CandleBuilder.
+# Nao altera fluxo operacional.
+# Nao certifica dados.
+# ============================================================
+
+@app.get("/tt/raw/status")
+async def tt_raw_status():
+    caminho = (
+        Path(__file__).resolve().parents[1]
+        / "TRIN_HISTORICO"
+        / "00_PROCESSAMENTO_TT"
+        / "painel_tt_raw_status.json"
+    )
+
+    if not caminho.exists():
+        return {
+            "status": "TT_RAW_STATUS_NAO_ENCONTRADO",
+            "arquivo": str(caminho),
+            "arquivo_existe": False,
+            "observacao": "Diagnostico TT RAW ainda nao foi gerado."
+        }
+
+    try:
+        with open(caminho, "r", encoding="utf-8") as f:
+            dados = json.load(f)
+
+        dados["arquivo"] = str(caminho)
+        dados["arquivo_existe"] = True
+        dados["endpoint"] = "/tt/raw/status"
+        dados["uso_operacional"] = "DIAGNOSTICO_APENAS"
+        dados["candle_oficial"] = False
+
+        return dados
+
+    except Exception as erro:
+        return {
+            "status": "ERRO_LEITURA_TT_RAW_STATUS",
+            "arquivo": str(caminho),
+            "arquivo_existe": True,
+            "erro": str(erro),
+            "uso_operacional": "DIAGNOSTICO_APENAS",
+            "candle_oficial": False
+        }
 
 
 @app.get("/data")
