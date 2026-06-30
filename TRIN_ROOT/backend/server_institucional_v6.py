@@ -500,7 +500,68 @@ def gerar_payload():
         atualizar_historico()
         atualizar_historico()
 
-    anterior = historico[-2]
+    # Se houver 1 candle real, o payload pode continuar.
+    # Isso acontece quando duas leituras caem no mesmo segundo e a regra
+    # de nao duplicar timestamp atualiza o candle atual em vez de criar outro.
+    if len(historico) == 0:
+        agora = int(datetime.now().timestamp())
+
+        candle_fallback = historico[-1] if historico else {
+            "time": agora,
+            "open": preco_atual,
+            "high": preco_atual,
+            "low": preco_atual,
+            "close": preco_atual,
+            "ultimo": preco_atual,
+            "volume": 0,
+            "volume_real": 0,
+            "delta": 0,
+            "saldo": 0,
+            "ativo": "WIN",
+            "vwap": preco_atual,
+            "vwap_real": preco_atual,
+            "fonte_dados": "RTD_EXCEL_INDISPONIVEL",
+            "status_candle": "FALLBACK_SEM_HISTORICO_SUFICIENTE",
+        }
+
+        return {
+            "historico": historico,
+            "engine": {},
+            "vwap": candle_fallback.get("vwap", preco_atual),
+            "vwap_superior": candle_fallback.get("vwap", preco_atual),
+            "vwap_inferior": candle_fallback.get("vwap", preco_atual),
+            "distancia_vwap": 0,
+            "ultimo": candle_fallback.get("ultimo", candle_fallback.get("close", preco_atual)),
+            "volume": candle_fallback.get("volume", 0),
+            "delta": candle_fallback.get("delta", 0),
+            "saldo": candle_fallback.get("saldo", 0),
+            "fonte_dados": "RTD_EXCEL_INDISPONIVEL",
+            "modo_replay": False,
+            "status_backend": "SEM_HISTORICO_SUFICIENTE",
+            "erro_operacional": "historico com menos de 2 candles apos atualizar_historico",
+            "painel_temporal": {
+                "origem": "RTD_EXCEL_INDISPONIVEL",
+                "tipo_candle": "FALLBACK_OPERACIONAL",
+                "regua_painel": "SEM_REGUA",
+                "timeframe_painel": painel_timeframe_atual,
+                "status_painel": "SEM_HISTORICO_SUFICIENTE",
+                "fractal_oficial": "NAO_APLICAVEL",
+                "profit_timeframe_visual": "NAO_INTEGRADO",
+                "timeframes_operacionais": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()),
+                "timeframes_reservados": TIMEFRAMES_PAINEL_RESERVADOS,
+                "timeframes_disponiveis": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()) + TIMEFRAMES_PAINEL_RESERVADOS,
+                "observacao": "Backend preservado. Monitor RTD/Excel nao entregou historico suficiente para gerar payload operacional."
+            },
+            "contrato_ativo": {},
+            "contrato_ativo_status": "NAO_VALIDADO",
+            "contrato_ativo_motivo": "Sem candle atual suficiente.",
+            "contrato_ativo_bloqueio": True,
+            "sinal": "SEM SINAL",
+            "entrada": "AGUARDAR",
+            "score": 0,
+        }
+
+    anterior = historico[-2] if len(historico) >= 2 else historico[-1]
     atual = historico[-1]
 
     contrato_ativo = _validar_contrato_ativo(atual)
