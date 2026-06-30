@@ -39,6 +39,8 @@ export default function App() {
 
   const [dataInfo, setDataInfo] = useState({});
   const [wsStatus, setWsStatus] = useState("DESCONECTADO");
+  const [ttRawStatus, setTtRawStatus] = useState(null);
+  const [ttRawErro, setTtRawErro] = useState("");
 
   const ordenarPorTempo = useCallback((lista) => {
     if (!Array.isArray(lista)) return [];
@@ -927,6 +929,36 @@ if (temEntradaReal) {
           : "#00d4ff")
       : "#ff4444";
 
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarTtRawStatus() {
+      try {
+        const resposta = await fetch("http://127.0.0.1:8001/tt/raw/status");
+        const json = await resposta.json();
+
+        if (!ativo) return;
+
+        setTtRawStatus(json);
+        setTtRawErro("");
+      } catch (erro) {
+        if (!ativo) return;
+
+        setTtRawErro("TT_RAW_STATUS_INDISPONIVEL");
+      }
+    }
+
+    carregarTtRawStatus();
+
+    const timer = setInterval(carregarTtRawStatus, 15000);
+
+    return () => {
+      ativo = false;
+      clearInterval(timer);
+    };
+  }, []);
+
   return (
     <div
       style={{
@@ -1046,6 +1078,18 @@ if (temEntradaReal) {
               </option>
             ))}
           </select>
+        </Box>
+        <Box color="#263238">
+          TT RAW: {ttRawStatus?.status || ttRawErro || "SEM DIAGNOSTICO"}
+        </Box>
+        <Box color="#263238">
+          TT LINHAS: {Number(ttRawStatus?.total_linhas_validas_tt || 0).toLocaleString("pt-BR")} | SNAP: {Number(ttRawStatus?.total_snapshots || 0).toLocaleString("pt-BR")}
+        </Box>
+        <Box color="#263238">
+          TT USO: {ttRawStatus?.uso_operacional || "DIAGNOSTICO_APENAS"} | CANDLE: {ttRawStatus?.candle_oficial ? "SIM" : "NAO"}
+        </Box>
+        <Box color="#263238">
+          TT PROXIMA: {ttRawStatus?.proxima_etapa || "BASTIAO_TT_PENEIRADOR"}
         </Box>
         <Box color="#37474f">
           BERNARDO: {dataInfo.bernardoStatus || "SEM BERNARDO"} | SIM: {dataInfo.bernardoSimilaridade}
