@@ -1058,6 +1058,20 @@ if (temEntradaReal) {
           ? "BLOQUEIO OPERACIONAL"
           : "SEM BLOQUEIO";
 
+  const estadoCentralPainel =
+    bloqueadoPainel
+      ? "AGUARDAR"
+      : temEntradaValida
+        ? "ENTRADA"
+        : direcaoPainel;
+
+  const subtituloCentralPainel =
+    bloqueadoPainel
+      ? "BLOQUEADO"
+      : temEntradaValida
+        ? "VALIDADA"
+        : "MONITORANDO";
+
   const acaoPrincipalPainel =
     bloqueioPorFiscalPainel ? "AGUARDAR CERTIFICACAO" :
     bloqueadoPainel ? "AGUARDAR CONFIRMACAO" :
@@ -1285,10 +1299,13 @@ if (temEntradaReal) {
 
         <div style={{ textAlign: "center" }}>
           <div style={{ color: corEstadoPainel, fontSize: 32, fontWeight: "900" }}>
-            {direcaoPainel}
+            {estadoCentralPainel}
           </div>
           <div style={{ color: "#b0bec5", fontSize: 13, fontWeight: "bold", marginTop: 6 }}>
-            {statusFinalPainel}
+            {subtituloCentralPainel}
+          </div>
+          <div style={{ color: "#8a969e", fontSize: 11, fontWeight: "900", marginTop: 10 }}>
+            DIRECAO: {direcaoPainel}
           </div>
         </div>
 
