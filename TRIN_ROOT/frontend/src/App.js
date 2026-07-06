@@ -647,12 +647,22 @@ alvo: temEntradaPainel ? data.alvo : null,
         ? "#ff3333"
         : contexto.cor;
 
+    const fiscalStatusFinal =
+      fiscalBloqueandoConfluencia
+        ? "BLOQUEANDO CONFLUENCIA"
+        : (
+            data.fiscal_status ||
+            data.status_certificacao ||
+            baseInfo.fiscalStatus ||
+            "DESCONHECIDO"
+          );
+
     setDataInfo({
       ...baseInfo,
 
       qualidadeConfluencia: data.qualidade_confluencia,
       alertaConfluencia: data.alerta_confluencia,
-      fiscalStatus: data.fiscal_status,
+      fiscalStatus: fiscalStatusFinal,
       contratoAtivoStatus: data.contrato_ativo_status,
       contratoAtivoBloqueio: data.contrato_ativo_bloqueio,
 
