@@ -372,7 +372,18 @@ if (absorcao) {
   const processarDados = useCallback((data) => {
     setWsStatus("ONLINE");
 
-    const historico = ordenarPorTempo(data.historico || []);
+    let historico = ordenarPorTempo(data.historico || []);
+
+    // Calibracao: remove candle fallback 100 quando ja existe preco real
+    const historicoReal = historico.filter((c) => {
+      const preco = Number(c?.close ?? c?.ultimo ?? c?.open ?? 0);
+      return Number.isFinite(preco) && preco > 1000;
+    });
+
+    if (historicoReal.length > 0) {
+      historico = historicoReal;
+    }
+
     const vwap = ordenarPorTempo(data.vwap || []);
     const vwapSuperior = ordenarPorTempo(data.vwap_superior || []);
     const vwapInferior = ordenarPorTempo(data.vwap_inferior || []);
@@ -382,6 +393,17 @@ if (absorcao) {
     const ultimoCandle = historico[historico.length - 1];
     const primeiroTime = historico[0].time;
     const ultimoTime = ultimoCandle.time;
+
+    const ajustarJanelaGrafico = () => {
+      if (!chartRef.current || !historico.length) return;
+
+      const totalCandles = historico.length;
+
+      chartRef.current.timeScale().setVisibleLogicalRange({
+        from: Math.max(0, totalCandles - 120),
+        to: totalCandles + 8,
+      });
+    };
 
     const engine = data.engine || {};
     const agressao = data.agressao || {};
@@ -425,6 +447,18 @@ if (absorcao) {
       saldo: data.saldo_agressor ?? ultimoCandle.saldo,
       delta: data.delta ?? ultimoCandle.delta,
       volume: data.volume ?? ultimoCandle.volume,
+
+      // Calibracao recuperada: painel usa ultimo candle real como fonte visual
+      open: ultimoCandle.open,
+      high: ultimoCandle.high,
+      low: ultimoCandle.low,
+      close: ultimoCandle.close,
+      ultimo: ultimoCandle.ultimo ?? ultimoCandle.close,
+      maximo: ultimoCandle.high,
+      minimo: ultimoCandle.low,
+      vwap: data.vwap_atual ?? data.vwap_real ?? ultimoCandle.vwap ?? ultimoCandle.vwap_real,
+      fonteDados: ultimoCandle.fonte_dados,
+      abaOrigem: ultimoCandle.aba_origem,
 
       compra: data.pressao_compra ?? agressao.persistencia_compra ?? 0,
       venda: data.pressao_venda ?? agressao.persistencia_venda ?? 0,
@@ -586,7 +620,13 @@ alvo: temEntradaPainel ? data.alvo : null,
 
       carregouHistoricoRef.current = true;
     } else {
-      candleSeriesRef.current.update(ultimoCandle);
+      const precoValidoPainel =
+        Number(ultimoCandle.close) > 1000 &&
+        Number.isFinite(Number(ultimoCandle.close));
+
+      if (precoValidoPainel) {
+        candleSeriesRef.current.update(ultimoCandle);
+      }
 
       if (vwap.length) {
         vwapLineRef.current.update(vwap[vwap.length - 1]);
@@ -604,6 +644,8 @@ alvo: temEntradaPainel ? data.alvo : null,
         candleSeriesRef.current.setMarkers(gerarMarkersInstitucionais(historico));
       }
     }
+
+    ajustarJanelaGrafico();
 
 const entradaAtual = baseInfo.entrada || "";
 const scoreAtual = Number(baseInfo.score || 0);
