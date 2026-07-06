@@ -1045,7 +1045,21 @@ if (temEntradaReal) {
     direcaoPainel === "VENDA" ? "#ff4444" :
     "#00d9ff";
 
+  const bloqueioPorFiscalPainel =
+    dataInfo.qualidadeConfluencia === "BLOQUEADO_POR_CERTIFICACAO" ||
+    String(dataInfo.alertaConfluencia || "").includes("FISCAL");
+
+  const motivoBloqueioPainel =
+    bloqueioPorFiscalPainel
+      ? "FISCAL BLOQUEANDO CONFLUENCIA"
+      : dataInfo.contratoAtivoBloqueio
+        ? "CONTRATO BLOQUEADO"
+        : bloqueadoPainel
+          ? "BLOQUEIO OPERACIONAL"
+          : "SEM BLOQUEIO";
+
   const acaoPrincipalPainel =
+    bloqueioPorFiscalPainel ? "AGUARDAR CERTIFICACAO" :
     bloqueadoPainel ? "AGUARDAR CONFIRMACAO" :
     temEntradaValida ? String(dataInfo.entrada || "ENTRADA") :
     direcaoPainel === "COMPRA" ? "MONITORAR COMPRA" :
@@ -1175,7 +1189,7 @@ if (temEntradaReal) {
             boxShadow: `0 0 24px ${corEstadoPainel}55`,
           }}
         >
-          {bloqueadoPainel ? "RISCO / BLOQUEADO" : acaoPrincipalPainel}
+          {bloqueadoPainel ? motivoBloqueioPainel : acaoPrincipalPainel}
         </div>
 
         <div style={{ marginTop: 34 }}>
@@ -1337,7 +1351,7 @@ if (temEntradaReal) {
             ALERTA
           </div>
           <div style={{ color: "#d0d7dc", fontSize: 12, fontWeight: "bold" }}>
-            {alertaPrincipalPainel}
+            {motivoBloqueioPainel || alertaPrincipalPainel}
           </div>
         </div>
 
