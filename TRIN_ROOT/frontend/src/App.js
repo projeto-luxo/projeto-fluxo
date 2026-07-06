@@ -959,14 +959,82 @@ if (temEntradaReal) {
     };
   }, []);
 
+  const ultimoPainel = dataInfo.ultimo ?? dataInfo.close ?? dataInfo.preco ?? "-";
+  const maximaPainel = dataInfo.maximo ?? dataInfo.maxima ?? dataInfo.high ?? "-";
+  const minimaPainel = dataInfo.minimo ?? dataInfo.minima ?? dataInfo.low ?? "-";
+  const volumePainel = dataInfo.volume ?? "-";
+  const deltaPainel = dataInfo.delta ?? "-";
+  const saldoPainel = dataInfo.saldo ?? "-";
+  const vwapPainel = dataInfo.vwap ?? dataInfo.vwapReal ?? dataInfo.vwap_real ?? "-";
+  const distVwapPainel = dataInfo.distanciaVwap ?? dataInfo.distancia_vwap ?? "-";
+
+  const direcaoPainel = dataInfo.direcaoConfluencia || dataInfo.engineDirecao || "NEUTRO";
+  const entradaTexto = String(dataInfo.entrada || "AGUARDAR").toUpperCase();
+
+  const bloqueadoPainel =
+    Boolean(dataInfo.bloqueioCognitivo) ||
+    Boolean(dataInfo.contratoAtivoBloqueio) ||
+    dataInfo.qualidadeConfluencia === "BLOQUEADO_POR_CERTIFICACAO";
+
+  const temEntradaValida =
+    !bloqueadoPainel &&
+    entradaTexto &&
+    !["AGUARDAR", "SEM ENTRADA", "SEM SINAL", "-", "NAO", "NÃO"].includes(entradaTexto) &&
+    dataInfo.stop != null &&
+    dataInfo.parcial != null &&
+    dataInfo.alvo != null;
+
+  const alertaPainel = dataInfo.alertaConfluencia || "";
+  const temAlerta =
+    Boolean(alertaPainel && alertaPainel !== "SEM ALERTA") ||
+    Boolean(dataInfo.engineAbsorcao) ||
+    Boolean(temHotZone) ||
+    Boolean(dataInfo.explosao && dataInfo.explosao !== "SEM EXPLOSÃO");
+
+  const statusFinalPainel = bloqueadoPainel ? "BLOQUEADO" : "MONITORANDO";
+  const macroPainel = dataInfo.contextoInstitucional || "AGUARDANDO";
+  const microPainel = dataInfo.contextoDetalhe || "Aguardando dados institucionais";
+  const topoPainel = dataInfo.ultimoTopo ?? dataInfo.ultimo_topo ?? "-";
+  const fundoPainel = dataInfo.ultimoFundo ?? dataInfo.ultimo_fundo ?? "-";
+
+  const corEstadoPainel =
+    bloqueadoPainel ? "#ff3333" :
+    direcaoPainel === "COMPRA" ? "#00ff77" :
+    direcaoPainel === "VENDA" ? "#ff4444" :
+    "#00d9ff";
+
+  const acaoPrincipalPainel =
+    bloqueadoPainel ? "AGUARDAR CONFIRMACAO" :
+    temEntradaValida ? String(dataInfo.entrada || "ENTRADA") :
+    direcaoPainel === "COMPRA" ? "MONITORAR COMPRA" :
+    direcaoPainel === "VENDA" ? "MONITORAR VENDA" :
+    "MONITORAR MERCADO";
+
+  const alertaPrincipalPainel =
+    alertaPainel && alertaPainel !== "SEM ALERTA"
+      ? alertaPainel
+      : bloqueadoPainel
+        ? "CONFLUENCIA BLOQUEADA"
+        : "SEM ALERTA CRITICO";
+
+  const compraPctPainel = Math.max(0, Math.min(100, Number(dataInfo.compra || 0)));
+  const vendaPctPainel = Math.max(0, Math.min(100, Number(dataInfo.venda || 0)));
+
   return (
     <div
       style={{
-        display: "flex",
         height: "100vh",
-        padding: 10,
-        background: "radial-gradient(circle at top, #071120 0%, #020816 70%)",
+        width: "100vw",
+        padding: 18,
         boxSizing: "border-box",
+        background: "radial-gradient(circle at center, #172324 0%, #081013 42%, #010409 100%)",
+        color: "#ffffff",
+        overflow: "hidden",
+        display: "grid",
+        gridTemplateColumns: "37% 22% 41%",
+        gridTemplateRows: "1fr 170px",
+        gap: 16,
+        fontFamily: "Arial, sans-serif",
       }}
     >
       <style>
@@ -992,150 +1060,271 @@ if (temEntradaReal) {
 
       <div
         style={{
-          flex: 1,
-          minWidth: 0,
-          border: `2px solid ${glowRadar}`,
-          borderRadius: 8,
+          gridColumn: "1",
+          gridRow: "1",
+          padding: "30px 28px",
+          borderRadius: 24,
+          background: "linear-gradient(180deg, rgba(13,22,24,0.70), rgba(1,5,8,0.94))",
+          border: "1px solid rgba(0,217,255,0.14)",
+          boxShadow: "inset 0 0 55px rgba(0,255,180,0.04), 0 0 28px rgba(0,217,255,0.08)",
           overflow: "hidden",
-          boxShadow: `0 0 35px ${glowRadar}`,
+        }}
+      >
+        <div style={{ color: "#00d9ff", fontSize: 13, fontWeight: "900", marginBottom: 30 }}>
+          TRIN Updates
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 22 }}>
+          <div style={{ height: 1, flex: 1, background: "rgba(255,255,255,0.45)" }} />
+          <div style={{ color: "#cfd8dc", fontSize: 16 }}>
+            Nova Atualizacao
+          </div>
+          <div style={{ height: 1, flex: 1, background: "rgba(255,255,255,0.45)" }} />
+        </div>
+
+        <div style={{ color: "#d7dde1", fontSize: 15, lineHeight: 1.55, marginBottom: 18 }}>
+          CONTEXTO: {macroPainel}
+        </div>
+
+        <div style={{ color: corEstadoPainel, fontSize: 15, fontWeight: "900", lineHeight: 1.55, marginBottom: 18 }}>
+          CENARIO: {microPainel}
+        </div>
+
+        <div style={{ color: "#d7dde1", fontSize: 14, lineHeight: 1.6, marginBottom: 28 }}>
+          • Direcao: {direcaoPainel}<br />
+          • Entrada: {temEntradaValida ? dataInfo.entrada : "AGUARDAR"}<br />
+          • Qualidade: {dataInfo.qualidadeConfluencia || "DESCONHECIDA"}<br />
+          • Fiscal: {dataInfo.fiscalStatus || "DESCONHECIDO"}
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 22, marginBottom: 18 }}>
+          <div style={{ color: "#8f9aa3", fontWeight: "900", fontStyle: "italic", fontSize: 20, lineHeight: 1.05 }}>
+            SMART<br />MONEY
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, flex: 1 }}>
+            {[
+              ["1", formatar(ultimoPainel), "#8b1f1f", "#ff5555"],
+              ["2", formatar(minimaPainel), "#006b3c", "#00ff99"],
+              ["3", formatar(vwapPainel), "#006b3c", "#00ff99"],
+              ["4", formatar(maximaPainel), "#8b1f1f", "#ff5555"],
+            ].map(([n, valor, fundo, borda]) => (
+              <div key={n} style={{ textAlign: "center" }}>
+                <div style={{ fontWeight: "900", marginBottom: 5 }}>{n}</div>
+                <div style={{ padding: "8px 4px", borderRadius: 7, background: fundo, border: `1px solid ${borda}`, fontWeight: "900" }}>
+                  {valor}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: 26,
+            padding: "14px 18px",
+            borderRadius: 10,
+            border: `1px solid ${corEstadoPainel}`,
+            color: corEstadoPainel,
+            fontWeight: "900",
+            fontSize: 28,
+            letterSpacing: 2,
+            textAlign: "center",
+            boxShadow: `0 0 24px ${corEstadoPainel}55`,
+          }}
+        >
+          {bloqueadoPainel ? "RISCO / BLOQUEADO" : acaoPrincipalPainel}
+        </div>
+
+        <div style={{ marginTop: 34 }}>
+          <div style={{ color: "#cfd8dc", fontSize: 12, fontWeight: "900", marginBottom: 10 }}>
+            PLACAR ESTATISTICO
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "110px 110px 1fr", gap: 14, alignItems: "end" }}>
+            <div style={{ border: "1px solid rgba(0,255,120,0.45)", borderRadius: 10, padding: 12, textAlign: "center" }}>
+              <div style={{ color: "#00ff77", fontSize: 12, fontWeight: "900" }}>COMPRA</div>
+              <div style={{ color: "#ffffff", fontSize: 24, fontWeight: "900" }}>{compraPctPainel}%</div>
+            </div>
+
+            <div style={{ border: "1px solid rgba(255,60,60,0.45)", borderRadius: 10, padding: 12, textAlign: "center" }}>
+              <div style={{ color: "#ff4444", fontSize: 12, fontWeight: "900" }}>VENDA</div>
+              <div style={{ color: "#ffffff", fontSize: 24, fontWeight: "900" }}>{vendaPctPainel}%</div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(14, 1fr)", gap: 5 }}>
+              {Array.from({ length: 14 }).map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    height: 42,
+                    borderRadius: 3,
+                    background: i < 10 ? corEstadoPainel : "rgba(255,255,255,0.16)",
+                    boxShadow: i < 10 ? `0 0 12px ${corEstadoPainel}` : "none",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          gridColumn: "2",
+          gridRow: "1",
+          position: "relative",
+          borderRadius: 24,
+          background: "linear-gradient(180deg, rgba(11,18,20,0.58), rgba(0,3,8,0.90))",
+          border: "1px solid rgba(255,255,255,0.10)",
+          boxShadow: "inset 0 0 65px rgba(255,255,255,0.04), 0 0 22px rgba(0,217,255,0.06)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "32px 20px",
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ alignSelf: "stretch", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ color: "#8a969e", fontSize: 12, fontWeight: "900" }}>CONTEXTO</div>
+            <div style={{ color: corEstadoPainel, fontSize: 34, fontWeight: "900", marginTop: 8 }}>
+              {dataInfo.score ?? 0}
+            </div>
+          </div>
+
+          <div style={{ textAlign: "center" }}>
+            <div style={{ color: "#8a969e", fontSize: 12, fontWeight: "900" }}>PONTOS</div>
+            <div style={{ color: corEstadoPainel, fontSize: 34, fontWeight: "900", marginTop: 8 }}>
+              {formatar(dataInfo.scoreConfluencia)}
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            width: 250,
+            height: 190,
+            border: "1px solid rgba(255,255,255,0.18)",
+            borderRadius: 28,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: `0 0 44px ${corEstadoPainel}22, inset 0 0 34px rgba(255,255,255,0.04)`,
+          }}
+        >
+          <div
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: "48px solid transparent",
+              borderRight: "48px solid transparent",
+              borderBottom: `86px solid ${corEstadoPainel}`,
+              filter: `drop-shadow(0 0 22px ${corEstadoPainel})`,
+              transform: direcaoPainel === "VENDA" ? "rotate(180deg)" : "none",
+            }}
+          />
+        </div>
+
+        <div style={{ textAlign: "center" }}>
+          <div style={{ color: corEstadoPainel, fontSize: 32, fontWeight: "900" }}>
+            {direcaoPainel}
+          </div>
+          <div style={{ color: "#b0bec5", fontSize: 13, fontWeight: "bold", marginTop: 6 }}>
+            {statusFinalPainel}
+          </div>
+        </div>
+
+        <div
+          style={{
+            width: 4,
+            height: 130,
+            borderRadius: 999,
+            background: corEstadoPainel,
+            boxShadow: `0 0 25px ${corEstadoPainel}`,
+            opacity: 0.95,
+          }}
+        />
+      </div>
+
+      <div
+        style={{
+          gridColumn: "3",
+          gridRow: "1",
+          borderRadius: 18,
+          border: `1px solid ${corEstadoPainel}`,
+          background: "#020712",
+          boxShadow: `0 0 28px ${corEstadoPainel}88, inset 0 0 24px rgba(0,217,255,0.04)`,
+          overflow: "hidden",
           position: "relative",
         }}
       >
-        <TopBar dataInfo={dataInfo} cor={glowRadar} wsStatus={statusVisual} />
+        <TopBar dataInfo={dataInfo} cor={corEstadoPainel} wsStatus={statusVisual} />
 
         {temHotZone && (
-         <HotZoneOverlay
-  low={dataInfo.zonaLow}
-  high={dataInfo.zonaHigh}
-  absorcao={dataInfo.engineAbsorcao}
-  compra={dataInfo.compra}
-  venda={dataInfo.venda}
-/>
+          <HotZoneOverlay
+            low={dataInfo.zonaLow}
+            high={dataInfo.zonaHigh}
+            absorcao={dataInfo.engineAbsorcao}
+            compra={dataInfo.compra}
+            venda={dataInfo.venda}
+          />
         )}
 
         <div ref={chartContainerRef} style={{ height: "100%" }} />
       </div>
-      <div style={{ width: 340, marginLeft: 10 }}>
-       <Titulo>TRIN FLOW PRO 5.9 EXEC</Titulo>
 
-        <Radar cor={glowRadar} intensidade={dataInfo.intensidade} wsStatus={statusVisual} />
+      <div
+        style={{
+          gridColumn: "1 / 4",
+          gridRow: "2",
+          borderRadius: 18,
+          background: "linear-gradient(90deg, rgba(4,10,13,0.97), rgba(3,15,12,0.94), rgba(4,10,13,0.97))",
+          border: `1px solid ${corEstadoPainel}`,
+          boxShadow: `0 0 30px ${corEstadoPainel}66`,
+          display: "grid",
+          gridTemplateColumns: "240px 1fr 330px",
+          gap: 18,
+          alignItems: "center",
+          padding: "16px 24px",
+        }}
+      >
+        <div>
+          <div style={{ color: corEstadoPainel, fontSize: 32, fontWeight: "900", letterSpacing: 2 }}>
+            ALERTA
+          </div>
+          <div style={{ color: "#d0d7dc", fontSize: 12, fontWeight: "bold" }}>
+            {alertaPrincipalPainel}
+          </div>
+        </div>
 
-        <Box color={dataInfo.contextoCor || "#263238"}>
-          CONTEXTO: {dataInfo.contextoInstitucional || "AGUARDANDO"}
-        </Box>
+        <div>
+          <div style={{ color: corEstadoPainel, fontSize: 38, fontWeight: "900", textAlign: "center", letterSpacing: 3 }}>
+            {acaoPrincipalPainel}
+          </div>
 
-        <Box color="#102027">
-          LEITURA: {dataInfo.contextoDetalhe || "Aguardando dados institucionais"}
-        </Box>
-
-        <Box color="#0b5d1e">SCORE: {dataInfo.score ?? "-"}</Box>
-
-        <Box color={dataInfo.bloqueioCognitivo ? "#b71c1c" : "#0d47a1"}>
-          CONFLUENCIA v2.2: {formatar(dataInfo.scoreConfluencia)}
-        </Box>
-        <Box color={dataInfo.bloqueioCognitivo ? "#b71c1c" : "#263238"}>
-          QUALIDADE: {dataInfo.qualidadeConfluencia || "DESCONHECIDA"}
-        </Box>
-        <Box color="#263238">
-          DIRECAO COGNITIVA: {dataInfo.direcaoConfluencia || "NEUTRO"}
-        </Box>
-        <Box color={dataInfo.bloqueioCognitivo ? "#b71c1c" : "#1b5e20"}>
-          FISCAL: {dataInfo.fiscalStatus || "DESCONHECIDO"}
-        </Box>
-
-        <Box color={dataInfo.contratoAtivoBloqueio ? "#7f0000" : "#263238"}>
-          CONTRATO: {dataInfo.contratoExcelRtd || "-"} | {dataInfo.contratoAtivoStatus || "SEM STATUS"}
-        </Box>
-
-        <Box color="#263238">
-          BASTIAO CONTRATO: {dataInfo.contratoResolverStatus || "-"}
-        </Box>
-        <Box color="#37474f">
-          REGUA PAINEL: {dataInfo.painelRegua || "DESCONHECIDA"}
-        </Box>
-        <Box color="#37474f">
-          TIMEFRAME PAINEL: {dataInfo.painelTimeframe || "DESCONHECIDO"}
-        </Box>
-        <Box color="#263238">
-          SELETOR TIMEFRAME PAINEL:
-          <select
-            value={dataInfo.painelTimeframe || "2_MIN"}
-            onChange={(e) => alterarTimeframePainel(e.target.value)}
-            style={{
-              width: "100%",
-              marginTop: "6px",
-              padding: "6px",
-              borderRadius: "6px",
-              background: "#071923",
-              color: "#ffffff",
-              border: "1px solid #00d9ff",
-              fontWeight: "bold"
-            }}
-          >
-            {(dataInfo.painelTimeframesDisponiveis || ["15s", "30s", "1_MIN", "2_MIN", "5_MIN", "10_MIN", "15_MIN", "30_MIN", "60_MIN", "DIARIO", "SEMANAL"]).map((tf) => (
-              <option key={tf} value={tf}>
-                {tf}{(dataInfo.painelTimeframesReservados || []).includes(tf) ? " ? RESERVADO" : ""}
-              </option>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(18, 1fr)", gap: 5, marginTop: 16 }}>
+            {Array.from({ length: 18 }).map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  height: 34,
+                  borderRadius: 3,
+                  background: i < 12 ? corEstadoPainel : "rgba(255,255,255,0.18)",
+                  boxShadow: i < 12 ? `0 0 12px ${corEstadoPainel}` : "none",
+                }}
+              />
             ))}
-          </select>
-        </Box>
-        <Box color="#263238">
-          TT RAW: {ttRawStatus?.status || ttRawErro || "SEM DIAGNOSTICO"}
-        </Box>
-        <Box color="#263238">
-          TT LINHAS: {Number(ttRawStatus?.total_linhas_validas_tt || 0).toLocaleString("pt-BR")} | SNAP: {Number(ttRawStatus?.total_snapshots || 0).toLocaleString("pt-BR")}
-        </Box>
-        <Box color="#263238">
-          TT USO: {ttRawStatus?.uso_operacional || "DIAGNOSTICO_APENAS"} | CANDLE: {ttRawStatus?.candle_oficial ? "SIM" : "NAO"}
-        </Box>
-        <Box color="#263238">
-          TT PROXIMA: {ttRawStatus?.proxima_etapa || "BASTIAO_TT_PENEIRADOR"}
-        </Box>
-        <Box color="#37474f">
-          BERNARDO: {dataInfo.bernardoStatus || "SEM BERNARDO"} | SIM: {dataInfo.bernardoSimilaridade}
-        </Box>
-        <Box color="#37474f">
-          HISTORIADOR: {dataInfo.historiadorPadrao || "SEM PADRAO"} | SCORE: {dataInfo.historiadorScore}
-        </Box>
-        <Box color="#4a148c">
-          ALERTA: {dataInfo.alertaConfluencia || "SEM ALERTA"}
-        </Box>
-        <Box color="#212121">
-          EVIDENCIAS: {dataInfo.qtdEvidenciasConfluencia ?? 0}
-        </Box>
+          </div>
+        </div>
 
-        <Box color="#004d40">FREQUÃŠNCIA: {dataInfo.frequencia || "-"}</Box>
-        <Box color="#4a148c">INTENSIDADE: {formatar(dataInfo.intensidade)}</Box>
-        <Box color="#263238">SCORE AGRESSÃƒO: {formatar(dataInfo.scoreAgressao)}</Box>
-        <Box color="#311b92">{dataInfo.leituraAgressao || "AGUARDANDO LEITURA"}</Box>
-        
-        <Box color="#4a0000">STOP: {formatar(dataInfo.stop)}</Box>
-        <Box color="#5a4a00">PARCIAL: {formatar(dataInfo.parcial)}</Box>
-        <Box color="#003d1f">ALVO: {formatar(dataInfo.alvo)}</Box>
-
-        <Box color="#102027">SINAL: {dataInfo.sinal || "SEM ENTRADA"}</Box>
-        <Box color="#1b2631">ENTRADA: {dataInfo.entrada || "AGUARDAR"}</Box>
-        <Box color="#263238">TENDÃŠNCIA: {dataInfo.tendencia || "NEUTRO"}</Box>
-
-        <Box color="#424242">SALDO: {dataInfo.saldo ?? "-"}</Box>
-        <Box color="#424242">DELTA: {dataInfo.delta ?? "-"}</Box>
-        <Box color="#424242">VOLUME: {dataInfo.volume ?? "-"}</Box>
-        <Box color="#263238">EXPLOSÃƒO: {dataInfo.explosao || "SEM EXPLOSÃƒO"}</Box>
-
-        <Box color="#0d2538">FASE: {dataInfo.engineFase || "AGUARDANDO"}</Box>
-        <Box color="#0d2538">DIREÃ‡ÃƒO: {dataInfo.engineDirecao || "NEUTRO"}</Box>
-        <Box color="#0d2538">TRAP: {dataInfo.engineTrap || "SEM TRAP"}</Box>
-        <Box color="#0d2538">SEQ DELTA: {dataInfo.engineSeqDelta ?? "-"}</Box>
-
-        <Box color={temHotZone ? "#5a3600" : "#263238"}>
-          HOT ZONE: {temHotZone ? `${formatar(dataInfo.zonaLow)} - ${formatar(dataInfo.zonaHigh)}` : "SEM ZONA"}
-        </Box>
-
-        <Box color={dataInfo.engineAbsorcao ? "#7b1fa2" : "#263238"}>
-          ABSORÃ‡ÃƒO: {dataInfo.engineAbsorcao ? "ATIVA" : "NÃƒO"}
-        </Box>
-
-        <PressaoBar compra={dataInfo.compra} venda={dataInfo.venda} />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <Box color="#12313d">ULTIMO<br />{formatar(ultimoPainel)}</Box>
+          <Box color="#263238">VWAP<br />{formatar(vwapPainel)}</Box>
+          <Box color={Number(deltaPainel || 0) >= 0 ? "#004d40" : "#4a0000"}>DELTA<br />{deltaPainel}</Box>
+          <Box color={Number(saldoPainel || 0) >= 0 ? "#004d40" : "#4a0000"}>SALDO<br />{saldoPainel}</Box>
+        </div>
       </div>
     </div>
   );
@@ -1234,11 +1423,11 @@ function Radar({ cor, intensidade, wsStatus }) {
   return (
     <div
       style={{
-        height: 170,
-        background: "#05101d",
+        height: 165,
+        background: "radial-gradient(circle at center, #061421 0%, #020812 70%)",
         border: `1px solid ${cor}`,
-        borderRadius: 12,
-        marginBottom: 10,
+        borderRadius: 14,
+        marginBottom: 12,
         position: "relative",
         overflow: "hidden",
         boxShadow: `0 0 30px ${cor}`,
@@ -1361,11 +1550,13 @@ function Titulo({ children }) {
       style={{
         background: "linear-gradient(90deg,#00ffc8,#0066ff)",
         color: "#001014",
-        padding: 10,
-        marginBottom: 8,
-        borderRadius: 6,
+        padding: 11,
+        marginBottom: 10,
+        borderRadius: 8,
         fontWeight: "900",
         textAlign: "center",
+        letterSpacing: 0.8,
+        boxShadow: "0 0 18px rgba(0,217,255,0.35)",
       }}
     >
       {children}
@@ -1379,10 +1570,13 @@ function Box({ children, color }) {
       style={{
         backgroundColor: color,
         color: "white",
-        padding: 8,
-        marginBottom: 5,
-        borderRadius: 5,
+        padding: "10px 11px",
+        marginBottom: 8,
+        borderRadius: 8,
         fontWeight: "bold",
+        lineHeight: 1.25,
+        boxShadow: "inset 0 0 14px rgba(255,255,255,0.04), 0 0 12px rgba(0,217,255,0.10)",
+        border: "1px solid rgba(255,255,255,0.07)",
       }}
     >
       {children}
