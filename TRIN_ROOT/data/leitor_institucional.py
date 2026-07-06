@@ -31,6 +31,20 @@ CELULAS = {
     "vwap": "N2",
 }
 
+CAMPOS_CRITICOS = [
+    "ativo",
+    "data",
+    "hora",
+    "ultimo",
+    "abertura",
+    "maximo",
+    "minimo",
+    "volume",
+    "delta",
+    "saldo",
+    "vwap",
+]
+
 
 def _com_retry(func, tentativas=10, espera=0.08):
     ultimo_erro = None
@@ -50,18 +64,45 @@ def _nome_limpo(valor):
     return str(valor or "").strip().lower()
 
 
-def para_numero(valor, padrao=0):
+def valor_excel_invalido(valor):
     if valor is None:
+        return True
+
+    # Excel COM pode retornar erros de celula como inteiros HRESULT,
+    # por exemplo #N/D / #N/A como valores negativos perto de -2146826xxx.
+    if isinstance(valor, (int, float)):
+        if valor <= -1000000000:
+            return True
+        return False
+
+    texto = str(valor).strip()
+
+    if texto in (
+        "",
+        "---",
+        "#N/D",
+        "#N/A",
+        "#VALOR!",
+        "#VALUE!",
+        "#REF!",
+        "#DIV/0!",
+        "Atributo",
+        "Atributo Inválido",
+        "Atributo InvÃ¡lido",
+    ):
+        return True
+
+    return False
+
+
+def para_numero(valor, padrao=0):
+    if valor_excel_invalido(valor):
         return padrao
 
     if isinstance(valor, (int, float)):
         return float(valor)
 
     texto = str(valor).strip()
-
-    if texto in ("", "---", "#N/D", "#N/A", "Atributo", "Atributo Inválido", "Atributo InvÃ¡lido"):
-        return padrao
-
     texto = texto.replace(".", "").replace(",", ".")
 
     try:
@@ -71,8 +112,9 @@ def para_numero(valor, padrao=0):
 
 
 def conectar_planilha():
-    excel = _com_retry(lambda: win32com.client.GetActiveObject("Excel.Application"))
+    pythoncom.CoInitialize()
 
+    excel = _com_retry(lambda: win32com.client.GetActiveObject("Excel.Application"))
     qtd_livros = _com_retry(lambda: excel.Workbooks.Count)
 
     livro_alvo = None
@@ -121,6 +163,22 @@ def ler_celula(ws, celula):
     return _com_retry(lambda: ws.Range(celula).Value)
 
 
+def validar_dados_rtd(dados):
+    invalidos = {}
+
+    for campo in CAMPOS_CRITICOS:
+        valor = dados.get(campo)
+
+        if valor_excel_invalido(valor):
+            invalidos[campo] = str(valor)
+
+    if invalidos:
+        raise RuntimeError(
+            "RTD_EXCEL_PLAN1_INVALIDO: células críticas sem dado válido: "
+            f"{invalidos}"
+        )
+
+
 def ler_dados_institucionais():
     ws = conectar_planilha()
 
@@ -129,11 +187,16 @@ def ler_dados_institucionais():
         for nome, celula in CELULAS.items()
     }
 
+    validar_dados_rtd(dados)
+
     preco = para_numero(dados["ultimo"])
     abertura = para_numero(dados["abertura"], preco)
     maximo = para_numero(dados["maximo"], preco)
     minimo = para_numero(dados["minimo"], preco)
     vwap = para_numero(dados["vwap"], preco)
+
+    if preco <= 0:
+        raise RuntimeError(f"RTD_EXCEL_PLAN1_INVALIDO: preço inválido: {preco}")
 
     volume_real = int(para_numero(dados["volume"]))
     delta_real = int(para_numero(dados["delta"]))
@@ -143,8 +206,6 @@ def ler_dados_institucionais():
     volume_venda_real = int(para_numero(dados["volume_venda"]))
     volume_saldo_real = int(para_numero(dados["volume_saldo"]))
 
-    # Volume normalizado para o motor TRIN.
-    # O volume real continua preservado em volume_real.
     volume_trin = int(volume_real / 100000000)
 
     if volume_trin < 0:
