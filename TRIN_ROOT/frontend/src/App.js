@@ -1148,6 +1148,13 @@ if (temEntradaReal) {
     direcaoPainel === "VENDA" ? "MONITORAR VENDA" :
     "MONITORAR MERCADO";
 
+  const contextoIndicadorPainel =
+    bloqueioPorFiscalPainel
+      ? "FISCAL"
+      : bloqueadoPainel
+        ? "BLOQ"
+        : (dataInfo.score ?? 0);
+
   const alertaPrincipalPainel =
     alertaPainel && alertaPainel !== "SEM ALERTA"
       ? alertaPainel
@@ -1343,7 +1350,7 @@ if (temEntradaReal) {
           <div style={{ textAlign: "center" }}>
             <div style={{ color: "#8a969e", fontSize: 12, fontWeight: "900" }}>CONTEXTO</div>
             <div style={{ color: corEstadoPainel, fontSize: 34, fontWeight: "900", marginTop: 8 }}>
-              {dataInfo.score ?? 0}
+              {contextoIndicadorPainel}
             </div>
           </div>
 
