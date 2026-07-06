@@ -430,6 +430,34 @@ if (absorcao) {
 
     const entradaBackend = data.entrada ?? data.sinal?.entrada ?? "AGUARDAR";
 
+    // Calibracao do placar:
+    // se o candle trouxer volume_compra/volume_venda real, ele manda no placar.
+    // Isso evita o erro visual 100% / 0% quando o backend manda campo ja normalizado.
+    const compraCandleReal = Number(
+      ultimoCandle.volume_compra ??
+      ultimoCandle.compra ??
+      ultimoCandle.pressao_compra ??
+      0
+    );
+
+    const vendaCandleReal = Number(
+      ultimoCandle.volume_venda ??
+      ultimoCandle.venda ??
+      ultimoCandle.pressao_venda ??
+      0
+    );
+
+    const compraTopo = Number(data.pressao_compra ?? agressao.persistencia_compra ?? 0);
+    const vendaTopo = Number(data.pressao_venda ?? agressao.persistencia_venda ?? 0);
+
+    const usarPressaoCandleReal =
+      Number.isFinite(compraCandleReal) &&
+      Number.isFinite(vendaCandleReal) &&
+      compraCandleReal + vendaCandleReal > 1000;
+
+    const compraPainelFonte = usarPressaoCandleReal ? compraCandleReal : compraTopo;
+    const vendaPainelFonte = usarPressaoCandleReal ? vendaCandleReal : vendaTopo;
+
     const temEntradaPainel =
      entradaBackend.includes("COMPRA") ||
      entradaBackend.includes("VENDA");
@@ -460,8 +488,8 @@ if (absorcao) {
       fonteDados: ultimoCandle.fonte_dados,
       abaOrigem: ultimoCandle.aba_origem,
 
-      compra: data.pressao_compra ?? agressao.persistencia_compra ?? 0,
-      venda: data.pressao_venda ?? agressao.persistencia_venda ?? 0,
+      compra: compraPainelFonte,
+      venda: vendaPainelFonte,
 
       explosao:
         data.tipo_explosao ??
@@ -596,12 +624,42 @@ alvo: temEntradaPainel ? data.alvo : null,
 
     const contexto = calcularContextoInstitucional(baseInfo);
 
+    const fiscalBloqueandoConfluencia =
+      data.qualidade_confluencia === "BLOQUEADO_POR_CERTIFICACAO" ||
+      String(data.alerta_confluencia || "").includes("FISCAL");
+
+    const direcaoContexto = baseInfo.engineDirecao || "NEUTRO";
+
+    const contextoTextoFinal =
+      fiscalBloqueandoConfluencia && direcaoContexto !== "NEUTRO"
+        ? `${direcaoContexto} BLOQUEADA PELO FISCAL`
+        : fiscalBloqueandoConfluencia
+          ? "CONFLUENCIA BLOQUEADA PELO FISCAL"
+          : contexto.texto;
+
+    const contextoDetalheFinal =
+      fiscalBloqueandoConfluencia
+        ? "Contrato aprovado, mas confluencia operacional aguardando certificacao fiscal"
+        : contexto.detalhe;
+
+    const contextoCorFinal =
+      fiscalBloqueandoConfluencia
+        ? "#ff3333"
+        : contexto.cor;
+
     setDataInfo({
       ...baseInfo,
-      contextoInstitucional: contexto.texto,
-      contextoTexto: contexto.texto,
-      contextoCor: contexto.cor,
-      contextoDetalhe: contexto.detalhe,
+
+      qualidadeConfluencia: data.qualidade_confluencia,
+      alertaConfluencia: data.alerta_confluencia,
+      fiscalStatus: data.fiscal_status,
+      contratoAtivoStatus: data.contrato_ativo_status,
+      contratoAtivoBloqueio: data.contrato_ativo_bloqueio,
+
+      contextoInstitucional: contextoTextoFinal,
+      contextoTexto: contextoTextoFinal,
+      contextoCor: contextoCorFinal,
+      contextoDetalhe: contextoDetalheFinal,
     });
 
     if (!carregouHistoricoRef.current) {
@@ -1087,8 +1145,23 @@ if (temEntradaReal) {
         ? "CONFLUENCIA BLOQUEADA"
         : "SEM ALERTA CRITICO";
 
-  const compraPctPainel = Math.max(0, Math.min(100, Number(dataInfo.compra || 0)));
-  const vendaPctPainel = Math.max(0, Math.min(100, Number(dataInfo.venda || 0)));
+  const compraBrutaPainel = Math.max(0, Number(dataInfo.compra || 0));
+  const vendaBrutaPainel = Math.max(0, Number(dataInfo.venda || 0));
+  const totalPressaoPainel = compraBrutaPainel + vendaBrutaPainel;
+
+  const compraPctPainel =
+    totalPressaoPainel > 0
+      ? Math.round((compraBrutaPainel / totalPressaoPainel) * 100)
+      : 0;
+
+  const vendaPctPainel =
+    totalPressaoPainel > 0
+      ? Math.max(0, 100 - compraPctPainel)
+      : 0;
+
+  const forcaPlacarPainel = Math.max(compraPctPainel, vendaPctPainel);
+  const barrasPlacarPainel = Math.max(0, Math.round((forcaPlacarPainel / 100) * 14));
+  const barrasAlertaPainel = Math.max(0, Math.round((forcaPlacarPainel / 100) * 18));
 
   return (
     <div
@@ -1229,8 +1302,8 @@ if (temEntradaReal) {
                   style={{
                     height: 42,
                     borderRadius: 3,
-                    background: i < 10 ? corEstadoPainel : "rgba(255,255,255,0.16)",
-                    boxShadow: i < 10 ? `0 0 12px ${corEstadoPainel}` : "none",
+                    background: i < barrasPlacarPainel ? corEstadoPainel : "rgba(255,255,255,0.16)",
+                    boxShadow: i < barrasPlacarPainel ? `0 0 12px ${corEstadoPainel}` : "none",
                   }}
                 />
               ))}
@@ -1384,8 +1457,8 @@ if (temEntradaReal) {
                 style={{
                   height: 34,
                   borderRadius: 3,
-                  background: i < 12 ? corEstadoPainel : "rgba(255,255,255,0.18)",
-                  boxShadow: i < 12 ? `0 0 12px ${corEstadoPainel}` : "none",
+                  background: i < barrasAlertaPainel ? corEstadoPainel : "rgba(255,255,255,0.18)",
+                  boxShadow: i < barrasAlertaPainel ? `0 0 12px ${corEstadoPainel}` : "none",
                 }}
               />
             ))}
