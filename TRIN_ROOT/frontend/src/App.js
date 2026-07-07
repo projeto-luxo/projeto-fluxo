@@ -1583,6 +1583,14 @@ function TopBar({ dataInfo, cor, wsStatus }) {
       ? "AGUARDANDO MOTOR"
       : faseTopoBruta;
 
+  const contextoTopoBruto = String(dataInfo.contextoInstitucional || "AGUARDANDO");
+
+  const contextoTopo =
+    dataInfo.qualidadeConfluencia === "BLOQUEADO_POR_CERTIFICACAO" ||
+    contextoTopoBruto.includes("FISCAL")
+      ? "BLOQUEIO FISCAL"
+      : contextoTopoBruto;
+
   return (
     <div
       style={{
@@ -1600,7 +1608,7 @@ function TopBar({ dataInfo, cor, wsStatus }) {
       </MiniBadge>
 
       <MiniBadge cor={cor}>
-        CONTEXTO: {dataInfo.contextoInstitucional || "AGUARDANDO"}
+        CONTEXTO: {contextoTopo}
       </MiniBadge>
 
       <MiniBadge cor={cor}>FASE: {faseTopo}</MiniBadge>
