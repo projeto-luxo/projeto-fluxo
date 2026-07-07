@@ -1558,6 +1558,11 @@ function HotZoneOverlay({ low, high, absorcao, compra, venda }) {
 }
 
 function TopBar({ dataInfo, cor, wsStatus }) {
+  const direcaoTopo =
+    dataInfo.direcaoConfluencia ||
+    dataInfo.engineDirecao ||
+    "NEUTRO";
+
   return (
     <div
       style={{
@@ -1579,7 +1584,7 @@ function TopBar({ dataInfo, cor, wsStatus }) {
       </MiniBadge>
 
       <MiniBadge cor={cor}>FASE: {dataInfo.engineFase || "AGUARDANDO"}</MiniBadge>
-      <MiniBadge cor={cor}>DIREÃ‡ÃƒO: {dataInfo.engineDirecao || "NEUTRO"}</MiniBadge>
+      <MiniBadge cor={cor}>DIREÃ‡ÃƒO: {direcaoTopo}</MiniBadge>
       <MiniBadge cor={cor}>ENTRADA: {dataInfo.entrada || "AGUARDAR"}</MiniBadge>
     </div>
   );
