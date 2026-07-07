@@ -1563,6 +1563,13 @@ function TopBar({ dataInfo, cor, wsStatus }) {
     dataInfo.engineDirecao ||
     "NEUTRO";
 
+  const faseTopoBruta = String(dataInfo.engineFase || "AGUARDANDO").toUpperCase();
+
+  const faseTopo =
+    faseTopoBruta === "SIMULADO_TRINENGINE_SEM_PROCESSAR"
+      ? "AGUARDANDO MOTOR"
+      : faseTopoBruta;
+
   return (
     <div
       style={{
@@ -1583,7 +1590,7 @@ function TopBar({ dataInfo, cor, wsStatus }) {
         CONTEXTO: {dataInfo.contextoInstitucional || "AGUARDANDO"}
       </MiniBadge>
 
-      <MiniBadge cor={cor}>FASE: {dataInfo.engineFase || "AGUARDANDO"}</MiniBadge>
+      <MiniBadge cor={cor}>FASE: {faseTopo}</MiniBadge>
       <MiniBadge cor={cor}>DIREÃ‡ÃƒO: {direcaoTopo}</MiniBadge>
       <MiniBadge cor={cor}>ENTRADA: {dataInfo.entrada || "AGUARDAR"}</MiniBadge>
     </div>
