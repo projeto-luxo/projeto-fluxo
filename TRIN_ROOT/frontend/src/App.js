@@ -1173,6 +1173,19 @@ if (temEntradaReal) {
           ? "LIBERADA"
           : "AGUARDANDO";
 
+  const estadoQualidadePainel =
+    dataInfo.qualidadeConfluencia === "BLOQUEADO_POR_CERTIFICACAO"
+      ? "BLOQUEADO POR CERTIFICACAO"
+      : dataInfo.qualidadeConfluencia === "FORTE"
+        ? "CONFLUENCIA FORTE"
+        : dataInfo.qualidadeConfluencia === "MEDIA"
+          ? "CONFLUENCIA MEDIA"
+          : dataInfo.qualidadeConfluencia === "FRACA"
+            ? "CONFLUENCIA FRACA"
+            : dataInfo.qualidadeConfluencia === "NEUTRA"
+              ? "CONFLUENCIA NEUTRA"
+              : (dataInfo.qualidadeConfluencia || "DESCONHECIDO");
+
   const alertaPrincipalPainel =
     alertaPainel && alertaPainel !== "SEM ALERTA"
       ? alertaPainel
@@ -1272,7 +1285,7 @@ if (temEntradaReal) {
           • Direcao: {direcaoPainel}<br />
           • Entrada: {temEntradaValida ? dataInfo.entrada : "AGUARDAR"}<br />
           • Autorizacao: {autorizacaoOperacionalPainel}<br />
-          • Qualidade: {dataInfo.qualidadeConfluencia || "DESCONHECIDA"}<br />
+          • Estado: {estadoQualidadePainel}<br />
           • Fiscal: {dataInfo.fiscalStatus || "DESCONHECIDO"}
         </div>
 
