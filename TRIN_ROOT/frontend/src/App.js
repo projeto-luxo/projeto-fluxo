@@ -369,6 +369,21 @@ if (absorcao) {
 });
    
   }, [setLinhaHorizontal]);
+
+  const aplicarEscalaTempoPorTimeframe = useCallback((timeframe) => {
+    if (!chartRef.current) return;
+
+    const tf = String(timeframe || "").toUpperCase();
+    const mostrarSegundos = tf === "15S" || tf === "30S";
+
+    chartRef.current.applyOptions({
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: mostrarSegundos,
+      },
+    });
+  }, []);
+
   const processarDados = useCallback((data) => {
     setWsStatus("ONLINE");
 
@@ -391,6 +406,14 @@ if (absorcao) {
     if (!historico.length || !candleSeriesRef.current) return;
 
     const ultimoCandle = historico[historico.length - 1];
+
+    const timeframeAtualGrafico =
+      data.painel_temporal?.timeframe_painel ||
+      ultimoCandle.timeframe_painel ||
+      "DESCONHECIDO";
+
+    aplicarEscalaTempoPorTimeframe(timeframeAtualGrafico);
+
     const primeiroTime = historico[0].time;
     const ultimoTime = ultimoCandle.time;
 
@@ -797,6 +820,7 @@ if (temEntradaReal) {
     }
   }, [
     atualizarPriceLineExecucao,
+    aplicarEscalaTempoPorTimeframe,
     ordenarPorTempo,
     gerarMarkersInstitucionais,
     setLinhaHorizontal,
@@ -994,6 +1018,8 @@ if (temEntradaReal) {
         alert(`${resultado.status || "TIMEFRAME_NAO_APLICADO"}: ${resultado.motivo || "Timeframe nao liberado."}`);
         return;
       }
+
+      aplicarEscalaTempoPorTimeframe(timeframe);
 
       carregouHistoricoRef.current = false;
 
