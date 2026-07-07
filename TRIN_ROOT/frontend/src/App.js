@@ -485,8 +485,19 @@ if (absorcao) {
       maximo: ultimoCandle.high,
       minimo: ultimoCandle.low,
       vwap: data.vwap_atual ?? data.vwap_real ?? ultimoCandle.vwap ?? ultimoCandle.vwap_real,
-      fonteDados: ultimoCandle.fonte_dados,
+      fonteDados:
+        ultimoCandle.fonte_dados ||
+        data.fonte_dados ||
+        data.painel_temporal?.origem ||
+        "DESCONHECIDA",
       abaOrigem: ultimoCandle.aba_origem,
+
+      modoOperacional:
+        data.modo_replay
+          ? "REPLAY"
+          : data.painel_temporal?.origem === "RTD_EXCEL_AGREGADO"
+            ? "AO_VIVO"
+            : data.fonte_dados || "DESCONHECIDO",
 
       compra: compraPainelFonte,
       venda: vendaPainelFonte,
@@ -1078,6 +1089,28 @@ if (temEntradaReal) {
   const vwapPainel = dataInfo.vwap ?? dataInfo.vwapReal ?? dataInfo.vwap_real ?? "-";
   const distVwapPainel = dataInfo.distanciaVwap ?? dataInfo.distancia_vwap ?? "-";
 
+  const modoOperacionalPainel =
+    dataInfo.modoOperacional ||
+    (dataInfo.painelOrigemTemporal === "RTD_EXCEL_AGREGADO" ? "AO_VIVO" : "DESCONHECIDO");
+
+  const fonteOperacionalPainel =
+    dataInfo.fonteDados ||
+    dataInfo.painelOrigemTemporal ||
+    "DESCONHECIDA";
+
+  const timeframeOperacionalPainel =
+    dataInfo.painelTimeframe ||
+    "DESCONHECIDO";
+
+  const statusOperacionalPainel =
+    dataInfo.painelStatus ||
+    "DESCONHECIDO";
+
+  const contratoOperacionalPainel =
+    dataInfo.contratoExcelRtd ||
+    dataInfo.contratoEsperadoRtd ||
+    "-";
+
   const direcaoPainel = dataInfo.direcaoConfluencia || dataInfo.engineDirecao || "NEUTRO";
   const entradaTexto = String(dataInfo.entrada || "AGUARDAR").toUpperCase();
 
@@ -1295,12 +1328,35 @@ if (temEntradaReal) {
           CENARIO: {microPainel}
         </div>
 
-        <div style={{ color: "#d7dde1", fontSize: 14, lineHeight: 1.6, marginBottom: 28 }}>
+        <div style={{ color: "#d7dde1", fontSize: 14, lineHeight: 1.6, marginBottom: 18 }}>
           • Direcao: {direcaoPainel}<br />
           • Entrada: {temEntradaValida ? dataInfo.entrada : "AGUARDAR"}<br />
           • Autorizacao: {autorizacaoOperacionalPainel}<br />
           • Estado: {estadoQualidadePainel}<br />
           • Fiscal: {dataInfo.fiscalStatus || "DESCONHECIDO"}
+        </div>
+
+        <div
+          style={{
+            border: "1px solid rgba(0,217,255,0.22)",
+            background: "rgba(0,217,255,0.055)",
+            borderRadius: 12,
+            padding: "10px 12px",
+            marginBottom: 24,
+            color: "#d7dde1",
+            fontSize: 12,
+            lineHeight: 1.55,
+            boxShadow: "inset 0 0 18px rgba(0,217,255,0.05)",
+          }}
+        >
+          <div style={{ color: "#00d9ff", fontWeight: "900", fontSize: 11, letterSpacing: 1, marginBottom: 6 }}>
+            FONTE OPERACIONAL
+          </div>
+          <div>• Modo: <b>{modoOperacionalPainel}</b></div>
+          <div>• Fonte: <b>{fonteOperacionalPainel}</b></div>
+          <div>• TF: <b>{timeframeOperacionalPainel}</b></div>
+          <div>• Status: <b>{statusOperacionalPainel}</b></div>
+          <div>• Contrato: <b>{contratoOperacionalPainel}</b></div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 22, marginBottom: 18 }}>
