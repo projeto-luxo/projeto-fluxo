@@ -1591,7 +1591,7 @@ function TopBar({ dataInfo, cor, wsStatus }) {
       </MiniBadge>
 
       <MiniBadge cor={cor}>FASE: {faseTopo}</MiniBadge>
-      <MiniBadge cor={cor}>DIREÃ‡ÃƒO: {direcaoTopo}</MiniBadge>
+      <MiniBadge cor={cor}>DIRECAO: {direcaoTopo}</MiniBadge>
       <MiniBadge cor={cor}>ENTRADA: {dataInfo.entrada || "AGUARDAR"}</MiniBadge>
     </div>
   );
