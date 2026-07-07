@@ -1164,6 +1164,15 @@ if (temEntradaReal) {
           ? "LIB"
           : "MON";
 
+  const autorizacaoOperacionalPainel =
+    bloqueioPorFiscalPainel
+      ? "BLOQUEADA PELO FISCAL"
+      : bloqueadoPainel
+        ? "BLOQUEADA"
+        : temEntradaValida
+          ? "LIBERADA"
+          : "AGUARDANDO";
+
   const alertaPrincipalPainel =
     alertaPainel && alertaPainel !== "SEM ALERTA"
       ? alertaPainel
@@ -1262,6 +1271,7 @@ if (temEntradaReal) {
         <div style={{ color: "#d7dde1", fontSize: 14, lineHeight: 1.6, marginBottom: 28 }}>
           • Direcao: {direcaoPainel}<br />
           • Entrada: {temEntradaValida ? dataInfo.entrada : "AGUARDAR"}<br />
+          • Autorizacao: {autorizacaoOperacionalPainel}<br />
           • Qualidade: {dataInfo.qualidadeConfluencia || "DESCONHECIDA"}<br />
           • Fiscal: {dataInfo.fiscalStatus || "DESCONHECIDO"}
         </div>
