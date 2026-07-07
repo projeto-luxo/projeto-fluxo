@@ -1303,10 +1303,10 @@ if (temEntradaReal) {
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, flex: 1 }}>
             {[
-              ["1", formatar(ultimoPainel), "#8b1f1f", "#ff5555"],
-              ["2", formatar(minimaPainel), "#006b3c", "#00ff99"],
-              ["3", formatar(vwapPainel), "#006b3c", "#00ff99"],
-              ["4", formatar(maximaPainel), "#8b1f1f", "#ff5555"],
+              ["ULT", formatar(ultimoPainel), "#8b1f1f", "#ff5555"],
+              ["MIN", formatar(minimaPainel), "#006b3c", "#00ff99"],
+              ["VWAP", formatar(vwapPainel), "#006b3c", "#00ff99"],
+              ["MAX", formatar(maximaPainel), "#8b1f1f", "#ff5555"],
             ].map(([n, valor, fundo, borda]) => (
               <div key={n} style={{ textAlign: "center" }}>
                 <div style={{ fontWeight: "900", marginBottom: 5 }}>{n}</div>
