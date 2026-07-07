@@ -1200,6 +1200,13 @@ if (temEntradaReal) {
         ? "CONFLUENCIA BLOQUEADA"
         : "SEM ALERTA CRITICO";
 
+  const tituloAlertaRodape =
+    bloqueioPorFiscalPainel
+      ? "ALERTA FISCAL"
+      : temAlerta
+        ? "ALERTA"
+        : "STATUS";
+
   const compraBrutaPainel = Math.max(0, Number(dataInfo.compra || 0));
   const vendaBrutaPainel = Math.max(0, Number(dataInfo.venda || 0));
   const totalPressaoPainel = compraBrutaPainel + vendaBrutaPainel;
@@ -1497,7 +1504,7 @@ if (temEntradaReal) {
       >
         <div>
           <div style={{ color: corEstadoPainel, fontSize: 32, fontWeight: "900", letterSpacing: 2 }}>
-            ALERTA
+            {tituloAlertaRodape}
           </div>
           <div style={{ color: "#d0d7dc", fontSize: 12, fontWeight: "bold" }}>
             {motivoBloqueioPainel || alertaPrincipalPainel}
@@ -1505,6 +1512,9 @@ if (temEntradaReal) {
         </div>
 
         <div>
+          <div style={{ color: "#d0d7dc", fontSize: 12, fontWeight: "900", textAlign: "center", letterSpacing: 2, marginBottom: 4 }}>
+            ACAO
+          </div>
           <div style={{ color: corEstadoPainel, fontSize: 38, fontWeight: "900", textAlign: "center", letterSpacing: 3 }}>
             {acaoPrincipalPainel}
           </div>
