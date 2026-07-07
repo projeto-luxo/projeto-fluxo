@@ -378,6 +378,13 @@ def agregar_historico_painel(historico_raw, timeframe):
         if bucket not in agregados:
             novo = dict(candle)
             novo["time"] = bucket
+            novo["volume_normalizado_capado"] = candle.get("volume_normalizado_capado", candle.get("volume"))
+            novo["volume_candle_estimado"] = _num(
+                candle.get("volume_delta_estimado", candle.get("volume_candle_estimado")),
+                0
+            )
+            novo["volume_delta_estimado"] = novo["volume_candle_estimado"]
+            novo["volume_tipo"] = "REAL_DELTA_ESTIMADO"
             novo["timeframe_painel"] = timeframe
             novo["regua_painel"] = "RTD_AGREGADO"
             novo["status_painel"] = "OPERACIONAL_NAO_CERTIFICADO"
@@ -396,12 +403,21 @@ def agregar_historico_painel(historico_raw, timeframe):
         )
         atual["close"] = candle.get("close")
         atual["volume"] = candle.get("volume")
+        atual["volume_normalizado_capado"] = candle.get("volume_normalizado_capado", candle.get("volume"))
+        atual["volume_candle_estimado"] = _num(atual.get("volume_candle_estimado"), 0) + _num(
+            candle.get("volume_delta_estimado", candle.get("volume_candle_estimado")),
+            0
+        )
+        atual["volume_delta_estimado"] = atual["volume_candle_estimado"]
+        atual["volume_tipo"] = "REAL_DELTA_ESTIMADO"
         atual["timeframe_painel"] = timeframe
         atual["regua_painel"] = "RTD_AGREGADO"
         atual["status_painel"] = "OPERACIONAL_NAO_CERTIFICADO"
 
         for chave in [
             "volume_real",
+            "volume_normalizado_capado",
+            "volume_tipo",
             "delta",
             "saldo",
             "ativo",
@@ -419,8 +435,53 @@ def agregar_historico_painel(historico_raw, timeframe):
     return list(agregados.values())[-MAX_HISTORICO_PAINEL:]
 
 
+def calcular_volume_delta_estimado(candle, referencia=None):
+    """
+    Calcula volume estimado por diferenca de volume_real acumulado.
+    Nao altera o campo legado `volume`, que permanece normalizado/capado.
+    """
+    try:
+        volume_atual = _num(candle.get("volume_real"), 0)
+
+        if referencia is None:
+            return 0
+
+        if candle.get("ativo") != referencia.get("ativo"):
+            return 0
+
+        if candle.get("data_excel") and referencia.get("data_excel"):
+            if candle.get("data_excel") != referencia.get("data_excel"):
+                return 0
+
+        volume_anterior = _num(referencia.get("volume_real"), 0)
+        delta = volume_atual - volume_anterior
+
+        if delta < 0:
+            return 0
+
+        return round(delta, 2)
+    except Exception:
+        return 0
+
+
+def enriquecer_volume_estimado(candle, referencia=None):
+    """
+    Preserva volume normalizado/capado e adiciona campos novos para auditoria/painel.
+    """
+    volume_delta = calcular_volume_delta_estimado(candle, referencia)
+
+    candle["volume_normalizado_capado"] = candle.get("volume")
+    candle["volume_delta_estimado"] = volume_delta
+    candle["volume_candle_estimado"] = volume_delta
+    candle["volume_tipo"] = "REAL_DELTA_ESTIMADO"
+
+    return candle
+
+
 def atualizar_historico():
     candle = gerar_candle()
+    referencia_volume = historico[-1] if historico else None
+    candle = enriquecer_volume_estimado(candle, referencia_volume)
 
     candle_engine.adicionar_candle(candle)
     candle["reversao_detectada"] = candle_engine.calcular_reversao()
@@ -442,6 +503,12 @@ def atualizar_historico():
         )
         ultimo["close"] = candle.get("close")
         ultimo["volume"] = candle.get("volume")
+        ultimo["volume_normalizado_capado"] = candle.get("volume_normalizado_capado", candle.get("volume"))
+
+        delta_volume_estimado = _num(candle.get("volume_delta_estimado"), 0)
+        ultimo["volume_delta_estimado"] = _num(ultimo.get("volume_delta_estimado"), 0) + delta_volume_estimado
+        ultimo["volume_candle_estimado"] = _num(ultimo.get("volume_candle_estimado"), 0) + delta_volume_estimado
+        ultimo["volume_tipo"] = "REAL_DELTA_ESTIMADO"
 
         for chave in [
             "volume_real",
