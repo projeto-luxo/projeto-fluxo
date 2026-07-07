@@ -1155,6 +1155,15 @@ if (temEntradaReal) {
         ? "BLOQ"
         : (dataInfo.score ?? 0);
 
+  const statusConfluenciaPainel =
+    bloqueioPorFiscalPainel
+      ? "BLOQ"
+      : bloqueadoPainel
+        ? "BLOQ"
+        : temEntradaValida
+          ? "LIB"
+          : "MON";
+
   const alertaPrincipalPainel =
     alertaPainel && alertaPainel !== "SEM ALERTA"
       ? alertaPainel
@@ -1355,9 +1364,12 @@ if (temEntradaReal) {
           </div>
 
           <div style={{ textAlign: "center" }}>
-            <div style={{ color: "#8a969e", fontSize: 12, fontWeight: "900" }}>PONTOS</div>
+            <div style={{ color: "#8a969e", fontSize: 12, fontWeight: "900" }}>CONFL</div>
             <div style={{ color: corEstadoPainel, fontSize: 34, fontWeight: "900", marginTop: 8 }}>
               {formatar(dataInfo.scoreConfluencia)}
+            </div>
+            <div style={{ color: corEstadoPainel, fontSize: 11, fontWeight: "900", letterSpacing: 1, marginTop: 3 }}>
+              {statusConfluenciaPainel}
             </div>
           </div>
         </div>
