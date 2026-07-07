@@ -1148,6 +1148,13 @@ if (temEntradaReal) {
     direcaoPainel === "VENDA" ? "MONITORAR VENDA" :
     "MONITORAR MERCADO";
 
+  const chamadaPrincipalPainel =
+    bloqueioPorFiscalPainel
+      ? "AUTORIZACAO BLOQUEADA"
+      : bloqueadoPainel
+        ? motivoBloqueioPainel
+        : acaoPrincipalPainel;
+
   const contextoIndicadorPainel =
     bloqueioPorFiscalPainel
       ? "FISCAL"
@@ -1325,7 +1332,7 @@ if (temEntradaReal) {
             boxShadow: `0 0 24px ${corEstadoPainel}55`,
           }}
         >
-          {bloqueadoPainel ? motivoBloqueioPainel : acaoPrincipalPainel}
+          {chamadaPrincipalPainel}
         </div>
 
         <div style={{ marginTop: 34 }}>
