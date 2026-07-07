@@ -1591,6 +1591,24 @@ function TopBar({ dataInfo, cor, wsStatus }) {
       ? "BLOQUEIO FISCAL"
       : contextoTopoBruto;
 
+  const entradaTopoBruta = String(dataInfo.entrada || "AGUARDAR").toUpperCase();
+
+  const bloqueioOperacionalTopo =
+    dataInfo.qualidadeConfluencia === "BLOQUEADO_POR_CERTIFICACAO" ||
+    String(dataInfo.alertaConfluencia || "").includes("FISCAL") ||
+    contextoTopoBruto.includes("FISCAL");
+
+  const temEntradaTopo =
+    entradaTopoBruta &&
+    !["AGUARDAR", "SEM ENTRADA", "SEM SINAL", "-", "NAO", "NÃO"].includes(entradaTopoBruta);
+
+  const acaoTopo =
+    bloqueioOperacionalTopo
+      ? "AGUARDAR"
+      : temEntradaTopo
+        ? entradaTopoBruta
+        : "AGUARDAR";
+
   return (
     <div
       style={{
@@ -1613,7 +1631,7 @@ function TopBar({ dataInfo, cor, wsStatus }) {
 
       <MiniBadge cor={cor}>FASE: {faseTopo}</MiniBadge>
       <MiniBadge cor={cor}>DIRECAO: {direcaoTopo}</MiniBadge>
-      <MiniBadge cor={cor}>ENTRADA: {dataInfo.entrada || "AGUARDAR"}</MiniBadge>
+      <MiniBadge cor={cor}>ACAO: {acaoTopo}</MiniBadge>
     </div>
   );
 }
