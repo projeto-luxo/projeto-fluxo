@@ -1276,13 +1276,13 @@ if (temEntradaReal) {
         }}
       >
         <div style={{ color: "#00d9ff", fontSize: 13, fontWeight: "900", marginBottom: 30 }}>
-          TRIN Updates
+          TRIN COCKPIT
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 22 }}>
           <div style={{ height: 1, flex: 1, background: "rgba(255,255,255,0.45)" }} />
           <div style={{ color: "#cfd8dc", fontSize: 16 }}>
-            Nova Atualizacao
+            STATUS OPERACIONAL
           </div>
           <div style={{ height: 1, flex: 1, background: "rgba(255,255,255,0.45)" }} />
         </div>
