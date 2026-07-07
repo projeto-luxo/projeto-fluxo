@@ -499,6 +499,29 @@ if (absorcao) {
       delta: data.delta ?? ultimoCandle.delta,
       volume: data.volume ?? ultimoCandle.volume,
 
+      volumeNormalizadoCapado:
+        ultimoCandle.volume_normalizado_capado ??
+        data.volume_normalizado_capado ??
+        data.volume ??
+        ultimoCandle.volume,
+
+      volumeReal:
+        ultimoCandle.volume_real ??
+        data.volume_real,
+
+      volumeDeltaEstimado:
+        ultimoCandle.volume_delta_estimado ??
+        data.volume_delta_estimado,
+
+      volumeCandleEstimado:
+        ultimoCandle.volume_candle_estimado ??
+        data.volume_candle_estimado,
+
+      volumeTipo:
+        ultimoCandle.volume_tipo ??
+        data.volume_tipo ??
+        "NAO_INFORMADO",
+
       // Calibracao recuperada: painel usa ultimo candle real como fonte visual
       open: ultimoCandle.open,
       high: ultimoCandle.high,
@@ -1110,6 +1133,9 @@ if (temEntradaReal) {
   const maximaPainel = dataInfo.maximo ?? dataInfo.maxima ?? dataInfo.high ?? "-";
   const minimaPainel = dataInfo.minimo ?? dataInfo.minima ?? dataInfo.low ?? "-";
   const volumePainel = dataInfo.volume ?? "-";
+  const volumeNormalizadoPainel = dataInfo.volumeNormalizadoCapado ?? dataInfo.volume ?? "-";
+  const volumeCandleEstimadoPainel = dataInfo.volumeCandleEstimado ?? "-";
+  const volumeTipoPainel = dataInfo.volumeTipo ?? "NAO_INFORMADO";
   const deltaPainel = dataInfo.delta ?? "-";
   const saldoPainel = dataInfo.saldo ?? "-";
   const vwapPainel = dataInfo.vwap ?? dataInfo.vwapReal ?? dataInfo.vwap_real ?? "-";
@@ -1383,6 +1409,12 @@ if (temEntradaReal) {
           <div>• TF: <b>{timeframeOperacionalPainel}</b></div>
           <div>• Status: <b>{statusOperacionalPainel}</b></div>
           <div>• Contrato: <b>{contratoOperacionalPainel}</b></div>
+          <div style={{ marginTop: 6, color: "#00d9ff", fontWeight: "900" }}>
+            VOLUME DO CANDLE
+          </div>
+          <div>• Vol norm: <b>{formatar(volumeNormalizadoPainel)}</b></div>
+          <div>• Vol candle: <b>{formatar(volumeCandleEstimadoPainel)}</b></div>
+          <div>• Tipo: <b>{volumeTipoPainel}</b></div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 22, marginBottom: 18 }}>
@@ -1622,6 +1654,7 @@ if (temEntradaReal) {
           <Box color={Number(deltaPainel || 0) >= 0 ? "#004d40" : "#4a0000"}>DELTA<br />{deltaPainel}</Box>
           <Box color={Number(saldoPainel || 0) >= 0 ? "#004d40" : "#4a0000"}>SALDO<br />{saldoPainel}</Box>
         </div>
+
       </div>
     </div>
   );
