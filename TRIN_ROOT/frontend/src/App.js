@@ -654,6 +654,21 @@ if (absorcao) {
       painelStatus:
         data.painel_temporal?.status_painel ||
         "DESCONHECIDO",
+
+      statusFonte:
+        data.painel_temporal?.status_fonte ||
+        ultimoCandle.status_fonte ||
+        data.status_fonte ||
+        "NAO_INFORMADO",
+
+      fonteEstagnada:
+        Boolean(
+          data.painel_temporal?.fonte_estagnada ??
+          ultimoCandle.fonte_estagnada ??
+          data.fonte_estagnada ??
+          false
+        ),
+
       painelTimeframesDisponiveis:
         data.painel_temporal?.timeframes_disponiveis ||
         ["15s", "30s", "1_MIN", "2_MIN", "5_MIN", "10_MIN", "15_MIN", "30_MIN", "60_MIN", "DIARIO", "SEMANAL"],
@@ -1174,6 +1189,28 @@ if (temEntradaReal) {
     dataInfo.painelStatus ||
     "DESCONHECIDO";
 
+  const statusFontePainel =
+    dataInfo.statusFonte ||
+    "NAO_INFORMADO";
+
+  const fonteEstagnadaPainel =
+    Boolean(dataInfo.fonteEstagnada) ||
+    statusFontePainel === "RTD_ESTAGNADO";
+
+  const textoFonteRtdPainel =
+    fonteEstagnadaPainel
+      ? "ESTAGNADA"
+      : statusFontePainel === "RTD_ATUALIZANDO"
+        ? "ATUALIZANDO"
+        : statusFontePainel;
+
+  const corFonteRtdPainel =
+    fonteEstagnadaPainel
+      ? "#ff4444"
+      : statusFontePainel === "RTD_ATUALIZANDO"
+        ? "#00ff99"
+        : "#ffffff";
+
   const contratoOperacionalPainel =
     dataInfo.contratoExcelRtd ||
     dataInfo.contratoEsperadoRtd ||
@@ -1424,6 +1461,9 @@ if (temEntradaReal) {
           <div>• Fonte: <b>{fonteOperacionalPainel}</b></div>
           <div>• TF: <b>{timeframeOperacionalPainel}</b></div>
           <div>• Status: <b>{statusOperacionalPainel}</b></div>
+          <div>
+            • Fonte RTD: <b style={{ color: corFonteRtdPainel }}>{textoFonteRtdPainel}</b>
+          </div>
           <div>• Contrato: <b>{contratoOperacionalPainel}</b></div>
           <div style={{ marginTop: 6, color: "#00d9ff", fontWeight: "900" }}>
             VOLUME DO CANDLE
