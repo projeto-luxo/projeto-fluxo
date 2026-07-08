@@ -478,10 +478,83 @@ def enriquecer_volume_estimado(candle, referencia=None):
     return candle
 
 
+
+def assinatura_fonte_rtd(candle):
+    """
+    Assinatura operacional da fonte RTD/Excel.
+    Ignora o campo `time`, porque ele vem do relogio do backend.
+    Se esta assinatura nao muda, a fonte nao entregou novo dado real.
+    """
+    if not candle:
+        return None
+
+    campos = [
+        "ativo",
+        "open",
+        "high",
+        "low",
+        "close",
+        "ultimo",
+        "volume_real",
+        "delta",
+        "saldo",
+        "vwap",
+        "vwap_real",
+        "volume_compra",
+        "volume_venda",
+        "volume_saldo",
+    ]
+
+    assinatura = []
+
+    for campo in campos:
+        valor = candle.get(campo)
+
+        if isinstance(valor, float):
+            valor = round(valor, 6)
+
+        assinatura.append((campo, valor))
+
+    return tuple(assinatura)
+
+
+def fonte_rtd_estagnada(candle, referencia):
+    """
+    Detecta se a nova leitura RTD/Excel e identica a ultima leitura efetiva.
+    Nao usa timestamp, pois timestamp e gerado pelo backend.
+    """
+    if not candle or not referencia:
+        return False
+
+    if candle.get("fonte_dados") != "RTD_EXCEL_PLAN1":
+        return False
+
+    if referencia.get("fonte_dados") != "RTD_EXCEL_PLAN1":
+        return False
+
+    return assinatura_fonte_rtd(candle) == assinatura_fonte_rtd(referencia)
+
+
 def atualizar_historico():
     candle = gerar_candle()
     referencia_volume = historico[-1] if historico else None
     candle = enriquecer_volume_estimado(candle, referencia_volume)
+
+    # Regra PATCH_CANDLEBUILDER_02:
+    # nao cria candle novo quando o RTD/Excel esta parado.
+    # O campo `time` muda pelo relogio do backend, portanto nao pode ser
+    # usado sozinho como prova de novo candle operacional.
+    if referencia_volume is not None and fonte_rtd_estagnada(candle, referencia_volume):
+        referencia_volume["fonte_estagnada"] = True
+        referencia_volume["status_fonte"] = "RTD_ESTAGNADO"
+        referencia_volume["status_painel"] = "OPERACIONAL_NAO_CERTIFICADO_FONTE_ESTAGNADA"
+        referencia_volume["observacao_fonte"] = (
+            "Leitura RTD/Excel identica a anterior; candle novo nao foi criado."
+        )
+        return referencia_volume
+
+    candle["fonte_estagnada"] = False
+    candle["status_fonte"] = "RTD_ATUALIZANDO"
 
     candle_engine.adicionar_candle(candle)
     candle["reversao_detectada"] = candle_engine.calcular_reversao()
@@ -891,7 +964,9 @@ def gerar_payload():
             "tipo_candle": "CANDLE_OPERACIONAL_INTRADAY",
             "regua_painel": "RTD_AGREGADO",
             "timeframe_painel": painel_timeframe_atual,
-            "status_painel": "OPERACIONAL_NAO_CERTIFICADO",
+            "status_painel": atual.get("status_painel", "OPERACIONAL_NAO_CERTIFICADO"),
+            "status_fonte": atual.get("status_fonte", "RTD_ATUALIZANDO"),
+            "fonte_estagnada": atual.get("fonte_estagnada", False),
             "fractal_oficial": "NAO_APLICAVEL",
             "profit_timeframe_visual": "NAO_INTEGRADO",
             "timeframes_operacionais": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()),
