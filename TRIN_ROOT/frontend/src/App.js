@@ -36,6 +36,10 @@ export default function App() {
 
   const socketRef = useRef(null);
   const carregouHistoricoRef = useRef(false);
+  const ultimoTimeframeGraficoRef = useRef(null);
+  const ultimoTamanhoHistoricoRef = useRef(0);
+  const ultimoPrimeiroTimeGraficoRef = useRef(null);
+  const ultimoUltimoTimeGraficoRef = useRef(null);
 
   const [dataInfo, setDataInfo] = useState({});
   const [wsStatus, setWsStatus] = useState("DESCONECTADO");
@@ -729,7 +733,14 @@ alvo: temEntradaPainel ? data.alvo : null,
       contextoDetalhe: contextoDetalheFinal,
     });
 
-    if (!carregouHistoricoRef.current) {
+    const precisaReconstruirGrafico =
+      !carregouHistoricoRef.current ||
+      ultimoTimeframeGraficoRef.current !== timeframeAtualGrafico ||
+      ultimoTamanhoHistoricoRef.current !== historico.length ||
+      ultimoPrimeiroTimeGraficoRef.current !== primeiroTime ||
+      Number(ultimoTime) < Number(ultimoUltimoTimeGraficoRef.current || 0);
+
+    if (precisaReconstruirGrafico) {
       candleSeriesRef.current.setData(historico);
       vwapLineRef.current.setData(vwap);
       vwapSuperiorRef.current.setData(vwapSuperior);
@@ -737,10 +748,6 @@ alvo: temEntradaPainel ? data.alvo : null,
 
       if (typeof candleSeriesRef.current.setMarkers === "function") {
         candleSeriesRef.current.setMarkers(gerarMarkersInstitucionais(historico));
-      }
-
-      if (chartRef.current) {
-        chartRef.current.timeScale().fitContent();
       }
 
       carregouHistoricoRef.current = true;
@@ -769,6 +776,11 @@ alvo: temEntradaPainel ? data.alvo : null,
         candleSeriesRef.current.setMarkers(gerarMarkersInstitucionais(historico));
       }
     }
+
+    ultimoTimeframeGraficoRef.current = timeframeAtualGrafico;
+    ultimoTamanhoHistoricoRef.current = historico.length;
+    ultimoPrimeiroTimeGraficoRef.current = primeiroTime;
+    ultimoUltimoTimeGraficoRef.current = ultimoTime;
 
     ajustarJanelaGrafico();
 
@@ -1045,6 +1057,10 @@ if (temEntradaReal) {
       aplicarEscalaTempoPorTimeframe(timeframe);
 
       carregouHistoricoRef.current = false;
+      ultimoTimeframeGraficoRef.current = null;
+      ultimoTamanhoHistoricoRef.current = 0;
+      ultimoPrimeiroTimeGraficoRef.current = null;
+      ultimoUltimoTimeGraficoRef.current = null;
 
       if (candleSeriesRef.current) {
         candleSeriesRef.current.setData([]);
