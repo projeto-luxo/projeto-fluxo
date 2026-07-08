@@ -168,3 +168,108 @@ Status final:
 
 CANDLEBUILDER_2MIN_VALIDADO_EM_MERCADO_ABERTO_COM_RESSALVAS
 
+
+---
+
+## 9. Complemento — validação dos timeframes curtos
+
+Após a validação inicial do 2_MIN, foram testados também os timeframes operacionais curtos:
+
+- 30s
+- 15s
+
+### 9.1 Validação 30s
+
+Resultado observado:
+
+- timeframe: 30s
+- historico_cresceu: True
+- candles_novos: 1
+- intervalo: 30
+- preco_mudou: True
+- volume_mudou: True
+- delta_mudou: True
+- saldo_mudou: True
+- status_fonte: RTD_ATUALIZANDO
+- fonte_estagnada: False
+
+Parecer:
+
+CandleBuilder 30s aprovado em mercado aberto.
+
+---
+
+### 9.2 Validação 15s
+
+Resultado observado:
+
+- timeframe: 15s
+- historico_cresceu: True
+- candles_novos: 2
+- intervalo total: 30
+- preco_mudou: True
+- volume_mudou: True
+- delta_mudou: True
+- saldo_mudou: True
+
+Interpretação:
+
+O intervalo total de 30 segundos com 2 candles novos é coerente com o timeframe de 15s.
+
+Parecer:
+
+CandleBuilder 15s aprovado em mercado aberto quanto à formação temporal.
+
+---
+
+### 9.3 Ressalva mantida — status_fonte
+
+Durante o teste de 15s, foi novamente observada a marcação:
+
+- status_fonte: RTD_ESTAGNADO
+- fonte_estagnada: True
+
+Mesmo com alteração real de:
+
+- preço;
+- volume;
+- delta;
+- saldo.
+
+Conclusão:
+
+A marcação RTD_ESTAGNADO está sensível demais em mercado aberto.
+
+Recomendação futura:
+
+Criar PATCH_CANDLEBUILDER_03 para separar:
+
+- SEM_NOVO_TICK_NA_LEITURA
+- RTD_ESTAGNADO_CONFIRMADO
+
+---
+
+### 9.4 Ressalva mantida — volume_candle_estimado
+
+O volume_candle_estimado continua apresentando escala elevada para leitura visual.
+
+Recomendação futura:
+
+Abrir auditoria específica:
+
+AUDITORIA_VOLUME_CANDLE_ESTIMADO_MERCADO_ABERTO
+
+---
+
+## 10. Parecer atualizado
+
+Timeframes validados em mercado aberto:
+
+- 2_MIN: aprovado com ressalvas;
+- 30s: aprovado;
+- 15s: aprovado com ressalva de status.
+
+Status atualizado:
+
+CANDLEBUILDER_TIMEFRAMES_CURTOS_VALIDADO_EM_MERCADO_ABERTO_COM_RESSALVAS
+
