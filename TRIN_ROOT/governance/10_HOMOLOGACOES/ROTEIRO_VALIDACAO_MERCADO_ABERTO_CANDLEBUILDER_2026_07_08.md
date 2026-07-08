@@ -19,6 +19,16 @@ Não altera Bernardo.
 Não altera Historiador.
 Não altera Biblioteca Histórica oficial.
 
+## Confluência documental
+
+Este roteiro complementa:
+
+- CHECKPOINT_CANDLEBUILDER_PAINEL_2026_07_07
+- AUDITORIA_VOLUME_CANDLEBUILDER_PAINEL_2026_07_07
+- AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07
+
+Este roteiro não substitui auditorias anteriores.
+
 ## Patches a validar
 
 - ed754bc TRIN reconstrói grafico quando historico muda
