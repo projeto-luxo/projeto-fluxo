@@ -46,6 +46,18 @@ export default function App() {
   const [ttRawStatus, setTtRawStatus] = useState(null);
   const [ttRawErro, setTtRawErro] = useState("");
 
+  const [replayStatus, setReplayStatus] = useState({
+    ativo: false,
+    modo_dados: "AO_VIVO",
+    csv: "",
+    data_pregao: "2026-01-26",
+    indice: 0,
+    total: 0,
+    ultimo_erro: "",
+  });
+  const [replayDataPregao, setReplayDataPregao] = useState("2026-01-26");
+
+
   const ordenarPorTempo = useCallback((lista) => {
     if (!Array.isArray(lista)) return [];
 
@@ -987,7 +999,7 @@ if (temEntradaReal) {
 
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
-      height: window.innerHeight - 20,
+      height: Math.max(320, chartContainerRef.current.clientHeight || window.innerHeight - 20),
       layout: {
         background: { type: "solid", color: "#020816" },
         textColor: "#ffffff",
@@ -1118,7 +1130,7 @@ if (temEntradaReal) {
 
       chartRef.current.applyOptions({
         width: chartContainerRef.current.clientWidth,
-        height: window.innerHeight - 20,
+        height: Math.max(320, chartContainerRef.current.clientHeight || window.innerHeight - 20),
       });
 
       chartRef.current.timeScale().fitContent();
@@ -1198,6 +1210,99 @@ if (temEntradaReal) {
       alert("Erro ao alterar timeframe do painel.");
     }
   }
+
+
+  const carregarStatusReplay = useCallback(async () => {
+    try {
+      const resposta = await fetch("http://127.0.0.1:8001/painel/replay/status");
+      const json = await resposta.json();
+
+      setReplayStatus({
+        ativo: Boolean(json.ativo),
+        modo_dados: json.modo_dados || (json.ativo ? "REPLAY" : "AO_VIVO"),
+        csv: json.csv || "",
+        data_pregao: json.data_pregao || replayDataPregao,
+        indice: json.indice || 0,
+        total: json.total || 0,
+        ultimo_erro: json.ultimo_erro || "",
+      });
+    } catch (erro) {
+      setReplayStatus((atual) => ({
+        ...atual,
+        ultimo_erro: "Replay indisponivel",
+      }));
+    }
+  }, [replayDataPregao]);
+
+  const alternarModoReplay = useCallback(async () => {
+    const ativar = !replayStatus.ativo;
+
+    const url = ativar
+      ? `http://127.0.0.1:8001/painel/replay/start?data_pregao=${encodeURIComponent(replayDataPregao || "")}&intervalo_segundos=5.0&intervalo_segundos=5.0`
+      : "http://127.0.0.1:8001/painel/replay/stop";
+
+    try {
+      await fetch(url);
+      await carregarStatusReplay();
+
+      carregouHistoricoRef.current = false;
+      ultimoTimeframeGraficoRef.current = null;
+      ultimoTamanhoHistoricoRef.current = 0;
+      ultimoPrimeiroTimeGraficoRef.current = null;
+      ultimoUltimoTimeGraficoRef.current = null;
+
+      if (candleSeriesRef.current) candleSeriesRef.current.setData([]);
+      if (vwapLineRef.current) vwapLineRef.current.setData([]);
+      if (vwapSuperiorRef.current) vwapSuperiorRef.current.setData([]);
+      if (vwapInferiorRef.current) vwapInferiorRef.current.setData([]);
+
+      setTimeout(() => {
+        if (chartContainerRef.current && chartRef.current) {
+          chartRef.current.applyOptions({
+            width: chartContainerRef.current.clientWidth,
+            height: Math.max(320, chartContainerRef.current.clientHeight || window.innerHeight - 20),
+          });
+
+          chartRef.current.timeScale().fitContent();
+        }
+      }, 250);
+    } catch (erro) {
+      alert("Erro ao alternar modo Replay.");
+    }
+  }, [replayStatus.ativo, replayDataPregao, carregarStatusReplay]);
+
+  const carregarDataReplay = useCallback(async () => {
+    try {
+      const url = `http://127.0.0.1:8001/painel/replay/start?data_pregao=${encodeURIComponent(replayDataPregao || "")}&intervalo_segundos=5.0&intervalo_segundos=5.0`;
+
+      await fetch(url);
+      await carregarStatusReplay();
+
+      carregouHistoricoRef.current = false;
+      ultimoTimeframeGraficoRef.current = null;
+      ultimoTamanhoHistoricoRef.current = 0;
+      ultimoPrimeiroTimeGraficoRef.current = null;
+      ultimoUltimoTimeGraficoRef.current = null;
+
+      if (candleSeriesRef.current) candleSeriesRef.current.setData([]);
+      if (vwapLineRef.current) vwapLineRef.current.setData([]);
+      if (vwapSuperiorRef.current) vwapSuperiorRef.current.setData([]);
+      if (vwapInferiorRef.current) vwapInferiorRef.current.setData([]);
+    } catch (erro) {
+      alert("Erro ao carregar data do Replay.");
+    }
+  }, [replayDataPregao, carregarStatusReplay]);
+
+  useEffect(() => {
+    carregarStatusReplay();
+
+    const id = setInterval(() => {
+      carregarStatusReplay();
+    }, 4000);
+
+    return () => clearInterval(id);
+  }, [carregarStatusReplay]);
+
 
   const statusVisual = dataInfo.volume !== undefined ? "ONLINE" : wsStatus;
 
@@ -1469,18 +1574,114 @@ if (temEntradaReal) {
       style={{
         height: "100vh",
         width: "100vw",
-        padding: 18,
+        padding: replayStatus.ativo ? 8 : 14,
         boxSizing: "border-box",
         background: "radial-gradient(circle at center, #172324 0%, #081013 42%, #010409 100%)",
         color: "#ffffff",
         overflow: "hidden",
         display: "grid",
-        gridTemplateColumns: "37% 22% 41%",
-        gridTemplateRows: "1fr 170px",
-        gap: 16,
+        gridTemplateColumns: replayStatus.ativo ? "18% 12% 70%" : "30% 18% 52%",
+        gridTemplateRows: replayStatus.ativo ? "1fr 110px" : "1fr 150px",
+        gap: replayStatus.ativo ? 8 : 12,
         fontFamily: "Arial, sans-serif",
       }}
     >
+
+      {/* CHAVE_REPLAY_DIAGNOSTICO_DATA_02 */}
+      <div
+        style={{
+          position: "fixed",
+          top: 8,
+          right: 12,
+          zIndex: 9999,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          background: replayStatus.ativo ? "rgba(80,45,0,0.96)" : "rgba(0,35,26,0.96)",
+          border: replayStatus.ativo ? "1px solid #ffaa00" : "1px solid #00ff99",
+          borderRadius: 999,
+          padding: "7px 9px",
+          boxShadow: replayStatus.ativo
+            ? "0 0 18px rgba(255,170,0,0.65)"
+            : "0 0 18px rgba(0,255,153,0.45)",
+        }}
+      >
+        <input
+          type="date"
+          value={replayDataPregao}
+          onChange={(e) => setReplayDataPregao(e.target.value)}
+          style={{
+            background: "rgba(0,0,0,0.45)",
+            color: "#ffffff",
+            border: "1px solid rgba(255,255,255,0.18)",
+            borderRadius: 999,
+            padding: "5px 8px",
+            fontSize: 11,
+            fontWeight: "900",
+          }}
+        />
+
+        <button
+          onClick={carregarDataReplay}
+          title="Carregar o pregão escolhido no Replay"
+          style={{
+            border: "1px solid rgba(255,255,255,0.18)",
+            background: replayStatus.ativo ? "rgba(255,170,0,0.16)" : "rgba(255,255,255,0.08)",
+            color: replayStatus.ativo ? "#ffd27a" : "#cfd8dc",
+            borderRadius: 999,
+            padding: "5px 8px",
+            fontSize: 10,
+            fontWeight: "900",
+            letterSpacing: 0.5,
+            cursor: "pointer",
+          }}
+        >
+          CARREGAR DATA
+        </button>
+
+        <button
+          onClick={alternarModoReplay}
+          title="Alternar entre AO_VIVO e REPLAY diagnostico"
+          style={{
+            border: "none",
+            background: "transparent",
+            color: replayStatus.ativo ? "#ffd27a" : "#00ff99",
+            fontSize: 11,
+            fontWeight: "900",
+            letterSpacing: 1,
+            cursor: "pointer",
+          }}
+        >
+          {replayStatus.ativo ? "REPLAY ON" : "AO VIVO"}
+        </button>
+      </div>
+
+      {replayStatus.ativo && (
+        <div
+          style={{
+            position: "fixed",
+            top: 48,
+            right: 12,
+            zIndex: 9999,
+            color: "#ffd27a",
+            background: "rgba(20,12,0,0.92)",
+            border: "1px solid rgba(255,170,0,0.55)",
+            borderRadius: 10,
+            padding: "7px 10px",
+            fontSize: 10,
+            fontWeight: "900",
+            lineHeight: 1.35,
+            boxShadow: "0 0 18px rgba(255,170,0,0.25)",
+            maxWidth: 300,
+          }}
+        >
+          REPLAY DIAGNOSTICO<br />
+          NAO OPERACIONAL · NAO CERTIFICADO<br />
+          PREGAO: {replayDataPregao || replayStatus.data_pregao}<br />
+          {replayStatus.indice}/{replayStatus.total}
+        </div>
+      )}
+
       <style>
         {`
           @keyframes pulseRadar {

@@ -25,6 +25,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from pathlib import Path
+from backend.replay_diagnostico import replay_reader
 import asyncio
 import json
 
@@ -536,6 +537,23 @@ def fonte_rtd_estagnada(candle, referencia):
 
 
 def atualizar_historico():
+
+    global historico
+
+    if replay_reader.ativo:
+        candle_replay = replay_reader.proximo_candle(painel_timeframe_atual)
+
+        if candle_replay:
+            if historico and historico[-1].get("time") == candle_replay.get("time"):
+                historico[-1] = candle_replay
+            else:
+                historico.append(candle_replay)
+
+            if len(historico) > MAX_HISTORICO_RAW:
+                historico = historico[-MAX_HISTORICO_RAW:]
+
+        return
+
     candle = gerar_candle()
     referencia_volume = historico[-1] if historico else None
     candle = enriquecer_volume_estimado(candle, referencia_volume)
@@ -983,6 +1001,7 @@ def gerar_payload():
         **sinal_data,
     }
 
+    payload = replay_reader.aplicar_payload(payload, painel_timeframe_atual)
     return payload
 
 
@@ -1077,6 +1096,44 @@ async def tt_raw_status():
             "uso_operacional": "DIAGNOSTICO_APENAS",
             "candle_oficial": False
         }
+
+
+
+@app.get("/painel/replay/status")
+async def replay_status():
+    return replay_reader.status()
+
+
+@app.get("/painel/replay/start")
+async def replay_start(csv_path: str = "", data_pregao: str = "", intervalo_segundos: float = 1.5):
+    global historico
+
+    resultado = replay_reader.start(csv_path=csv_path, data_pregao=data_pregao, intervalo_segundos=intervalo_segundos)
+
+    if resultado.get("ok"):
+        historico = []
+
+    return resultado
+
+
+@app.get("/painel/replay/stop")
+async def replay_stop():
+    global historico
+
+    resultado = replay_reader.stop()
+    historico = []
+
+    return resultado
+
+
+@app.get("/painel/replay/reset")
+async def replay_reset():
+    global historico
+
+    resultado = replay_reader.reset()
+    historico = []
+
+    return resultado
 
 
 @app.get("/data")
