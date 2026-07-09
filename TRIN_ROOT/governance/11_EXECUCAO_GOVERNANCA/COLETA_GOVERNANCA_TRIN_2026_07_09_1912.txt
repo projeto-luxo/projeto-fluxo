@@ -1,0 +1,161 @@
+﻿===== COLETA GOVERNANCA TRIN =====
+Gerado em: 07/09/2026 19:12:04
+
+===== STATUS GIT =====
+## TRIN_CLEAN...origin/TRIN_CLEAN
+?? governance/11_EXECUCAO_GOVERNANCA/COLETA_GOVERNANCA_TRIN_2026_07_09_1912.txt
+
+===== ULTIMOS COMMITS =====
+99a4c74 TRIN registra auditoria pre-integracao Candle 5S Replay
+410d55b TRIN registra checkpoint TT e Candle 5S diagnostico
+12e8d9a TRIN registra contrato do Candle 5S diagnostico
+cbc9b49 TRIN implementa Candle 5S diagnostico v0
+64fb782 TRIN implementa Candle 5S diagnostico v0
+eae1dcc TRIN reforca gravador TT contra Excel ocupado
+31fdc42 TRIN implementa Bastiao TT Peneirador v0
+ac67888 TRIN implementa replay diagnostico com data e candle em formacao
+d074415 TRIN adiciona gravador TT bruto diagnostico
+8c04c55 TRIN registra auditoria pre-patch do Bastiao TT Peneirador
+be92211 TRIN registra contrato do Bastiao TT Peneirador
+7f4383c TRIN corrige alinhamento temporal das series do grafico
+5f57846 TRIN registra auditoria do volume estimado em mercado aberto
+33030dd TRIN registra auditoria do status fonte RTD em mercado aberto
+99c9b68 TRIN complementa validacao dos timeframes curtos em mercado aberto
+810f30a TRIN registra validacao parcial do CandleBuilder em mercado aberto
+6c24bdb TRIN registra auditoria pre-limpeza de encoding frontend
+5f9ecfd TRIN cria roteiro de validacao do CandleBuilder em mercado aberto
+cde0975 TRIN cria roteiro de validacao do CandleBuilder em mercado aberto
+ce0bfda TRIN exibe status da fonte RTD no painel
+aa28244 TRIN registra auditoria de RTD estagnado
+4775a03 TRIN bloqueia candle novo com RTD estagnado
+ed754bc TRIN reconstr├│i grafico quando historico muda
+373f8ad TRIN registra checkpoint do CandleBuilderPainel
+da407f4 TRIN exibe volume estimado no painel
+f22ee43 TRIN adiciona volume estimado ao CandleBuilder
+8fd6b11 TRIN registra auditoria do volume do CandleBuilder
+818f4a9 TRIN ajusta segundos dinamicos no grafico
+3da14fa TRIN exibe identidade operacional no grafico
+540d943 TRIN calibra cabecalho institucional do cockpit
+33599b2 TRIN calibra rodape de alerta e acao operacional
+a7c3548 TRIN calibra legendas smart money do cockpit
+0949262 TRIN organiza hierarquia visual do cockpit operacional
+1188bf7 TRIN calibra acao operacional na topbar do cockpit
+28fdd2f TRIN resume contexto fiscal na topbar do cockpit
+465ab10 TRIN traduz estado tecnico para leitura operacional no cockpit
+4145018 TRIN limpa topbar operacional do cockpit
+9275e04 TRIN calibra estado operacional da topbar do cockpit
+171e7f3 TRIN organiza estado operacional e direcao do cockpit
+dad444c TRIN explicita autorizacao operacional no cockpit
+
+===== CHECKLISTS COMMITADOS =====
+COMMIT 8a242fe | 2026-06-22 | TRIN registra checklist de validacao do CandleBuilder em mercado aberto
+
+A	TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO.md
+COMMIT 8419292 | 2026-06-20 | TRIN cria estrutura oficial do calendario B3 de contratos
+
+A	TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_CALENDARIO_CONTRATOS_B3.md
+COMMIT c906e9b | 2026-06-17 | BERNARDO HOMOLOGADO E CONGELADO - auditoria arquitetural conclu├¡da
+
+A	TRIN_ROOT/governance/01_CHECKLISTS/checklist_arquitetura.md
+A	TRIN_ROOT/governance/01_CHECKLISTS/checklist_modulos.md
+A	TRIN_ROOT/governance/01_CHECKLISTS/checklist_normas.md
+
+===== DOCUMENTOS DE GOVERNANCA ATUAIS =====
+governance/01_CHECKLISTS/checklist_arquitetura.md
+governance/01_CHECKLISTS/CHECKLIST_CALENDARIO_CONTRATOS_B3.md
+governance/01_CHECKLISTS/checklist_modulos.md
+governance/01_CHECKLISTS/checklist_normas.md
+governance/01_CHECKLISTS/CHECKLIST_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO.md
+governance/02_AUDITORIAS/AUDITORIA_ARQUITETURAL_PRELIMINAR_HISTORIADOR.md
+governance/02_AUDITORIAS/auditoria_bernardo.md
+governance/02_AUDITORIAS/AUDITORIA_COMPLEMENTAR_BUSCA_FONTE_MATRIZ_LACUNAS_REMANESCENTES.md
+governance/02_AUDITORIAS/AUDITORIA_COMPLEMENTAR_RESPOSTA_NELOGICA_LACUNAS_WIN_1MIN_2026.md
+governance/02_AUDITORIAS/AUDITORIA_CURTA_CANDLEBUILDER_PAINEL.md
+governance/02_AUDITORIAS/auditoria_fiscal.md
+governance/02_AUDITORIAS/AUDITORIA_HARD_PRELIMINAR_FISCAL_TEMPORAL_V4_2.md
+governance/02_AUDITORIAS/AUDITORIA_ORIGEM_LACUNAS_REMANESCENTES_POS_LEILAO.md
+governance/02_AUDITORIAS/AUDITORIA_ORIGEM_LACUNAS_WIN_1MIN_2026.md
+governance/02_AUDITORIAS/AUDITORIA_POS_PATCH_BASTIAO_TT_PENEIRADOR_V0.md
+governance/02_AUDITORIAS/AUDITORIA_POS_PATCH_CANDLE_5S_DIAGNOSTICO_V0.md
+governance/02_AUDITORIAS/AUDITORIA_POS_PATCH_FISCAL_CANDLE_INEXISTENTE_POR_LEILAO.md
+governance/02_AUDITORIAS/AUDITORIA_POS_PATCH_FISCAL_TEMPORAL_V4_2_2.md
+governance/02_AUDITORIAS/AUDITORIA_POS_PATCH_HISTORIADOR_V1_0_1.md
+governance/02_AUDITORIAS/AUDITORIA_POS_PATCH_PAINEL_TEMPORAL_SNAPSHOT_RTD.md
+governance/02_AUDITORIAS/AUDITORIA_PRE_INTEGRACAO_CANDLE_5S_REPLAY_DIAGNOSTICO.md
+governance/02_AUDITORIAS/AUDITORIA_PRE_LIMPEZA_ENCODING_FRONTEND_2026_07_07.md
+governance/02_AUDITORIAS/AUDITORIA_PRE_PATCH_BASTIAO_TT_PENEIRADOR.md
+governance/02_AUDITORIAS/AUDITORIA_PRE_PATCH_FISCAL_CANDLE_INEXISTENTE_POR_LEILAO.md
+governance/02_AUDITORIAS/AUDITORIA_PRE_PATCH_MODO_REPLAY_PAINEL_TRIN.md
+governance/02_AUDITORIAS/AUDITORIA_PRE_PATCH_PAINEL_LIMPO_RESULTADOS.md
+governance/02_AUDITORIAS/AUDITORIA_PRE_PATCH_PAINEL_TT_RAW_DIAGNOSTICO.md
+governance/02_AUDITORIAS/AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md
+governance/02_AUDITORIAS/AUDITORIA_STATUS_FONTE_RTD_MERCADO_ABERTO_2026_07_08.md
+governance/02_AUDITORIAS/AUDITORIA_TT_RTD_CAPTURA_EXPERIMENTAL.md
+governance/02_AUDITORIAS/AUDITORIA_VOLUME_CANDLE_ESTIMADO_MERCADO_ABERTO_2026_07_08.md
+governance/02_AUDITORIAS/AUDITORIA_VOLUME_CANDLEBUILDER_PAINEL_2026_07_07.md
+governance/02_AUDITORIAS/auditoria_ze.md
+governance/02_AUDITORIAS/PARECER_PRONTIDAO_PATCH_CONTROLADO_HISTORIADOR.md
+governance/03_DECISOES_ARQUITETURAIS/DA_001.md
+governance/03_DECISOES_ARQUITETURAIS/DA_002.md
+governance/03_DECISOES_ARQUITETURAIS/DA_003.md
+governance/03_DECISOES_ARQUITETURAIS/DA_004.md
+governance/03_DECISOES_ARQUITETURAIS/DA_005.md
+governance/03_DECISOES_ARQUITETURAIS/DA_CANDLES_INEXISTENTES_POR_LEILAO.md
+governance/03_DECISOES_ARQUITETURAIS/DA_LACUNAS_REMANESCENTES_SEM_FONTE_MATRIZ.md
+governance/03_DECISOES_ARQUITETURAIS/DA_MODO_REPLAY_PAINEL_TRIN.md
+governance/03_DECISOES_ARQUITETURAIS/DA-002_BASTIAO_CONTRATO_ATIVO.md
+governance/04_METODOLOGIA/auditoria_hard.md
+governance/04_METODOLOGIA/CHECKLIST_OFICIAL_NORMAS_TRIN.md
+governance/04_METODOLOGIA/metodologia_oficial.md
+governance/04_METODOLOGIA/responsabilidade_unica.md
+governance/05_MEMORIA_PROJETO/filosofia_trin.md
+governance/05_MEMORIA_PROJETO/frases_oficiais.md
+governance/05_MEMORIA_PROJETO/ideias_homologadas.md
+governance/06_CHECKPOINTS/checkpoint_2026_06_12.md
+governance/06_CHECKPOINTS/CHECKPOINT_2026_06_21_BASTIAO_CONTRATO_ATIVO.md
+governance/06_CHECKPOINTS/checkpoint_2026_07_01.md
+governance/06_CHECKPOINTS/CHECKPOINT_CANDLEBUILDER_PAINEL_2026_07_07.md
+governance/06_CHECKPOINTS/CHECKPOINT_TRIN_2026_06_22_SCHEMA_REFERENCIA_E_AUDITORIA_CANDLEBUILDER.md
+governance/06_CHECKPOINTS/CHECKPOINT_TRIN_2026_06_26_FISCAL_LEILAO.md
+governance/06_CHECKPOINTS/CHECKPOINT_TRIN_2026_06_26_LACUNAS_REMANESCENTES_SEM_MATRIZ.md
+governance/06_CHECKPOINTS/CHECKPOINT_TRIN_2026_07_09_TT_CANDLE_5S.md
+governance/07_BANCO_DE_IDEIAS/ideias_arquivadas.md
+governance/07_BANCO_DE_IDEIAS/ideias_em_estudo.md
+governance/08_CONTRATOS/ADENDO_BASTIAO_CONTRATO_ATIVO.md
+governance/08_CONTRATOS/CONTRATO_ATIVO_RESOLVER.md
+governance/08_CONTRATOS/contrato_bastião.md
+governance/08_CONTRATOS/CONTRATO_BASTIAO_TT_PENEIRADOR.md
+governance/08_CONTRATOS/contrato_bernardo.md
+governance/08_CONTRATOS/CONTRATO_CANDLE_5S_DIAGNOSTICO.md
+governance/08_CONTRATOS/CONTRATO_DADOS_REFERENCIA_MERCADO.md
+governance/08_CONTRATOS/CONTRATO_ENTRADAS_SAIDAS_HISTORIADOR.md
+governance/08_CONTRATOS/contrato_fiscal.md
+governance/08_CONTRATOS/contrato_historiador.md
+governance/08_CONTRATOS/CONTRATO_INDICE_GERAL_BERNARDO.md
+governance/08_CONTRATOS/CONTRATO_MANIFESTO_HISTORIADOR.md
+governance/08_CONTRATOS/contrato_motor_confluencia.md
+governance/08_CONTRATOS/CONTRATO_SCHEMA_CONHECIMENTO_HISTORIADOR.md
+governance/08_CONTRATOS/CONTRATO_SCHEMA_DADOS_REFERENCIA_MERCADO.md
+governance/08_CONTRATOS/CONTRATO_SCHEMA_INDICE_GERAL_BERNARDO.md
+governance/08_CONTRATOS/contrato_ze.md
+governance/09_PADROES/candles_inexistentes_por_leilao.csv
+governance/09_PADROES/PADRAO_CALENDARIO_CONTRATOS_B3.md
+governance/09_PADROES/padrao_csv.md
+governance/09_PADROES/padrao_hash.md
+governance/09_PADROES/padrao_logs.md
+governance/09_PADROES/padrao_manifestos.md
+governance/09_PADROES/padrao_nomenclatura.md
+governance/09_PADROES/padrao_pastas.md
+governance/09_PADROES/PADRAO_UNICO_INTEGRACAO.md
+governance/09_PADROES/registro_oficial_fractais.md
+governance/10_HOMOLOGACOES/modelo_termo_homologacao.md
+governance/10_HOMOLOGACOES/ROTEIRO_VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md
+governance/10_HOMOLOGACOES/termo_homologacao_ze_4_0.md
+governance/10_HOMOLOGACOES/VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md
+governance/11_EXECUCAO_GOVERNANCA/COLETA_GOVERNANCA_TRIN_2026_07_09_1912.txt
+governance/11_EXECUCAO_GOVERNANCA/motor_governanca.md
+governance/11_EXECUCAO_GOVERNANCA/ORDEM_EXECUCAO_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO_2026_06_23.md
+governance/contrato_bastião.md
+governance/INDICE_MESTRE.md
+governance/INDICE_SISTEMICO_GLOBAL.md
+governance/LEIA_PRIMEIRO/unica_regra.md
