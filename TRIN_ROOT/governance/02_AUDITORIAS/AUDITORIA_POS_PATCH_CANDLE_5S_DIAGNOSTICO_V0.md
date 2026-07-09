@@ -23,66 +23,6 @@ Fonte:
 
 TT_PENEIRADO_NAO_CERTIFICADO
 
-Arquivo de origem:
-
-TRIN_HISTORICO/00_PROCESSAMENTO_TT/BASTIAO_TT_PENEIRADOR/WINQ26/2026-07-09/TT_PENEIRADO_NAO_CERTIFICADO_WINQ26_20260709.csv
-
-Status da fonte:
-
-NAO_CERTIFICADO
-
-Uso:
-
-DIAGNOSTICO_APENAS
-
----
-
-## 3. Resultado observado
-
-- total_negocios_validos: 22
-- total_candles_5s: 2
-- contrato: WINQ26
-- data_pregao: 2026-07-09
-
-Candles observados:
-
-1. Bucket 18:02:00 a 18:02:05
-   - abertura: 175270
-   - maximo: 175280
-   - minimo: 175265
-   - fechamento: 175280
-   - volume_quantidade: 90
-
-cd "C:\Users\User\projeto_fluxo\TRIN_ROOT"
-
-$arquivo = "governance\02_AUDITORIAS\AUDITORIA_POS_PATCH_CANDLE_5S_DIAGNOSTICO_V0.md"
-
-@'
-# AUDITORIA POS-PATCH — CANDLE 5S DIAGNOSTICO v0
-
-## Status
-
-AUDITORIA_POS_PATCH
-
-Data: 2026-07-09  
-Projeto: TRIN  
-Modulo: CANDLE_5S_DIAGNOSTICO  
-Script: tools_rtd/CANDLE_5S_DIAGNOSTICO_01.ps1
-
----
-
-## 1. Objetivo
-
-Registrar o primeiro teste de geração de candles de 5 segundos a partir de TT_PENEIRADO_NAO_CERTIFICADO.
-
----
-
-## 2. Entrada
-
-Fonte:
-
-TT_PENEIRADO_NAO_CERTIFICADO
-
 Status da fonte:
 
 NAO_CERTIFICADO
