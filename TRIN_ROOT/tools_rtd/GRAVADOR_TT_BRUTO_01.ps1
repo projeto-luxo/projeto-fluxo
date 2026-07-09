@@ -28,6 +28,34 @@ function Hash-Texto($texto) {
   return ([System.BitConverter]::ToString($hash)).Replace("-", "").ToLower()
 }
 
+function Get-ExcelText($ws, [int]$linha, [int]$coluna, [int]$tentativas = 10) {
+  for ($i = 1; $i -le $tentativas; $i++) {
+    try {
+      return $ws.Cells.Item($linha, $coluna).Text
+    } catch {
+      if ($i -eq $tentativas) {
+        throw
+      }
+
+      Start-Sleep -Milliseconds (100 + ($i * 100))
+    }
+  }
+}
+
+function Get-ExcelUsedRows($ws, [int]$tentativas = 10) {
+  for ($i = 1; $i -le $tentativas; $i++) {
+    try {
+      return $ws.UsedRange.Rows.Count
+    } catch {
+      if ($i -eq $tentativas) {
+        throw
+      }
+
+      Start-Sleep -Milliseconds (100 + ($i * 100))
+    }
+  }
+}
+
 if ([string]::IsNullOrWhiteSpace($DataPregao)) {
   $DataPregao = Get-Date -Format "yyyy-MM-dd"
 }
@@ -59,7 +87,7 @@ if (-not $ws) {
   throw "Aba TT não encontrada."
 }
 
-$contrato = $ws.Cells.Item(1,1).Text
+$contrato = Get-ExcelText $ws 1 1
 if ([string]::IsNullOrWhiteSpace($contrato)) {
   $contrato = "WIN_TT"
 }
@@ -116,20 +144,19 @@ while ((Get-Date) -lt $fim) {
   $ciclo += 1
   $timestampPc = Get-Date -Format "o"
 
-  $used = $ws.UsedRange
-  $lastRow = $used.Rows.Count
+  $lastRow = Get-ExcelUsedRows $ws
 
   $contagemBaseSnapshot = @{}
   $linhasNovas = New-Object System.Collections.Generic.List[string]
 
   for ($r = 3; $r -le $lastRow; $r++) {
-    $horaTt = $ws.Cells.Item($r,1).Text
-    $compradora = $ws.Cells.Item($r,2).Text
-    $preco = $ws.Cells.Item($r,3).Text
-    $quantidade = $ws.Cells.Item($r,4).Text
-    $vendedora = $ws.Cells.Item($r,5).Text
-    $agressor = $ws.Cells.Item($r,6).Text
-    $agenteAgressor = $ws.Cells.Item($r,7).Text
+    $horaTt = Get-ExcelText $ws $r 1
+    $compradora = Get-ExcelText $ws $r 2
+    $preco = Get-ExcelText $ws $r 3
+    $quantidade = Get-ExcelText $ws $r 4
+    $vendedora = Get-ExcelText $ws $r 5
+    $agressor = Get-ExcelText $ws $r 6
+    $agenteAgressor = Get-ExcelText $ws $r 7
 
     if ([string]::IsNullOrWhiteSpace($horaTt) -or [string]::IsNullOrWhiteSpace($preco)) {
       continue
