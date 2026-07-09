@@ -403,18 +403,119 @@ if (absorcao) {
       historico = historicoReal;
     }
 
-    const vwap = ordenarPorTempo(data.vwap || []);
-    const vwapSuperior = ordenarPorTempo(data.vwap_superior || []);
-    const vwapInferior = ordenarPorTempo(data.vwap_inferior || []);
+    let vwap = ordenarPorTempo(data.vwap || []);
+    let vwapSuperior = ordenarPorTempo(data.vwap_superior || []);
+    let vwapInferior = ordenarPorTempo(data.vwap_inferior || []);
 
     if (!historico.length || !candleSeriesRef.current) return;
 
-    const ultimoCandle = historico[historico.length - 1];
+    let ultimoCandle = historico[historico.length - 1];
 
     const timeframeAtualGrafico =
       data.painel_temporal?.timeframe_painel ||
       ultimoCandle.timeframe_painel ||
       "DESCONHECIDO";
+
+    // PATCH_GRAFICO_SERIES_TEMPORAIS_03
+    // Remove segmentos visuais quebrados por grandes buracos temporais
+    // e alinha VWAP/bandas na mesma regua dos candles.
+    const segundosPorTimeframeVisual = {
+      "15S": 15,
+      "30S": 30,
+      "1_MIN": 60,
+      "2_MIN": 120,
+      "5_MIN": 300,
+      "10_MIN": 600,
+      "15_MIN": 900,
+      "30_MIN": 1800,
+      "60_MIN": 3600,
+    };
+
+    const filtrarHistoricoVisualContinuo = (candles, timeframe) => {
+      if (!Array.isArray(candles) || candles.length < 3) return candles;
+
+      const tf = String(timeframe || "").toUpperCase();
+      const esperado = segundosPorTimeframeVisual[tf];
+
+      if (!esperado) return candles;
+
+      const limiteGap = Math.max(esperado * 8, 90);
+
+      let inicioSegmentoAtual = 0;
+
+      for (let i = candles.length - 1; i > 0; i -= 1) {
+        const atual = Number(candles[i]?.time);
+        const anterior = Number(candles[i - 1]?.time);
+
+        if (!Number.isFinite(atual) || !Number.isFinite(anterior)) continue;
+
+        const gap = atual - anterior;
+
+        if (gap > limiteGap) {
+          inicioSegmentoAtual = i;
+          break;
+        }
+      }
+
+      if (inicioSegmentoAtual <= 0) return candles;
+
+      const segmentoAtual = candles.slice(inicioSegmentoAtual);
+
+      // Se nasceu apenas 1 ou poucos candles depois de um grande buraco temporal,
+      // trata como leitura isolada pos-pausa e preserva o bloco anterior no grafico.
+      if (segmentoAtual.length < 8 && candles.length > inicioSegmentoAtual) {
+        return candles.slice(Math.max(0, inicioSegmentoAtual - 120), inicioSegmentoAtual);
+      }
+
+      return segmentoAtual;
+    };
+
+    const alinharSerieAoHistorico = (serie, candles) => {
+      if (!Array.isArray(serie) || !serie.length || !Array.isArray(candles) || !candles.length) {
+        return [];
+      }
+
+      const pontos = ordenarPorTempo(serie)
+        .filter((ponto) =>
+          ponto &&
+          ponto.time !== undefined &&
+          ponto.value !== undefined &&
+          Number.isFinite(Number(ponto.time)) &&
+          Number.isFinite(Number(ponto.value))
+        );
+
+      if (!pontos.length) return [];
+
+      const alinhada = [];
+      let idx = 0;
+      let ultimoValor = null;
+
+      candles.forEach((candle) => {
+        const t = Number(candle.time);
+        if (!Number.isFinite(t)) return;
+
+        while (idx < pontos.length && Number(pontos[idx].time) <= t) {
+          ultimoValor = Number(pontos[idx].value);
+          idx += 1;
+        }
+
+        if (ultimoValor !== null && Number.isFinite(ultimoValor)) {
+          alinhada.push({
+            time: candle.time,
+            value: ultimoValor,
+          });
+        }
+      });
+
+      return alinhada;
+    };
+
+    historico = filtrarHistoricoVisualContinuo(historico, timeframeAtualGrafico);
+    ultimoCandle = historico[historico.length - 1] || ultimoCandle;
+
+    vwap = alinharSerieAoHistorico(vwap, historico);
+    vwapSuperior = alinharSerieAoHistorico(vwapSuperior, historico);
+    vwapInferior = alinharSerieAoHistorico(vwapInferior, historico);
 
     aplicarEscalaTempoPorTimeframe(timeframeAtualGrafico);
 
