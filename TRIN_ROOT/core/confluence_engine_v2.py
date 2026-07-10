@@ -1,6 +1,6 @@
 # core/confluence_engine_v2.py
 # ============================================================
-# MOTOR DE CONFLUENCIA v2.1 — TRIN
+# MOTOR DE CONFLUENCIA v2.3 — TRIN
 #
 # Responsabilidade unica:
 # - Combinar evidencias ponderadas para medir qualidade/contexto.
@@ -85,6 +85,101 @@ class ConfluenceEngineV2:
     def _clamp(self, valor: float, minimo: float, maximo: float) -> float:
         return max(minimo, min(maximo, valor))
 
+
+    @staticmethod
+    def _booleano(valor: Any, default: bool = True) -> bool:
+        if isinstance(valor, bool):
+            return valor
+
+        if valor is None:
+            return default
+
+        texto = str(valor).strip().lower()
+        if texto in {"true", "1", "sim", "yes", "verdadeiro"}:
+            return True
+        if texto in {"false", "0", "nao", "não", "no", "falso"}:
+            return False
+
+        return default
+
+    def _resolver_contexto_fluxo(self, tick: Dict[str, Any]) -> Dict[str, Any]:
+        delta = self._num(tick.get("delta"))
+        saldo = self._num(tick.get("saldo"))
+        relacao = str(
+            tick.get("delta_saldo_relacao") or "INDETERMINADO"
+        ).strip().upper()
+
+        independentes = self._booleano(
+            tick.get("delta_saldo_independentes"),
+            default=True,
+        )
+
+        if relacao == "INDEPENDENTES":
+            independentes = True
+        elif relacao in {
+            "EQUIVALENTES_OBSERVADOS",
+            "SALDO_DERIVADO_DELTA",
+            "DELTA_DERIVADO_SALDO",
+            "SEM_DADOS",
+        }:
+            independentes = False
+
+        fluxo_informado = tick.get("fluxo_agressor_canonico")
+        if fluxo_informado is None:
+            if relacao == "SEM_DADOS":
+                fluxo_canonico = 0.0
+            elif tick.get("saldo") is not None:
+                fluxo_canonico = saldo
+            else:
+                fluxo_canonico = delta
+        else:
+            fluxo_canonico = self._num(fluxo_informado)
+
+        if relacao == "SEM_DADOS":
+            modo = "SEM_DADOS"
+        elif independentes:
+            modo = "DUPLA_INDEPENDENTE"
+        else:
+            modo = "CANONICA_UNICA"
+
+        return {
+            "delta": delta,
+            "saldo": saldo,
+            "fluxo_canonico": fluxo_canonico,
+            "relacao": relacao,
+            "independentes": independentes,
+            "modo": modo,
+            "fluxo_fonte": tick.get("fluxo_agressor_fonte"),
+            "fluxo_status": tick.get("fluxo_agressor_status"),
+        }
+
+    def _correlacao_fluxo_agressao(
+        self,
+        tick: Dict[str, Any],
+        agressao: Optional[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        contexto = self._resolver_contexto_fluxo(tick)
+        agressao = agressao or {}
+        modo_agressao = str(
+            agressao.get("modo_evidencia_agressao") or "NAO_DECLARADO"
+        ).strip().upper()
+
+        correlacionados = (
+            not contexto["independentes"]
+            and modo_agressao == "CANONICA_UNICA"
+        )
+
+        return {
+            "correlacionados": correlacionados,
+            "classificacao": (
+                "MESMA_ORIGEM_CANONICA_TRANSFORMACOES_DISTINTAS"
+                if correlacionados
+                else "NAO_DECLARADA_COMO_CORRELACIONADA"
+            ),
+            "modo_agressao": modo_agressao,
+            "confirmacao_direcional_independente": not correlacionados,
+        }
+
     def _registrar_historico(self, tick: Dict[str, Any]) -> None:
         self.history.append(tick)
 
@@ -132,25 +227,63 @@ class ConfluenceEngineV2:
             }
 
     def _evidencia_fluxo(self, tick: Dict[str, Any]) -> Evidencia:
-        delta = self._num(tick.get("delta"))
-        saldo = self._num(tick.get("saldo"))
+        contexto = self._resolver_contexto_fluxo(tick)
+        delta = contexto["delta"]
+        saldo = contexto["saldo"]
+        fluxo_canonico = contexto["fluxo_canonico"]
 
-        bruto = (delta + saldo) / 20000
-        impacto = self._clamp(bruto, -3.0, 3.0)
+        if contexto["independentes"]:
+            bruto = (delta + saldo) / 20000
 
-        if delta > 0 and saldo > 0:
-            direcao = "COMPRA"
-            justificativa = "Delta e saldo positivos indicam fluxo comprador."
-        elif delta < 0 and saldo < 0:
-            direcao = "VENDA"
-            justificativa = "Delta e saldo negativos indicam fluxo vendedor."
+            if delta > 0 and saldo > 0:
+                direcao = "COMPRA"
+                justificativa = (
+                    "Delta e saldo independentes positivos indicam fluxo comprador."
+                )
+            elif delta < 0 and saldo < 0:
+                direcao = "VENDA"
+                justificativa = (
+                    "Delta e saldo independentes negativos indicam fluxo vendedor."
+                )
+            else:
+                direcao = "NEUTRO"
+                justificativa = (
+                    "Delta e saldo independentes nao confirmam a mesma direcao."
+                )
         else:
-            direcao = "NEUTRO"
-            justificativa = "Delta e saldo nao confirmam a mesma direcao."
+            # CR-03D3: uma unica grandeza canonica ocupa apenas um dos dois
+            # componentes historicos da formula. O peso 2.0 permanece intacto;
+            # o que deixa de existir e a confirmacao duplicada Delta + Saldo.
+            bruto = fluxo_canonico / 20000
+
+            if fluxo_canonico > 0:
+                direcao = "COMPRA"
+            elif fluxo_canonico < 0:
+                direcao = "VENDA"
+            else:
+                direcao = "NEUTRO"
+
+            justificativa = (
+                "Fluxo agressor canonico consumido uma unica vez; "
+                f"Delta e saldo com relacao {contexto['relacao']} nao constituem "
+                "confirmacao independente."
+            )
+
+        impacto = self._clamp(bruto, -3.0, 3.0)
 
         return Evidencia(
             "FLUXO_DELTA_SALDO",
-            {"delta": delta, "saldo": saldo},
+            {
+                "delta": delta,
+                "saldo": saldo,
+                "fluxo_agressor_canonico": fluxo_canonico,
+                "fluxo_agressor_fonte": contexto["fluxo_fonte"],
+                "fluxo_agressor_status": contexto["fluxo_status"],
+                "delta_saldo_relacao": contexto["relacao"],
+                "delta_saldo_independentes": contexto["independentes"],
+                "modo_evidencia_fluxo": contexto["modo"],
+                "confirmacao_delta_saldo_independente": contexto["independentes"],
+            },
             2.0,
             impacto,
             direcao,
@@ -165,14 +298,15 @@ class ConfluenceEngineV2:
         compra = self._num(tick.get("agressao_compra"))
         venda = self._num(tick.get("agressao_venda"))
         saldo_agressao = compra - venda
+        agressao = agressao or {}
 
         score_agressao = self._num(
-            (agressao or {}).get("score_agressao"),
+            agressao.get("score_agressao"),
             default=saldo_agressao / 100000,
         )
 
         impacto = self._clamp(score_agressao / 5, -3.0, 3.0)
-        leitura = str((agressao or {}).get("leitura_agressao", "")).upper()
+        leitura = str(agressao.get("leitura_agressao", "")).upper()
 
         if "COMPRADORA" in leitura or saldo_agressao > 0:
             direcao = "COMPRA"
@@ -181,6 +315,18 @@ class ConfluenceEngineV2:
         else:
             direcao = "NEUTRO"
 
+        correlacao = self._correlacao_fluxo_agressao(tick, agressao)
+
+        justificativa = (
+            "Agressao mede persistencia e intensidade do fluxo agressor."
+        )
+        if correlacao["correlacionados"]:
+            justificativa = (
+                "Agressao mede persistencia e intensidade derivadas do mesmo "
+                "fluxo canonico; correlacao declarada e nao usada como segunda "
+                "confirmacao direcional independente."
+            )
+
         return Evidencia(
             "AGRESSAO",
             {
@@ -188,11 +334,20 @@ class ConfluenceEngineV2:
                 "venda": venda,
                 "score_agressao": score_agressao,
                 "leitura": leitura,
+                "modo_evidencia_agressao": correlacao["modo_agressao"],
+                "fluxo_agressor_utilizado": agressao.get(
+                    "fluxo_agressor_utilizado"
+                ),
+                "correlacionada_fluxo_canonico": correlacao["correlacionados"],
+                "correlacao_fluxo_agressao": correlacao["classificacao"],
+                "confirmacao_direcional_independente": correlacao[
+                    "confirmacao_direcional_independente"
+                ],
             },
             1.5,
             impacto,
             direcao,
-            "Agressao mede persistencia e intensidade do fluxo agressor.",
+            justificativa,
         )
 
     def _evidencia_vwap(self, tick: Dict[str, Any]) -> Evidencia:
@@ -292,8 +447,22 @@ class ConfluenceEngineV2:
         )
 
     def _decidir_direcao(self, evidencias: List[Evidencia]) -> str:
-        compra = sum(e.peso for e in evidencias if e.direcao == "COMPRA")
-        venda = sum(e.peso for e in evidencias if e.direcao == "VENDA")
+        def voto_direcional(evidencia: Evidencia) -> bool:
+            valor = evidencia.valor
+            if not isinstance(valor, dict):
+                return True
+            return valor.get("confirmacao_direcional_independente", True) is not False
+
+        compra = sum(
+            e.peso
+            for e in evidencias
+            if e.direcao == "COMPRA" and voto_direcional(e)
+        )
+        venda = sum(
+            e.peso
+            for e in evidencias
+            if e.direcao == "VENDA" and voto_direcional(e)
+        )
 
         if compra > venda * 1.25:
             return "COMPRA"
@@ -363,6 +532,9 @@ class ConfluenceEngineV2:
         elif qualidade == "BLOQUEADO_POR_CERTIFICACAO":
             alerta = "CONFLUENCIA_BLOQUEADA_PELO_FISCAL"
 
+        contexto_fluxo = self._resolver_contexto_fluxo(tick)
+        correlacao = self._correlacao_fluxo_agressao(tick, agressao)
+
         return {
             "score_confluencia": score,
             "direcao": direcao,
@@ -370,6 +542,15 @@ class ConfluenceEngineV2:
             "alerta": alerta,
             "evidencias": [asdict(e) for e in evidencias],
             "justificativa": " | ".join(justificativas),
+            "modo_evidencia_fluxo": contexto_fluxo["modo"],
+            "delta_saldo_relacao": contexto_fluxo["relacao"],
+            "delta_saldo_independentes": contexto_fluxo["independentes"],
+            "fluxo_agressor_canonico": contexto_fluxo["fluxo_canonico"],
+            "fluxo_agressao_correlacionados": correlacao["correlacionados"],
+            "correlacao_fluxo_agressao": correlacao["classificacao"],
+            "agressao_confirmacao_direcional_independente": correlacao[
+                "confirmacao_direcional_independente"
+            ],
             "motor": "ConfluenceEngineV2",
-            "versao": "2.1",
+            "versao": "2.3",
         }
