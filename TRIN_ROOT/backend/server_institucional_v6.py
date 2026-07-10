@@ -155,6 +155,13 @@ ultimo_reset_estado_operacional = {
 }
 
 
+# CR-02A - cache idempotente do processamento operacional.
+ultima_assinatura_evento_processado = None
+ultimo_calculo_operacional = None
+sequencia_processamento_operacional = 0
+reutilizacoes_cache_operacional = 0
+
+
 def _tamanho_lista_interna(objeto, atributo):
     valor = getattr(objeto, atributo, None)
     return len(valor) if isinstance(valor, list) else 0
@@ -169,6 +176,8 @@ def resetar_estado_operacional(motivo, modo_destino):
     global engine, vwap_engine, candle_engine, aggression_engine, motor_confluencia
     global historico, ultima_explosao_tipo, ultima_explosao_tempo
     global ultimo_reset_estado_operacional
+    global ultima_assinatura_evento_processado, ultimo_calculo_operacional
+    global sequencia_processamento_operacional, reutilizacoes_cache_operacional
 
     estado_anterior = {
         "historico": len(historico),
@@ -177,6 +186,9 @@ def resetar_estado_operacional(motivo, modo_destino):
         "agressao_fluxo_recente": _tamanho_lista_interna(aggression_engine, "fluxo_recente"),
         "agressao_memoria": _tamanho_lista_interna(aggression_engine, "memoria_agressao"),
         "confluencia_history": _tamanho_lista_interna(motor_confluencia, "history"),
+        "cache_operacional_presente": ultimo_calculo_operacional is not None,
+        "sequencia_processamento_operacional": sequencia_processamento_operacional,
+        "reutilizacoes_cache_operacional": reutilizacoes_cache_operacional,
     }
 
     engine = TRINEngine()
@@ -188,6 +200,10 @@ def resetar_estado_operacional(motivo, modo_destino):
     historico = []
     ultima_explosao_tipo = "SEM EXPLOSÃO"
     ultima_explosao_tempo = 0
+    ultima_assinatura_evento_processado = None
+    ultimo_calculo_operacional = None
+    sequencia_processamento_operacional = 0
+    reutilizacoes_cache_operacional = 0
 
     sequencia = int(ultimo_reset_estado_operacional.get("sequencia", 0)) + 1
     estado_posterior = {
@@ -197,6 +213,9 @@ def resetar_estado_operacional(motivo, modo_destino):
         "agressao_fluxo_recente": _tamanho_lista_interna(aggression_engine, "fluxo_recente"),
         "agressao_memoria": _tamanho_lista_interna(aggression_engine, "memoria_agressao"),
         "confluencia_history": _tamanho_lista_interna(motor_confluencia, "history"),
+        "cache_operacional_presente": ultimo_calculo_operacional is not None,
+        "sequencia_processamento_operacional": sequencia_processamento_operacional,
+        "reutilizacoes_cache_operacional": reutilizacoes_cache_operacional,
     }
 
     ultimo_reset_estado_operacional = {
@@ -725,7 +744,59 @@ def _montar_tick_confluencia(atual, vwap_atual, memoria, engine_data):
     }
 
 
+def _valor_assinatura_evento(valor):
+    if isinstance(valor, float):
+        return round(valor, 6)
+    return valor
+
+
+def assinatura_evento_operacional(atual):
+    """Identifica o fato de mercado sem usar resultados derivados dos motores."""
+    modo_dados = "REPLAY" if replay_reader.ativo else "AO_VIVO"
+    campos = [
+        "ativo",
+        "time",
+        "close",
+        "ultimo",
+        "volume",
+        "volume_real",
+        "volume_candle_estimado",
+        "delta",
+        "saldo",
+        "vwap_real",
+    ]
+
+    assinatura = [("modo_dados", modo_dados)]
+    for campo in campos:
+        assinatura.append((campo, _valor_assinatura_evento(atual.get(campo))))
+    return tuple(assinatura)
+
+
+def _copiar_calculo_operacional(calculo):
+    """Entrega referencias de leitura do cache sem reprocessar os motores."""
+    return {
+        "engine_data": calculo["engine_data"],
+        "vwap": calculo["vwap"],
+        "banda_sup": calculo["banda_sup"],
+        "banda_inf": calculo["banda_inf"],
+        "vwap_atual": calculo["vwap_atual"],
+        "distancia_vwap": calculo["distancia_vwap"],
+        "freq": calculo["freq"],
+        "status": calculo["status"],
+        "intensidade": calculo["intensidade"],
+        "memoria": calculo["memoria"],
+        "explosao": calculo["explosao"],
+        "tipo_explosao": calculo["tipo_explosao"],
+        "sinal_data": dict(calculo["sinal_data"]),
+        "resultado_confluencia": calculo["resultado_confluencia"],
+    }
+
+
 def gerar_payload():
+    global ultima_explosao_tipo, ultima_explosao_tempo
+    global ultima_assinatura_evento_processado, ultimo_calculo_operacional
+    global sequencia_processamento_operacional, reutilizacoes_cache_operacional
+
     if len(historico) < 2:
         atualizar_historico()
         atualizar_historico()
@@ -795,236 +866,298 @@ def gerar_payload():
     atual = historico[-1]
 
     contrato_ativo = _validar_contrato_ativo(atual)
+    assinatura_evento = assinatura_evento_operacional(atual)
 
-    try:
-       engine_data = engine.processar(atual, anterior)
-    except AttributeError:
-        engine_data = {
-            "engine_score": 0,
-            "engine_fase": "SIMULADO_TRINENGINE_SEM_PROCESSAR",
-            "engine_direcao": "NEUTRO",
-            "engine_seq_delta": 0,
-            "engine_trap": None,
-            "engine_absorcao": False,
-            "engine_zona_low": None,
-            "engine_zona_high": None,
-     }
-
-    vwap, banda_sup, banda_inf = vwap_engine.calcular_vwap_e_bandas()
-    vwap_atual = vwap[-1]["value"] if vwap else atual["close"]
-
-    distancia_vwap = round(abs(atual["close"] - vwap_atual), 2) if vwap else 0
-
-    freq, status, intensidade = aggression_engine.calcular_frequencia(
-        atual["saldo"],
-        atual["delta"],
-        atual["volume"]
+    cache_reutilizado = (
+        assinatura_evento == ultima_assinatura_evento_processado
+        and isinstance(ultimo_calculo_operacional, dict)
     )
 
-    memoria = aggression_engine.calcular_memoria_agressao(
-        atual["saldo"],
-        atual["delta"],
-        atual["volume"]
-    )
+    if cache_reutilizado:
+        reutilizacoes_cache_operacional += 1
+        calculo = _copiar_calculo_operacional(ultimo_calculo_operacional)
 
-    explosao, tipo_explosao = aggression_engine.detectar_explosao_fluxo(
-        atual["saldo"],
-        atual["delta"],
-        atual["volume"],
-        memoria["score_agressao"],
-        intensidade
-    )
+        engine_data = calculo["engine_data"]
+        vwap = calculo["vwap"]
+        banda_sup = calculo["banda_sup"]
+        banda_inf = calculo["banda_inf"]
+        vwap_atual = calculo["vwap_atual"]
+        distancia_vwap = calculo["distancia_vwap"]
+        freq = calculo["freq"]
+        status = calculo["status"]
+        intensidade = calculo["intensidade"]
+        memoria = calculo["memoria"]
+        explosao = calculo["explosao"]
+        tipo_explosao = calculo["tipo_explosao"]
+        sinal_data = calculo["sinal_data"]
+        resultado_confluencia = calculo["resultado_confluencia"]
 
-    global ultima_explosao_tipo, ultima_explosao_tempo
-    agora = int(datetime.now().timestamp())
+        agora = int(datetime.now().timestamp())
+        tipo_explosao_painel = (
+            ultima_explosao_tipo
+            if agora - ultima_explosao_tempo <= 8
+            else "SEM EXPLOSÃO"
+        )
 
-    if explosao:
-        ultima_explosao_tipo = tipo_explosao
-        ultima_explosao_tempo = agora
+        atual["explosao_detectada"] = explosao
+        atual["tipo_explosao"] = tipo_explosao_painel
 
-    tipo_explosao_painel = (
-        ultima_explosao_tipo
-        if agora - ultima_explosao_tempo <= 8
-        else "SEM EXPLOSÃO"
-    )
+    else:
+        try:
+           engine_data = engine.processar(atual, anterior)
+        except AttributeError:
+            engine_data = {
+                "engine_score": 0,
+                "engine_fase": "SIMULADO_TRINENGINE_SEM_PROCESSAR",
+                "engine_direcao": "NEUTRO",
+                "engine_seq_delta": 0,
+                "engine_trap": None,
+                "engine_absorcao": False,
+                "engine_zona_low": None,
+                "engine_zona_high": None,
+         }
 
-    atual["explosao_detectada"] = explosao
-    atual["tipo_explosao"] = tipo_explosao_painel
+        vwap, banda_sup, banda_inf = vwap_engine.calcular_vwap_e_bandas()
+        vwap_atual = vwap[-1]["value"] if vwap else atual["close"]
 
-    sinal_data = gerar_sinal(
-        atual["saldo"],
-        atual["volume"],
-        atual["delta"],
-        preco=atual["close"]
-    )
+        distancia_vwap = round(abs(atual["close"] - vwap_atual), 2) if vwap else 0
 
-    # ==============================
-    # ENTRADA INSTITUCIONAL TRIN
-    # ==============================
-    engine_score = engine_data.get("engine_score", 0)
-    engine_fase = engine_data.get("engine_fase", "AGUARDANDO")
-    engine_direcao = engine_data.get("engine_direcao", "NEUTRO")
-    engine_seq_delta = engine_data.get("engine_seq_delta", 0)
-    engine_trap = engine_data.get("engine_trap")
-    engine_absorcao = engine_data.get("engine_absorcao", False)
+        freq, status, intensidade = aggression_engine.calcular_frequencia(
+            atual["saldo"],
+            atual["delta"],
+            atual["volume"]
+        )
 
-    score_agressao = memoria.get("score_agressao", 0)
-    entrada_institucional = "AGUARDAR"
+        memoria = aggression_engine.calcular_memoria_agressao(
+            atual["saldo"],
+            atual["delta"],
+            atual["volume"]
+        )
 
-    if explosao and tipo_explosao == "BUY EXPLOSION":
-        entrada_institucional = "COMPRA SCALPING CONTROLADO"
+        explosao, tipo_explosao = aggression_engine.detectar_explosao_fluxo(
+            atual["saldo"],
+            atual["delta"],
+            atual["volume"],
+            memoria["score_agressao"],
+            intensidade
+        )
 
-    elif explosao and tipo_explosao == "SELL EXPLOSION":
-        entrada_institucional = "VENDA SCALPING CONTROLADO"
+        agora = int(datetime.now().timestamp())
 
-    elif (
-        engine_score >= 6
-        and engine_fase == "ROMPIMENTO"
-        and engine_direcao == "COMPRA"
-        and engine_seq_delta >= 2
-        and atual["delta"] > 180
-        and not engine_absorcao
-    ):
-        entrada_institucional = "COMPRA CONSERVADORA"
+        if explosao:
+            ultima_explosao_tipo = tipo_explosao
+            ultima_explosao_tempo = agora
 
-    elif (
-        engine_score >= 6
-        and engine_fase == "ROMPIMENTO"
-        and engine_direcao == "VENDA"
-        and engine_seq_delta <= -2
-        and atual["delta"] < -180
-        and not engine_absorcao
-    ):
-        entrada_institucional = "VENDA CONSERVADORA"
+        tipo_explosao_painel = (
+            ultima_explosao_tipo
+            if agora - ultima_explosao_tempo <= 8
+            else "SEM EXPLOSÃO"
+        )
 
-    elif (
-        engine_fase == "DISTRIBUICAO"
-        and engine_direcao == "VENDA"
-        and atual["delta"] < -120
-        and not engine_absorcao
-    ):
-        entrada_institucional = "VENDA MODERADA"
+        atual["explosao_detectada"] = explosao
+        atual["tipo_explosao"] = tipo_explosao_painel
 
-    elif (
-        engine_fase == "ACUMULACAO"
-        and engine_direcao == "COMPRA"
-        and atual["delta"] > 120
-        and not engine_absorcao
-    ):
-        entrada_institucional = "COMPRA MODERADA"
+        sinal_data = gerar_sinal(
+            atual["saldo"],
+            atual["volume"],
+            atual["delta"],
+            preco=atual["close"]
+        )
 
-    elif (
-        engine_score >= 5
-        and engine_direcao == "COMPRA"
-        and score_agressao > 5
-        and (engine_trap == "COMPRA" or engine_absorcao)
-    ):
-        entrada_institucional = "COMPRA MODERADA"
+        # ==============================
+        # ENTRADA INSTITUCIONAL TRIN
+        # ==============================
+        engine_score = engine_data.get("engine_score", 0)
+        engine_fase = engine_data.get("engine_fase", "AGUARDANDO")
+        engine_direcao = engine_data.get("engine_direcao", "NEUTRO")
+        engine_seq_delta = engine_data.get("engine_seq_delta", 0)
+        engine_trap = engine_data.get("engine_trap")
+        engine_absorcao = engine_data.get("engine_absorcao", False)
 
-    elif (
-        engine_score >= 5
-        and engine_direcao == "VENDA"
-        and score_agressao < -5
-        and (engine_trap == "VENDA" or engine_absorcao)
-    ):
-        entrada_institucional = "VENDA MODERADA"
+        score_agressao = memoria.get("score_agressao", 0)
+        entrada_institucional = "AGUARDAR"
 
-    sinal_data["entrada"] = entrada_institucional
+        if explosao and tipo_explosao == "BUY EXPLOSION":
+            entrada_institucional = "COMPRA SCALPING CONTROLADO"
 
-    # ==============================
-    # ALERTA OPERACIONAL TRIN
-    # ==============================
-    alerta_operacional = "AGUARDANDO CONFIRMAÇÃO"
+        elif explosao and tipo_explosao == "SELL EXPLOSION":
+            entrada_institucional = "VENDA SCALPING CONTROLADO"
 
-    if (
-        engine_fase == "COMPRESSAO"
-        and atual["delta"] < -100
-        and score_agressao < -5
-        and not engine_absorcao
-    ):
-        alerta_operacional = "ALERTA: PRESSÃO VENDEDORA EM COMPRESSÃO"
+        elif (
+            engine_score >= 6
+            and engine_fase == "ROMPIMENTO"
+            and engine_direcao == "COMPRA"
+            and engine_seq_delta >= 2
+            and atual["delta"] > 180
+            and not engine_absorcao
+        ):
+            entrada_institucional = "COMPRA CONSERVADORA"
 
-    elif (
-        engine_fase == "COMPRESSAO"
-        and atual["delta"] > 100
-        and score_agressao > 5
-        and not engine_absorcao
-    ):
-        alerta_operacional = "ALERTA: PRESSÃO COMPRADORA EM COMPRESSÃO"
+        elif (
+            engine_score >= 6
+            and engine_fase == "ROMPIMENTO"
+            and engine_direcao == "VENDA"
+            and engine_seq_delta <= -2
+            and atual["delta"] < -180
+            and not engine_absorcao
+        ):
+            entrada_institucional = "VENDA CONSERVADORA"
 
-    elif engine_fase == "DISTRIBUICAO" and engine_direcao == "VENDA":
-        alerta_operacional = "ALERTA: DISTRIBUIÇÃO VENDEDORA"
+        elif (
+            engine_fase == "DISTRIBUICAO"
+            and engine_direcao == "VENDA"
+            and atual["delta"] < -120
+            and not engine_absorcao
+        ):
+            entrada_institucional = "VENDA MODERADA"
 
-    elif engine_fase == "ACUMULACAO" and engine_direcao == "COMPRA":
-        alerta_operacional = "ALERTA: ACUMULAÇÃO COMPRADORA"
+        elif (
+            engine_fase == "ACUMULACAO"
+            and engine_direcao == "COMPRA"
+            and atual["delta"] > 120
+            and not engine_absorcao
+        ):
+            entrada_institucional = "COMPRA MODERADA"
 
-    elif engine_fase == "ROMPIMENTO":
-        alerta_operacional = "ALERTA: ROMPIMENTO EM ANDAMENTO"
+        elif (
+            engine_score >= 5
+            and engine_direcao == "COMPRA"
+            and score_agressao > 5
+            and (engine_trap == "COMPRA" or engine_absorcao)
+        ):
+            entrada_institucional = "COMPRA MODERADA"
 
-    sinal_data["tendencia"] = alerta_operacional
+        elif (
+            engine_score >= 5
+            and engine_direcao == "VENDA"
+            and score_agressao < -5
+            and (engine_trap == "VENDA" or engine_absorcao)
+        ):
+            entrada_institucional = "VENDA MODERADA"
 
-    # ==============================
-    # GESTAO INSTITUCIONAL DINAMICA
-    # STOP / PARCIAL / ALVO
-    # ==============================
-    zona_low = engine_data.get("engine_zona_low")
-    zona_high = engine_data.get("engine_zona_high")
-    preco_entrada = atual["close"]
+        sinal_data["entrada"] = entrada_institucional
 
-    stop = sinal_data.get("stop")
-    parcial = sinal_data.get("parcial")
-    alvo = sinal_data.get("alvo")
+        # ==============================
+        # ALERTA OPERACIONAL TRIN
+        # ==============================
+        alerta_operacional = "AGUARDANDO CONFIRMAÇÃO"
 
-    if zona_low is not None and zona_high is not None:
-        zona_low = float(zona_low)
-        zona_high = float(zona_high)
-        preco_entrada = float(preco_entrada)
+        if (
+            engine_fase == "COMPRESSAO"
+            and atual["delta"] < -100
+            and score_agressao < -5
+            and not engine_absorcao
+        ):
+            alerta_operacional = "ALERTA: PRESSÃO VENDEDORA EM COMPRESSÃO"
 
-        range_zona = max(zona_high - zona_low, 0.5)
-        buffer = max(range_zona * 0.20, 0.15)
+        elif (
+            engine_fase == "COMPRESSAO"
+            and atual["delta"] > 100
+            and score_agressao > 5
+            and not engine_absorcao
+        ):
+            alerta_operacional = "ALERTA: PRESSÃO COMPRADORA EM COMPRESSÃO"
 
-        if entrada_institucional in ["COMPRA MODERADA", "COMPRA CONSERVADORA"]:
-            stop = round(zona_low - buffer, 2)
-            parcial = round(preco_entrada + range_zona, 2)
-            alvo = round(preco_entrada + (range_zona * 2), 2)
+        elif engine_fase == "DISTRIBUICAO" and engine_direcao == "VENDA":
+            alerta_operacional = "ALERTA: DISTRIBUIÇÃO VENDEDORA"
 
-        elif entrada_institucional in ["VENDA MODERADA", "VENDA CONSERVADORA"]:
-            stop = round(zona_high + buffer, 2)
-            parcial = round(preco_entrada - range_zona, 2)
-            alvo = round(preco_entrada - (range_zona * 2), 2)
+        elif engine_fase == "ACUMULACAO" and engine_direcao == "COMPRA":
+            alerta_operacional = "ALERTA: ACUMULAÇÃO COMPRADORA"
 
-        elif entrada_institucional == "COMPRA SCALPING CONTROLADO":
-            stop = round(preco_entrada - 0.60, 2)
-            parcial = round(preco_entrada + 0.90, 2)
-            alvo = round(preco_entrada + 1.60, 2)
+        elif engine_fase == "ROMPIMENTO":
+            alerta_operacional = "ALERTA: ROMPIMENTO EM ANDAMENTO"
 
-        elif entrada_institucional == "VENDA SCALPING CONTROLADO":
-            stop = round(preco_entrada + 0.60, 2)
-            parcial = round(preco_entrada - 0.90, 2)
-            alvo = round(preco_entrada - 1.60, 2)
+        sinal_data["tendencia"] = alerta_operacional
 
-    sinal_data["stop"] = stop
-    sinal_data["parcial"] = parcial
-    sinal_data["alvo"] = alvo
+        # ==============================
+        # GESTAO INSTITUCIONAL DINAMICA
+        # STOP / PARCIAL / ALVO
+        # ==============================
+        zona_low = engine_data.get("engine_zona_low")
+        zona_high = engine_data.get("engine_zona_high")
+        preco_entrada = atual["close"]
 
-    # ==============================
-    # MOTOR COGNITIVO TRIN v2.2
-    # ==============================
-    tick_confluencia = _montar_tick_confluencia(
-        atual=atual,
-        vwap_atual=vwap_atual,
-        memoria=memoria,
-        engine_data=engine_data,
-    )
+        stop = sinal_data.get("stop")
+        parcial = sinal_data.get("parcial")
+        alvo = sinal_data.get("alvo")
 
-    resultado_confluencia = motor_confluencia.process(
-        tick=tick_confluencia,
-        agressao=memoria,
-    )
+        if zona_low is not None and zona_high is not None:
+            zona_low = float(zona_low)
+            zona_high = float(zona_high)
+            preco_entrada = float(preco_entrada)
+
+            range_zona = max(zona_high - zona_low, 0.5)
+            buffer = max(range_zona * 0.20, 0.15)
+
+            if entrada_institucional in ["COMPRA MODERADA", "COMPRA CONSERVADORA"]:
+                stop = round(zona_low - buffer, 2)
+                parcial = round(preco_entrada + range_zona, 2)
+                alvo = round(preco_entrada + (range_zona * 2), 2)
+
+            elif entrada_institucional in ["VENDA MODERADA", "VENDA CONSERVADORA"]:
+                stop = round(zona_high + buffer, 2)
+                parcial = round(preco_entrada - range_zona, 2)
+                alvo = round(preco_entrada - (range_zona * 2), 2)
+
+            elif entrada_institucional == "COMPRA SCALPING CONTROLADO":
+                stop = round(preco_entrada - 0.60, 2)
+                parcial = round(preco_entrada + 0.90, 2)
+                alvo = round(preco_entrada + 1.60, 2)
+
+            elif entrada_institucional == "VENDA SCALPING CONTROLADO":
+                stop = round(preco_entrada + 0.60, 2)
+                parcial = round(preco_entrada - 0.90, 2)
+                alvo = round(preco_entrada - 1.60, 2)
+
+        sinal_data["stop"] = stop
+        sinal_data["parcial"] = parcial
+        sinal_data["alvo"] = alvo
+
+        # ==============================
+        # MOTOR COGNITIVO TRIN v2.2
+        # ==============================
+        tick_confluencia = _montar_tick_confluencia(
+            atual=atual,
+            vwap_atual=vwap_atual,
+            memoria=memoria,
+            engine_data=engine_data,
+        )
+
+        resultado_confluencia = motor_confluencia.process(
+            tick=tick_confluencia,
+            agressao=memoria,
+        )
+
+        sequencia_processamento_operacional += 1
+        ultima_assinatura_evento_processado = assinatura_evento
+        ultimo_calculo_operacional = {
+            "engine_data": engine_data,
+            "vwap": vwap,
+            "banda_sup": banda_sup,
+            "banda_inf": banda_inf,
+            "vwap_atual": vwap_atual,
+            "distancia_vwap": distancia_vwap,
+            "freq": freq,
+            "status": status,
+            "intensidade": intensidade,
+            "memoria": memoria,
+            "explosao": explosao,
+            "tipo_explosao": tipo_explosao,
+            "sinal_data": dict(sinal_data),
+            "resultado_confluencia": resultado_confluencia,
+        }
 
     payload = {
         "historico": agregar_historico_painel(historico, painel_timeframe_atual) or historico,
         "engine": engine_data,
+        "processamento_operacional": {
+            "status": "CACHE_REUTILIZADO" if cache_reutilizado else "NOVO_EVENTO_PROCESSADO",
+            "cache_reutilizado": cache_reutilizado,
+            "sequencia": sequencia_processamento_operacional,
+            "reutilizacoes_cache": reutilizacoes_cache_operacional,
+            "modo_dados": "REPLAY" if replay_reader.ativo else "AO_VIVO",
+            "assinatura_evento": [list(item) for item in assinatura_evento],
+        },
 
         "vwap": vwap,
         "vwap_superior": banda_sup,
