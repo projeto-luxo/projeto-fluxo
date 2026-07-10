@@ -1,0 +1,2468 @@
+AUDITORIA PRE-PATCH CR-03D
+CONTRATO SEMANTICO CANONICO DELTA / SALDO
+
+Projeto: TRIN
+Gerado em: 07/10/2026 15:54:30
+
+Objetivo:
+- definir o proprietario da normalizacao semantica;
+- definir o ponto unico de criacao dos metadados;
+- preservar os dados brutos;
+- impedir peso duplicado nos motores;
+- tornar explicito o fallback do Replay;
+- definir testes AO VIVO e REPLAY;
+- nao alterar codigo nesta etapa.
+
+Git de partida:
+786c29d TRIN registra laudo do contrato semantico delta saldo
+
+==============================================================================
+1. GIT - ESTADO DE PARTIDA
+==============================================================================
+## TRIN_CLEAN...origin/TRIN_CLEAN
+786c29d TRIN registra laudo do contrato semantico delta saldo
+45b4696 TRIN unifica VWAP oficial entre ao vivo e replay
+1faf6ef TRIN finaliza ajuste fino do layout do cockpit
+3bb3400 TRIN alinha candle canonico nos motores
+9ceb8e1 TRIN registra auditoria pre-patch CR-02B
+
+
+==============================================================================
+2. CAMPOS SEMANTICOS JA EXISTENTES NO PROJETO
+==============================================================================
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:303: - `delta_fonte`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:304: - `saldo_fonte`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:305: - `delta_saldo_relacao`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:306: - `delta_saldo_independentes`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:307: - `saldo_fallback_delta`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:308: - `fluxo_agressor_canonico`.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:313: - `EQUIVALENTES_OBSERVADOS`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:314: - `SALDO_DERIVADO_DELTA`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:320: `delta_saldo_relacao = EQUIVALENTES_OBSERVADOS`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:322: `delta_saldo_independentes = false`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:326: `delta_saldo_relacao = SALDO_DERIVADO_DELTA`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:328: `delta_saldo_independentes = false`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:330: `saldo_fallback_delta = true`
+
+
+==============================================================================
+3. BACKEND - DEFINICOES E PONTOS DE NORMALIZACAO
+==============================================================================
+L43: def gerar_sinal(saldo_agressor, volume, delta, preco):
+L161: sequencia_processamento_operacional = 0
+L165: def _tamanho_lista_interna(objeto, atributo):
+L170: def resetar_estado_operacional(motivo, modo_destino):
+L180: global sequencia_processamento_operacional, reutilizacoes_cache_operacional
+L190: "sequencia_processamento_operacional": sequencia_processamento_operacional,
+L205: sequencia_processamento_operacional = 0
+L217: "sequencia_processamento_operacional": sequencia_processamento_operacional,
+L239: def _num(valor, default=0.0):
+L256: def _ativo_base_from_ativo(ativo):
+L263: def _contrato_rtd_from_ativo(ativo):
+L275: def _validar_contrato_ativo(atual):
+L345: def gerar_candle():
+L376: candle["delta"] = _num(candle.get("delta"), 0)
+L377: candle["saldo"] = _num(candle.get("saldo", candle.get("saldo_agressor")), 0)
+L393: "delta": 0,
+L394: "saldo": 0,
+L401: def normalizar_timeframe_painel(valor):
+L437: def _bucket_time_painel(timestamp, timeframe):
+L450: def agregar_historico_painel(historico_raw, timeframe):
+L475: candle.get("volume_delta_estimado", candle.get("volume_candle_estimado")),
+L478: novo["volume_delta_estimado"] = novo["volume_candle_estimado"]
+L479: novo["volume_tipo"] = "REAL_DELTA_ESTIMADO"
+L500: candle.get("volume_delta_estimado", candle.get("volume_candle_estimado")),
+L503: atual["volume_delta_estimado"] = atual["volume_candle_estimado"]
+L504: atual["volume_tipo"] = "REAL_DELTA_ESTIMADO"
+L513: "delta",
+L514: "saldo",
+L519: "volume_saldo",
+L530: def calcular_volume_delta_estimado(candle, referencia=None):
+L549: delta = volume_atual - volume_anterior
+L551: if delta < 0:
+L554: return round(delta, 2)
+L559: def enriquecer_volume_estimado(candle, referencia=None):
+L563: volume_delta = calcular_volume_delta_estimado(candle, referencia)
+L566: candle["volume_delta_estimado"] = volume_delta
+L567: candle["volume_candle_estimado"] = volume_delta
+L568: candle["volume_tipo"] = "REAL_DELTA_ESTIMADO"
+L574: def assinatura_fonte_rtd(candle):
+L591: "delta",
+L592: "saldo",
+L597: "volume_saldo",
+L613: def fonte_rtd_estagnada(candle, referencia):
+L630: def atualizar_historico():
+L688: delta_volume_estimado = _num(candle.get("volume_delta_estimado"), 0)
+L689: ultimo["volume_delta_estimado"] = (
+L690: _num(ultimo.get("volume_delta_estimado"), 0)
+L691: + delta_volume_estimado
+L695: + delta_volume_estimado
+L697: ultimo["volume_tipo"] = "REAL_DELTA_ESTIMADO"
+L701: "delta",
+L702: "saldo",
+L707: "volume_saldo",
+L714: candle_canonico = ultimo
+L721: candle_canonico = historico[-1]
+L723: candle_engine.adicionar_ou_atualizar_candle(candle_canonico)
+L724: candle_canonico["reversao_detectada"] = candle_engine.calcular_reversao()
+L725: vwap_engine.adicionar_ou_atualizar_candle(candle_canonico)
+L727: return candle_canonico
+L730: def _montar_tick_confluencia(atual, vwap_atual, memoria, engine_data):
+L731: saldo = _num(atual.get("saldo"), 0)
+L736: # Quando o leitor nao trouxer compra/venda separados, derivamos do saldo.
+L738: compra = max(saldo, 0)
+L739: venda = max(-saldo, 0)
+L746: "delta": atual.get("delta"),
+L747: "saldo": atual.get("saldo"),
+L756: def _valor_assinatura_evento(valor):
+L762: def assinatura_evento_operacional(atual):
+L773: "delta",
+L774: "saldo",
+L785: def _copiar_calculo_operacional(calculo):
+L810: def _numero_vwap(valor):
+L822: def _valor_vwap_oficial(candle, modo_replay=False, fallback=None):
+L834: def _fonte_vwap_oficial(candle, modo_replay=False):
+L851: def _serie_vwap_oficial(candles, modo_replay=False, fallback=None):
+L891: def gerar_payload():
+L894: global sequencia_processamento_operacional, reutilizacoes_cache_operacional
+L906: candle_fallback = historico[-1] if historico else {
+L915: "delta": 0,
+L916: "saldo": 0,
+L927: "vwap": candle_fallback.get("vwap", preco_atual),
+L928: "vwap_superior": candle_fallback.get("vwap", preco_atual),
+L929: "vwap_inferior": candle_fallback.get("vwap", preco_atual),
+L931: "ultimo": candle_fallback.get("ultimo", candle_fallback.get("close", preco_atual)),
+L932: "volume": candle_fallback.get("volume", 0),
+L933: "delta": candle_fallback.get("delta", 0),
+L934: "saldo": candle_fallback.get("saldo", 0),
+L1009: "engine_seq_delta": 0,
+L1030: atual["saldo"],
+L1031: atual["delta"],
+L1036: atual["saldo"],
+L1037: atual["delta"],
+L1042: atual["saldo"],
+L1043: atual["delta"],
+L1065: atual["saldo"],
+L1067: atual["delta"],
+L1077: engine_seq_delta = engine_data.get("engine_seq_delta", 0)
+L1094: and engine_seq_delta >= 2
+L1095: and atual["delta"] > 180
+L1104: and engine_seq_delta <= -2
+L1105: and atual["delta"] < -180
+L1113: and atual["delta"] < -120
+L1121: and atual["delta"] > 120
+L1151: and atual["delta"] < -100
+L1159: and atual["delta"] > 100
+L1223: tick_confluencia = _montar_tick_confluencia(
+L1235: sequencia_processamento_operacional += 1
+L1276: "processamento_operacional": {
+L1279: "sequencia": sequencia_processamento_operacional,
+L1356: normalizado = normalizar_timeframe_painel(timeframe)
+
+
+==============================================================================
+4. BACKEND - BASE E FALLBACK DO CANDLE
+==============================================================================
+ARQUIVO: backend\server_institucional_v6.py
+FAIXA: 340 ate 440
+
+  340:     })
+  341:
+  342:     return base
+  343:
+  344:
+  345: def gerar_candle():
+  346:     """LÃª candle institucional vindo do Excel/RTD.
+  347:
+  348:     Se o leitor falhar, gera candle neutro para manter o servidor vivo.
+  349:     Esse fallback NAO deve ser usado para validacao operacional.
+  350:     """
+  351:     global preco_atual
+  352:
+  353:     try:
+  354:         candle = ler_dados_institucionais()
+  355:
+  356:         # Normalizacao minima de contrato para engines e frontend.
+  357:         candle["time"] = int(_num(candle.get("time"), int(datetime.now().timestamp())))
+  358:         # RTD entrega snapshot de sessao:
+  359:         # abertura/maximo/minimo sao da sessao, nao do candle.
+  360:         # Para o grafico em tempo real, montamos candle por variacao do ultimo preco.
+  361:         ultimo_preco = _num(
+  362:             candle.get("ultimo", candle.get("close", preco_atual)),
+  363:             preco_atual
+  364:         )
+  365:
+  366:         open_tick = (
+  367:             _num(historico[-1].get("close", ultimo_preco), ultimo_preco)
+  368:             if historico else ultimo_preco
+  369:         )
+  370:
+  371:         candle["open"] = round(open_tick, 2)
+  372:         candle["high"] = round(max(open_tick, ultimo_preco), 2)
+  373:         candle["low"] = round(min(open_tick, ultimo_preco), 2)
+  374:         candle["close"] = round(ultimo_preco, 2)
+  375:         candle["volume"] = _num(candle.get("volume"), 0)
+  376:         candle["delta"] = _num(candle.get("delta"), 0)
+  377:         candle["saldo"] = _num(candle.get("saldo", candle.get("saldo_agressor")), 0)
+  378:         candle["reversao_detectada"] = bool(candle.get("reversao_detectada", False))
+  379:
+  380:         preco_atual = candle["close"]
+  381:         return candle
+  382:
+  383:     except Exception as erro:
+  384:         print("[LEITOR INSTITUCIONAL ERRO]", erro)
+  385:
+  386:         candle = {
+  387:             "time": int(datetime.now().timestamp()),
+  388:             "open": round(preco_atual, 2),
+  389:             "high": round(preco_atual, 2),
+  390:             "low": round(preco_atual, 2),
+  391:             "close": round(preco_atual, 2),
+  392:             "volume": 0,
+  393:             "delta": 0,
+  394:             "saldo": 0,
+  395:             "reversao_detectada": False,
+  396:         }
+  397:
+  398:         return candle
+  399:
+  400:
+  401: def normalizar_timeframe_painel(valor):
+  402:     texto = str(valor or "").strip().upper().replace(" ", "").replace("-", "_")
+  403:
+  404:     aliases = {
+  405:         "15S": "15s",
+  406:         "30S": "30s",
+  407:         "1M": "1_MIN",
+  408:         "1MIN": "1_MIN",
+  409:         "1_MIN": "1_MIN",
+  410:         "2M": "2_MIN",
+  411:         "2MIN": "2_MIN",
+  412:         "2_MIN": "2_MIN",
+  413:         "5M": "5_MIN",
+  414:         "5MIN": "5_MIN",
+  415:         "5_MIN": "5_MIN",
+  416:         "10M": "10_MIN",
+  417:         "10MIN": "10_MIN",
+  418:         "10_MIN": "10_MIN",
+  419:         "15M": "15_MIN",
+  420:         "15MIN": "15_MIN",
+  421:         "15_MIN": "15_MIN",
+  422:         "30M": "30_MIN",
+  423:         "30MIN": "30_MIN",
+  424:         "30_MIN": "30_MIN",
+  425:         "60M": "60_MIN",
+  426:         "60MIN": "60_MIN",
+  427:         "60_MIN": "60_MIN",
+  428:         "DIARIO": "DIARIO",
+  429:         "D": "DIARIO",
+  430:         "SEMANAL": "SEMANAL",
+  431:         "W": "SEMANAL",
+  432:     }
+  433:
+  434:     return aliases.get(texto)
+  435:
+  436:
+  437: def _bucket_time_painel(timestamp, timeframe):
+  438:     segundos = TIMEFRAMES_PAINEL_SEGUNDOS.get(timeframe)
+  439:     if not segundos:
+  440:         return None
+
+
+==============================================================================
+5. BACKEND - MONTAGEM DO TICK DE CONFLUENCIA
+==============================================================================
+ARQUIVO: backend\server_institucional_v6.py
+FAIXA: 700 ate 790
+
+  700:             "volume_real",
+  701:             "delta",
+  702:             "saldo",
+  703:             "ativo",
+  704:             "vwap_real",
+  705:             "volume_compra",
+  706:             "volume_venda",
+  707:             "volume_saldo",
+  708:             "explosao_detectada",
+  709:             "tipo_explosao",
+  710:         ]:
+  711:             if chave in candle:
+  712:                 ultimo[chave] = candle[chave]
+  713:
+  714:         candle_canonico = ultimo
+  715:     else:
+  716:         historico.append(candle)
+  717:
+  718:         if len(historico) > MAX_HISTORICO_RAW:
+  719:             historico.pop(0)
+  720:
+  721:         candle_canonico = historico[-1]
+  722:
+  723:     candle_engine.adicionar_ou_atualizar_candle(candle_canonico)
+  724:     candle_canonico["reversao_detectada"] = candle_engine.calcular_reversao()
+  725:     vwap_engine.adicionar_ou_atualizar_candle(candle_canonico)
+  726:
+  727:     return candle_canonico
+  728:
+  729:
+  730: def _montar_tick_confluencia(atual, vwap_atual, memoria, engine_data):
+  731:     saldo = _num(atual.get("saldo"), 0)
+  732:
+  733:     compra = _num(atual.get("agressao_compra"), 0)
+  734:     venda = _num(atual.get("agressao_venda"), 0)
+  735:
+  736:     # Quando o leitor nao trouxer compra/venda separados, derivamos do saldo.
+  737:     if compra == 0 and venda == 0:
+  738:         compra = max(saldo, 0)
+  739:         venda = max(-saldo, 0)
+  740:
+  741:     return {
+  742:         "ativo": atual.get("ativo", "WIN"),
+  743:         "fractal": atual.get("fractal", "1_MIN"),
+  744:         "contexto": engine_data.get("engine_fase", "TEMPO_REAL"),
+  745:         "ultimo": atual.get("close"),
+  746:         "delta": atual.get("delta"),
+  747:         "saldo": atual.get("saldo"),
+  748:         "volume": atual.get("volume"),
+  749:         "vwap": vwap_atual,
+  750:         "agressao_compra": compra,
+  751:         "agressao_venda": venda,
+  752:         "score_agressao": memoria.get("score_agressao", 0),
+  753:     }
+  754:
+  755:
+  756: def _valor_assinatura_evento(valor):
+  757:     if isinstance(valor, float):
+  758:         return round(valor, 6)
+  759:     return valor
+  760:
+  761:
+  762: def assinatura_evento_operacional(atual):
+  763:     """Identifica o fato de mercado sem usar resultados derivados dos motores."""
+  764:     modo_dados = "REPLAY" if replay_reader.ativo else "AO_VIVO"
+  765:     campos = [
+  766:         "ativo",
+  767:         "time",
+  768:         "close",
+  769:         "ultimo",
+  770:         "volume",
+  771:         "volume_real",
+  772:         "volume_candle_estimado",
+  773:         "delta",
+  774:         "saldo",
+  775:         "vwap",
+  776:         "vwap_real",
+  777:     ]
+  778:
+  779:     assinatura = [("modo_dados", modo_dados)]
+  780:     for campo in campos:
+  781:         assinatura.append((campo, _valor_assinatura_evento(atual.get(campo))))
+  782:     return tuple(assinatura)
+  783:
+  784:
+  785: def _copiar_calculo_operacional(calculo):
+  786:     """Entrega referencias de leitura do cache sem reprocessar os motores."""
+  787:     return {
+  788:         "engine_data": calculo["engine_data"],
+  789:         "vwap": calculo["vwap"],
+  790:         "banda_sup": calculo["banda_sup"],
+
+
+==============================================================================
+6. BACKEND - SELECAO DO CANDLE OPERACIONAL
+==============================================================================
+ARQUIVO: backend\server_institucional_v6.py
+FAIXA: 870 ate 990
+
+  870:         tempo = candle.get("time")
+  871:         if tempo is None:
+  872:             continue
+  873:
+  874:         valor = _valor_vwap_oficial(
+  875:             candle,
+  876:             modo_replay=modo_replay,
+  877:             fallback=fallback_por_tempo.get(tempo),
+  878:         )
+  879:
+  880:         if valor is None:
+  881:             continue
+  882:
+  883:         serie.append({
+  884:             "time": tempo,
+  885:             "value": round(valor, 2),
+  886:         })
+  887:
+  888:     return serie
+  889:
+  890:
+  891: def gerar_payload():
+  892:     global ultima_explosao_tipo, ultima_explosao_tempo
+  893:     global ultima_assinatura_evento_processado, ultimo_calculo_operacional
+  894:     global sequencia_processamento_operacional, reutilizacoes_cache_operacional
+  895:
+  896:     if len(historico) < 2:
+  897:         atualizar_historico()
+  898:         atualizar_historico()
+  899:
+  900:     # Se houver 1 candle real, o payload pode continuar.
+  901:     # Isso acontece quando duas leituras caem no mesmo segundo e a regra
+  902:     # de nao duplicar timestamp atualiza o candle atual em vez de criar outro.
+  903:     if len(historico) == 0:
+  904:         agora = int(datetime.now().timestamp())
+  905:
+  906:         candle_fallback = historico[-1] if historico else {
+  907:             "time": agora,
+  908:             "open": preco_atual,
+  909:             "high": preco_atual,
+  910:             "low": preco_atual,
+  911:             "close": preco_atual,
+  912:             "ultimo": preco_atual,
+  913:             "volume": 0,
+  914:             "volume_real": 0,
+  915:             "delta": 0,
+  916:             "saldo": 0,
+  917:             "ativo": "WIN",
+  918:             "vwap": preco_atual,
+  919:             "vwap_real": preco_atual,
+  920:             "fonte_dados": "RTD_EXCEL_INDISPONIVEL",
+  921:             "status_candle": "FALLBACK_SEM_HISTORICO_SUFICIENTE",
+  922:         }
+  923:
+  924:         return {
+  925:             "historico": historico,
+  926:             "engine": {},
+  927:             "vwap": candle_fallback.get("vwap", preco_atual),
+  928:             "vwap_superior": candle_fallback.get("vwap", preco_atual),
+  929:             "vwap_inferior": candle_fallback.get("vwap", preco_atual),
+  930:             "distancia_vwap": 0,
+  931:             "ultimo": candle_fallback.get("ultimo", candle_fallback.get("close", preco_atual)),
+  932:             "volume": candle_fallback.get("volume", 0),
+  933:             "delta": candle_fallback.get("delta", 0),
+  934:             "saldo": candle_fallback.get("saldo", 0),
+  935:             "fonte_dados": "RTD_EXCEL_INDISPONIVEL",
+  936:             "modo_replay": False,
+  937:             "status_backend": "SEM_HISTORICO_SUFICIENTE",
+  938:             "erro_operacional": "historico com menos de 2 candles apos atualizar_historico",
+  939:             "painel_temporal": {
+  940:                 "origem": "RTD_EXCEL_INDISPONIVEL",
+  941:                 "tipo_candle": "FALLBACK_OPERACIONAL",
+  942:                 "regua_painel": "SEM_REGUA",
+  943:                 "timeframe_painel": painel_timeframe_atual,
+  944:                 "status_painel": "SEM_HISTORICO_SUFICIENTE",
+  945:                 "fractal_oficial": "NAO_APLICAVEL",
+  946:                 "profit_timeframe_visual": "NAO_INTEGRADO",
+  947:                 "timeframes_operacionais": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()),
+  948:                 "timeframes_reservados": TIMEFRAMES_PAINEL_RESERVADOS,
+  949:                 "timeframes_disponiveis": list(TIMEFRAMES_PAINEL_SEGUNDOS.keys()) + TIMEFRAMES_PAINEL_RESERVADOS,
+  950:                 "observacao": "Backend preservado. Monitor RTD/Excel nao entregou historico suficiente para gerar payload operacional."
+  951:             },
+  952:             "contrato_ativo": {},
+  953:             "contrato_ativo_status": "NAO_VALIDADO",
+  954:             "contrato_ativo_motivo": "Sem candle atual suficiente.",
+  955:             "contrato_ativo_bloqueio": True,
+  956:             "sinal": "SEM SINAL",
+  957:             "entrada": "AGUARDAR",
+  958:             "score": 0,
+  959:         }
+  960:
+  961:     anterior = historico[-2] if len(historico) >= 2 else historico[-1]
+  962:     atual = historico[-1]
+  963:
+  964:     contrato_ativo = _validar_contrato_ativo(atual)
+  965:     assinatura_evento = assinatura_evento_operacional(atual)
+  966:
+  967:     cache_reutilizado = (
+  968:         assinatura_evento == ultima_assinatura_evento_processado
+  969:         and isinstance(ultimo_calculo_operacional, dict)
+  970:     )
+  971:
+  972:     if cache_reutilizado:
+  973:         reutilizacoes_cache_operacional += 1
+  974:         calculo = _copiar_calculo_operacional(ultimo_calculo_operacional)
+  975:
+  976:         engine_data = calculo["engine_data"]
+  977:         vwap = calculo["vwap"]
+  978:         banda_sup = calculo["banda_sup"]
+  979:         banda_inf = calculo["banda_inf"]
+  980:         vwap_atual = calculo["vwap_atual"]
+  981:         distancia_vwap = calculo["distancia_vwap"]
+  982:         freq = calculo["freq"]
+  983:         status = calculo["status"]
+  984:         intensidade = calculo["intensidade"]
+  985:         memoria = calculo["memoria"]
+  986:         explosao = calculo["explosao"]
+  987:         tipo_explosao = calculo["tipo_explosao"]
+  988:         sinal_data = calculo["sinal_data"]
+  989:         resultado_confluencia = calculo["resultado_confluencia"]
+  990:
+
+
+==============================================================================
+7. BACKEND - AGGRESSION ENGINE, REGRAS E CONFLUENCIA
+==============================================================================
+ARQUIVO: backend\server_institucional_v6.py
+FAIXA: 1000 ate 1260
+
+ 1000:
+ 1001:     else:
+ 1002:         try:
+ 1003:            engine_data = engine.processar(atual, anterior)
+ 1004:         except AttributeError:
+ 1005:             engine_data = {
+ 1006:                 "engine_score": 0,
+ 1007:                 "engine_fase": "SIMULADO_TRINENGINE_SEM_PROCESSAR",
+ 1008:                 "engine_direcao": "NEUTRO",
+ 1009:                 "engine_seq_delta": 0,
+ 1010:                 "engine_trap": None,
+ 1011:                 "engine_absorcao": False,
+ 1012:                 "engine_zona_low": None,
+ 1013:                 "engine_zona_high": None,
+ 1014:          }
+ 1015:
+ 1016:         vwap, banda_sup, banda_inf = vwap_engine.calcular_vwap_e_bandas()
+ 1017:         vwap_calculada_atual = vwap[-1]["value"] if vwap else atual["close"]
+ 1018:         vwap_atual = _valor_vwap_oficial(
+ 1019:             atual,
+ 1020:             modo_replay=replay_reader.ativo,
+ 1021:             fallback=vwap_calculada_atual,
+ 1022:         )
+ 1023:
+ 1024:         if vwap_atual is None:
+ 1025:             vwap_atual = float(atual["close"])
+ 1026:
+ 1027:         distancia_vwap = round(abs(float(atual["close"]) - vwap_atual), 2)
+ 1028:
+ 1029:         freq, status, intensidade = aggression_engine.calcular_frequencia(
+ 1030:             atual["saldo"],
+ 1031:             atual["delta"],
+ 1032:             atual["volume"]
+ 1033:         )
+ 1034:
+ 1035:         memoria = aggression_engine.calcular_memoria_agressao(
+ 1036:             atual["saldo"],
+ 1037:             atual["delta"],
+ 1038:             atual["volume"]
+ 1039:         )
+ 1040:
+ 1041:         explosao, tipo_explosao = aggression_engine.detectar_explosao_fluxo(
+ 1042:             atual["saldo"],
+ 1043:             atual["delta"],
+ 1044:             atual["volume"],
+ 1045:             memoria["score_agressao"],
+ 1046:             intensidade
+ 1047:         )
+ 1048:
+ 1049:         agora = int(datetime.now().timestamp())
+ 1050:
+ 1051:         if explosao:
+ 1052:             ultima_explosao_tipo = tipo_explosao
+ 1053:             ultima_explosao_tempo = agora
+ 1054:
+ 1055:         tipo_explosao_painel = (
+ 1056:             ultima_explosao_tipo
+ 1057:             if agora - ultima_explosao_tempo <= 8
+ 1058:             else "SEM EXPLOSÃƒO"
+ 1059:         )
+ 1060:
+ 1061:         atual["explosao_detectada"] = explosao
+ 1062:         atual["tipo_explosao"] = tipo_explosao_painel
+ 1063:
+ 1064:         sinal_data = gerar_sinal(
+ 1065:             atual["saldo"],
+ 1066:             atual["volume"],
+ 1067:             atual["delta"],
+ 1068:             preco=atual["close"]
+ 1069:         )
+ 1070:
+ 1071:         # ==============================
+ 1072:         # ENTRADA INSTITUCIONAL TRIN
+ 1073:         # ==============================
+ 1074:         engine_score = engine_data.get("engine_score", 0)
+ 1075:         engine_fase = engine_data.get("engine_fase", "AGUARDANDO")
+ 1076:         engine_direcao = engine_data.get("engine_direcao", "NEUTRO")
+ 1077:         engine_seq_delta = engine_data.get("engine_seq_delta", 0)
+ 1078:         engine_trap = engine_data.get("engine_trap")
+ 1079:         engine_absorcao = engine_data.get("engine_absorcao", False)
+ 1080:
+ 1081:         score_agressao = memoria.get("score_agressao", 0)
+ 1082:         entrada_institucional = "AGUARDAR"
+ 1083:
+ 1084:         if explosao and tipo_explosao == "BUY EXPLOSION":
+ 1085:             entrada_institucional = "COMPRA SCALPING CONTROLADO"
+ 1086:
+ 1087:         elif explosao and tipo_explosao == "SELL EXPLOSION":
+ 1088:             entrada_institucional = "VENDA SCALPING CONTROLADO"
+ 1089:
+ 1090:         elif (
+ 1091:             engine_score >= 6
+ 1092:             and engine_fase == "ROMPIMENTO"
+ 1093:             and engine_direcao == "COMPRA"
+ 1094:             and engine_seq_delta >= 2
+ 1095:             and atual["delta"] > 180
+ 1096:             and not engine_absorcao
+ 1097:         ):
+ 1098:             entrada_institucional = "COMPRA CONSERVADORA"
+ 1099:
+ 1100:         elif (
+ 1101:             engine_score >= 6
+ 1102:             and engine_fase == "ROMPIMENTO"
+ 1103:             and engine_direcao == "VENDA"
+ 1104:             and engine_seq_delta <= -2
+ 1105:             and atual["delta"] < -180
+ 1106:             and not engine_absorcao
+ 1107:         ):
+ 1108:             entrada_institucional = "VENDA CONSERVADORA"
+ 1109:
+ 1110:         elif (
+ 1111:             engine_fase == "DISTRIBUICAO"
+ 1112:             and engine_direcao == "VENDA"
+ 1113:             and atual["delta"] < -120
+ 1114:             and not engine_absorcao
+ 1115:         ):
+ 1116:             entrada_institucional = "VENDA MODERADA"
+ 1117:
+ 1118:         elif (
+ 1119:             engine_fase == "ACUMULACAO"
+ 1120:             and engine_direcao == "COMPRA"
+ 1121:             and atual["delta"] > 120
+ 1122:             and not engine_absorcao
+ 1123:         ):
+ 1124:             entrada_institucional = "COMPRA MODERADA"
+ 1125:
+ 1126:         elif (
+ 1127:             engine_score >= 5
+ 1128:             and engine_direcao == "COMPRA"
+ 1129:             and score_agressao > 5
+ 1130:             and (engine_trap == "COMPRA" or engine_absorcao)
+ 1131:         ):
+ 1132:             entrada_institucional = "COMPRA MODERADA"
+ 1133:
+ 1134:         elif (
+ 1135:             engine_score >= 5
+ 1136:             and engine_direcao == "VENDA"
+ 1137:             and score_agressao < -5
+ 1138:             and (engine_trap == "VENDA" or engine_absorcao)
+ 1139:         ):
+ 1140:             entrada_institucional = "VENDA MODERADA"
+ 1141:
+ 1142:         sinal_data["entrada"] = entrada_institucional
+ 1143:
+ 1144:         # ==============================
+ 1145:         # ALERTA OPERACIONAL TRIN
+ 1146:         # ==============================
+ 1147:         alerta_operacional = "AGUARDANDO CONFIRMAÃ‡ÃƒO"
+ 1148:
+ 1149:         if (
+ 1150:             engine_fase == "COMPRESSAO"
+ 1151:             and atual["delta"] < -100
+ 1152:             and score_agressao < -5
+ 1153:             and not engine_absorcao
+ 1154:         ):
+ 1155:             alerta_operacional = "ALERTA: PRESSÃƒO VENDEDORA EM COMPRESSÃƒO"
+ 1156:
+ 1157:         elif (
+ 1158:             engine_fase == "COMPRESSAO"
+ 1159:             and atual["delta"] > 100
+ 1160:             and score_agressao > 5
+ 1161:             and not engine_absorcao
+ 1162:         ):
+ 1163:             alerta_operacional = "ALERTA: PRESSÃƒO COMPRADORA EM COMPRESSÃƒO"
+ 1164:
+ 1165:         elif engine_fase == "DISTRIBUICAO" and engine_direcao == "VENDA":
+ 1166:             alerta_operacional = "ALERTA: DISTRIBUIÃ‡ÃƒO VENDEDORA"
+ 1167:
+ 1168:         elif engine_fase == "ACUMULACAO" and engine_direcao == "COMPRA":
+ 1169:             alerta_operacional = "ALERTA: ACUMULAÃ‡ÃƒO COMPRADORA"
+ 1170:
+ 1171:         elif engine_fase == "ROMPIMENTO":
+ 1172:             alerta_operacional = "ALERTA: ROMPIMENTO EM ANDAMENTO"
+ 1173:
+ 1174:         sinal_data["tendencia"] = alerta_operacional
+ 1175:
+ 1176:         # ==============================
+ 1177:         # GESTAO INSTITUCIONAL DINAMICA
+ 1178:         # STOP / PARCIAL / ALVO
+ 1179:         # ==============================
+ 1180:         zona_low = engine_data.get("engine_zona_low")
+ 1181:         zona_high = engine_data.get("engine_zona_high")
+ 1182:         preco_entrada = atual["close"]
+ 1183:
+ 1184:         stop = sinal_data.get("stop")
+ 1185:         parcial = sinal_data.get("parcial")
+ 1186:         alvo = sinal_data.get("alvo")
+ 1187:
+ 1188:         if zona_low is not None and zona_high is not None:
+ 1189:             zona_low = float(zona_low)
+ 1190:             zona_high = float(zona_high)
+ 1191:             preco_entrada = float(preco_entrada)
+ 1192:
+ 1193:             range_zona = max(zona_high - zona_low, 0.5)
+ 1194:             buffer = max(range_zona * 0.20, 0.15)
+ 1195:
+ 1196:             if entrada_institucional in ["COMPRA MODERADA", "COMPRA CONSERVADORA"]:
+ 1197:                 stop = round(zona_low - buffer, 2)
+ 1198:                 parcial = round(preco_entrada + range_zona, 2)
+ 1199:                 alvo = round(preco_entrada + (range_zona * 2), 2)
+ 1200:
+ 1201:             elif entrada_institucional in ["VENDA MODERADA", "VENDA CONSERVADORA"]:
+ 1202:                 stop = round(zona_high + buffer, 2)
+ 1203:                 parcial = round(preco_entrada - range_zona, 2)
+ 1204:                 alvo = round(preco_entrada - (range_zona * 2), 2)
+ 1205:
+ 1206:             elif entrada_institucional == "COMPRA SCALPING CONTROLADO":
+ 1207:                 stop = round(preco_entrada - 0.60, 2)
+ 1208:                 parcial = round(preco_entrada + 0.90, 2)
+ 1209:                 alvo = round(preco_entrada + 1.60, 2)
+ 1210:
+ 1211:             elif entrada_institucional == "VENDA SCALPING CONTROLADO":
+ 1212:                 stop = round(preco_entrada + 0.60, 2)
+ 1213:                 parcial = round(preco_entrada - 0.90, 2)
+ 1214:                 alvo = round(preco_entrada - 1.60, 2)
+ 1215:
+ 1216:         sinal_data["stop"] = stop
+ 1217:         sinal_data["parcial"] = parcial
+ 1218:         sinal_data["alvo"] = alvo
+ 1219:
+ 1220:         # ==============================
+ 1221:         # MOTOR COGNITIVO TRIN v2.2
+ 1222:         # ==============================
+ 1223:         tick_confluencia = _montar_tick_confluencia(
+ 1224:             atual=atual,
+ 1225:             vwap_atual=vwap_atual,
+ 1226:             memoria=memoria,
+ 1227:             engine_data=engine_data,
+ 1228:         )
+ 1229:
+ 1230:         resultado_confluencia = motor_confluencia.process(
+ 1231:             tick=tick_confluencia,
+ 1232:             agressao=memoria,
+ 1233:         )
+ 1234:
+ 1235:         sequencia_processamento_operacional += 1
+ 1236:         ultima_assinatura_evento_processado = assinatura_evento
+ 1237:         ultimo_calculo_operacional = {
+ 1238:             "engine_data": engine_data,
+ 1239:             "vwap": vwap,
+ 1240:             "banda_sup": banda_sup,
+ 1241:             "banda_inf": banda_inf,
+ 1242:             "vwap_atual": vwap_atual,
+ 1243:             "distancia_vwap": distancia_vwap,
+ 1244:             "freq": freq,
+ 1245:             "status": status,
+ 1246:             "intensidade": intensidade,
+ 1247:             "memoria": memoria,
+ 1248:             "explosao": explosao,
+ 1249:             "tipo_explosao": tipo_explosao,
+ 1250:             "sinal_data": dict(sinal_data),
+ 1251:             "resultado_confluencia": resultado_confluencia,
+ 1252:         }
+ 1253:
+ 1254:     historico_painel = (
+ 1255:         agregar_historico_painel(historico, painel_timeframe_atual)
+ 1256:         or historico
+ 1257:     )
+ 1258:
+ 1259:     vwap_painel = _serie_vwap_oficial(
+ 1260:         historico_painel,
+
+
+==============================================================================
+8. AGGRESSION ENGINE - CODIGO COMPLETO
+==============================================================================
+# core/aggression_engine.py
+
+class AggressionEngine:
+    def __init__(self):
+        self.fluxo_recente = []
+        self.memoria_agressao = []
+
+    def calcular_frequencia(self, saldo_agressor, delta, volume):
+        intensidade = (
+            abs(saldo_agressor) / 1000 +
+            abs(delta) / 1000 +
+           (volume / 100)
+        )
+
+        self.fluxo_recente.append(intensidade)
+
+        if len(self.fluxo_recente) > 30:
+            self.fluxo_recente = self.fluxo_recente[-30:]
+
+        media = sum(self.fluxo_recente) / len(self.fluxo_recente)
+
+        if media > 1300:
+            return "FREQUÃŠNCIA ALTA", "MERCADO ACELERADO", round(media, 2)
+
+        if media > 800:
+            return "FREQUÃŠNCIA MÃ‰DIA", "MERCADO ATIVO", round(media, 2)
+
+        return "FREQUÃŠNCIA BAIXA", "MERCADO LENTO", round(media, 2)
+
+    def calcular_memoria_agressao(self, saldo_agressor, delta, volume):
+
+
+        self.memoria_agressao.append({
+            "saldo": saldo_agressor,
+            "delta": delta,
+            "volume": volume
+        })
+
+        if len(self.memoria_agressao) > 20:
+            self.memoria_agressao = self.memoria_agressao[-20:]
+
+        compras = sum(
+            1 for item in self.memoria_agressao
+            if item["saldo"] > 0 and item["delta"] > 0
+        )
+
+        vendas = sum(
+            1 for item in self.memoria_agressao
+            if item["saldo"] < 0 and item["delta"] < 0
+        )
+
+        ultimo = self.memoria_agressao[-1]
+
+        saldo_total = ultimo["saldo"]
+        delta_total = ultimo["delta"]
+        volume_total = ultimo["volume"]
+
+
+
+        persistencia_compra = round(
+            (compras / len(self.memoria_agressao)) * 100,
+            2
+        )
+
+        persistencia_venda = round(
+            (vendas / len(self.memoria_agressao)) * 100,
+            2
+        )
+
+        volume_medio = volume_total
+
+        direcao_fluxo = 0
+
+        if saldo_total > 0 and delta_total > 0:
+            direcao_fluxo = 1
+        elif saldo_total < 0 and delta_total < 0:
+            direcao_fluxo = -1
+        elif delta_total > 0:
+            direcao_fluxo = 0.5
+        elif delta_total < 0:
+            direcao_fluxo = -0.5
+
+        score_base = (
+            (saldo_total / 10000) +
+            (delta_total / 10000)
+        )
+
+        peso_volume = min(volume_medio / 800, 2)
+
+        score_agressao = round(
+            score_base * peso_volume,
+            2
+        )
+
+        if direcao_fluxo == 0:
+            score_agressao = round(score_agressao * 0.5, 2)
+
+        if persistencia_compra >= 60 and score_agressao > 8:
+            leitura = "PERSISTÃŠNCIA COMPRADORA"
+
+        elif persistencia_venda >= 60 and score_agressao < -8:
+            leitura = "PERSISTÃŠNCIA VENDEDORA"
+
+        elif score_agressao > 8:
+            leitura = "AGRESSÃƒO COMPRADORA INSTÃVEL"
+
+        elif score_agressao < -8:
+            leitura = "AGRESSÃƒO VENDEDORA INSTÃVEL"
+
+        else:
+            leitura = "AGRESSÃƒO NEUTRA"
+
+        return {
+            "persistencia_compra": persistencia_compra,
+            "persistencia_venda": persistencia_venda,
+            "score_agressao": score_agressao,
+            "leitura_agressao": leitura,
+        }
+
+    def detectar_explosao_fluxo(
+        self,
+        saldo_agressor,
+        delta,
+        volume,
+        score_agressao,
+        intensidade_fluxo
+    ):
+        if (
+            saldo_agressor > 400 and
+            delta > 220 and
+            volume > 900 and
+            score_agressao > 8 and
+            intensidade_fluxo > 800
+        ):
+            return True, "BUY EXPLOSION"
+
+        if (
+            saldo_agressor < -400 and
+            delta < -220 and
+            volume > 900 and
+            score_agressao < -8 and
+            intensidade_fluxo > 800
+        ):
+            return True, "SELL EXPLOSION"
+
+        return False, "SEM EXPLOSÃƒO"
+
+
+==============================================================================
+9. CONFLUENCE ENGINE V2 - CODIGO COMPLETO
+==============================================================================
+# core/confluence_engine_v2.py
+# ============================================================
+# MOTOR DE CONFLUENCIA v2.1 â€” TRIN
+#
+# Responsabilidade unica:
+# - Combinar evidencias ponderadas para medir qualidade/contexto.
+#
+# NAO FAZ:
+# - Nao executa ordem.
+# - Nao substitui operador.
+# - Nao le CSV bruto diretamente.
+# - Nao certifica dados.
+# - Nao gera fractais.
+#
+# Entradas esperadas:
+# - tick atual do mercado
+# - evidencias operacionais ja calculadas
+# - contexto historico/cognitivo vindo de Bernardo/Historiador
+# - status de certificacao vindo do Fiscal
+#
+# Saida:
+# - score_confluencia
+# - direcao
+# - qualidade
+# - evidencias
+# - justificativa
+# - alerta
+# ============================================================
+
+from __future__ import annotations
+
+from dataclasses import dataclass, asdict
+from typing import Any, Dict, List, Optional
+
+try:
+    from intelligence.historiador_adapter import HistoriadorAdapter
+except ModuleNotFoundError:
+    try:
+        from historiador_adapter import HistoriadorAdapter
+    except ModuleNotFoundError:
+        HistoriadorAdapter = None
+
+
+@dataclass
+class Evidencia:
+    nome: str
+    valor: Any
+    peso: float
+    impacto: float
+    direcao: str
+    justificativa: str
+
+
+class ConfluenceEngineV2:
+    def __init__(self, janela_historico: int = 30):
+        self.janela_historico = janela_historico
+        self.history: List[Dict[str, Any]] = []
+
+        self.historiador = None
+        if HistoriadorAdapter is not None:
+            try:
+                self.historiador = HistoriadorAdapter()
+            except Exception:
+                self.historiador = None
+
+    def _num(self, valor: Any, default: float = 0.0) -> float:
+        try:
+            if valor is None:
+                return default
+
+            texto = str(valor).strip()
+
+            if texto == "" or texto.lower() in {"none", "nan", "n/d"}:
+                return default
+
+            if "," in texto and "." in texto:
+                texto = texto.replace(".", "").replace(",", ".")
+            elif "," in texto:
+                texto = texto.replace(",", ".")
+
+            return float(texto)
+        except Exception:
+            return default
+
+    def _clamp(self, valor: float, minimo: float, maximo: float) -> float:
+        return max(minimo, min(maximo, valor))
+
+    def _registrar_historico(self, tick: Dict[str, Any]) -> None:
+        self.history.append(tick)
+
+        if len(self.history) > self.janela_historico:
+            self.history = self.history[-self.janela_historico:]
+
+    def _obter_contexto_historico(
+        self,
+        tick: Dict[str, Any],
+        contexto_historico: Optional[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        if contexto_historico:
+            return contexto_historico
+
+        if self.historiador is None:
+            return {
+                "padrao": "SEM_PADRAO",
+                "score_historico": 0.0,
+                "confianca": 0.0,
+                "frequencia": 0,
+                "episodio": "HistoriadorAdapter indisponivel.",
+                "contexto": tick.get("contexto", "DESCONHECIDO"),
+                "direcao": "NEUTRO",
+                "fonte": "ConfluenceEngineV2",
+                "status": "SEM_HISTORIADOR",
+            }
+
+        try:
+            return self.historiador.consultar(
+                ativo=tick.get("ativo"),
+                fractal=tick.get("fractal"),
+                contexto=tick.get("contexto"),
+            )
+        except Exception as erro:
+            return {
+                "padrao": "ERRO_HISTORIADOR",
+                "score_historico": 0.0,
+                "confianca": 0.0,
+                "frequencia": 0,
+                "episodio": f"Erro ao consultar HistoriadorAdapter: {erro}",
+                "contexto": tick.get("contexto", "DESCONHECIDO"),
+                "direcao": "NEUTRO",
+                "fonte": "ConfluenceEngineV2",
+                "status": "ERRO_HISTORIADOR",
+            }
+
+    def _evidencia_fluxo(self, tick: Dict[str, Any]) -> Evidencia:
+        delta = self._num(tick.get("delta"))
+        saldo = self._num(tick.get("saldo"))
+
+        bruto = (delta + saldo) / 20000
+        impacto = self._clamp(bruto, -3.0, 3.0)
+
+        if delta > 0 and saldo > 0:
+            direcao = "COMPRA"
+            justificativa = "Delta e saldo positivos indicam fluxo comprador."
+        elif delta < 0 and saldo < 0:
+            direcao = "VENDA"
+            justificativa = "Delta e saldo negativos indicam fluxo vendedor."
+        else:
+            direcao = "NEUTRO"
+            justificativa = "Delta e saldo nao confirmam a mesma direcao."
+
+        return Evidencia(
+            "FLUXO_DELTA_SALDO",
+            {"delta": delta, "saldo": saldo},
+            2.0,
+            impacto,
+            direcao,
+            justificativa,
+        )
+
+    def _evidencia_agressao(
+        self,
+        tick: Dict[str, Any],
+        agressao: Optional[Dict[str, Any]],
+    ) -> Evidencia:
+        compra = self._num(tick.get("agressao_compra"))
+        venda = self._num(tick.get("agressao_venda"))
+        saldo_agressao = compra - venda
+
+        score_agressao = self._num(
+            (agressao or {}).get("score_agressao"),
+            default=saldo_agressao / 100000,
+        )
+
+        impacto = self._clamp(score_agressao / 5, -3.0, 3.0)
+        leitura = str((agressao or {}).get("leitura_agressao", "")).upper()
+
+        if "COMPRADORA" in leitura or saldo_agressao > 0:
+            direcao = "COMPRA"
+        elif "VENDEDORA" in leitura or saldo_agressao < 0:
+            direcao = "VENDA"
+        else:
+            direcao = "NEUTRO"
+
+        return Evidencia(
+            "AGRESSAO",
+            {
+                "compra": compra,
+                "venda": venda,
+                "score_agressao": score_agressao,
+                "leitura": leitura,
+            },
+            1.5,
+            impacto,
+            direcao,
+            "Agressao mede persistencia e intensidade do fluxo agressor.",
+        )
+
+    def _evidencia_vwap(self, tick: Dict[str, Any]) -> Evidencia:
+        ultimo = self._num(tick.get("ultimo"))
+        vwap = self._num(tick.get("vwap"))
+
+        if ultimo <= 0 or vwap <= 0:
+            return Evidencia(
+                "VWAP",
+                {"ultimo": ultimo, "vwap": vwap},
+                1.0,
+                0.0,
+                "NEUTRO",
+                "VWAP indisponivel ou invalida.",
+            )
+
+        distancia = ultimo - vwap
+        impacto = self._clamp(distancia / 1500, -2.0, 2.0)
+
+        if distancia > 0:
+            direcao = "COMPRA"
+            justificativa = "Preco acima da VWAP indica pressao acima do valor medio."
+        elif distancia < 0:
+            direcao = "VENDA"
+            justificativa = "Preco abaixo da VWAP indica pressao abaixo do valor medio."
+        else:
+            direcao = "NEUTRO"
+            justificativa = "Preco exatamente na VWAP."
+
+        return Evidencia(
+            "VWAP",
+            {"ultimo": ultimo, "vwap": vwap, "distancia": distancia},
+            1.0,
+            impacto,
+            direcao,
+            justificativa,
+        )
+
+    def _evidencia_historica(self, contexto_historico: Optional[Dict[str, Any]]) -> Evidencia:
+        contexto_historico = contexto_historico or {}
+
+        score = self._num(contexto_historico.get("score_historico"))
+        confianca = self._num(contexto_historico.get("confianca"))
+        frequencia = int(self._num(contexto_historico.get("frequencia"), 0))
+        padrao = str(contexto_historico.get("padrao", "SEM_PADRAO"))
+        episodio = str(contexto_historico.get("episodio", "SEM_EPISODIO"))
+        status = str(contexto_historico.get("status", "DESCONHECIDO"))
+        direcao = str(contexto_historico.get("direcao", "NEUTRO")).upper()
+
+        impacto = self._clamp(score, -2.0, 2.0)
+
+        return Evidencia(
+            "HISTORIADOR",
+            {
+                "score_historico": score,
+                "confianca": confianca,
+                "frequencia": frequencia,
+                "padrao": padrao,
+                "episodio": episodio,
+                "status": status,
+                "direcao": direcao,
+            },
+            1.2,
+            impacto,
+            direcao if direcao in {"COMPRA", "VENDA"} else "NEUTRO",
+            episodio or "Contexto historico fornecido pelo HistoriadorAdapter.",
+        )
+
+    def _evidencia_certificacao(self, certificacao: Optional[Dict[str, Any]]) -> Evidencia:
+        certificacao = certificacao or {}
+        status = str(certificacao.get("status", "DESCONHECIDO")).upper()
+
+        if status in {"CERTIFICADO", "APROVADO", "OK"}:
+            impacto = 1.0
+            direcao = "NEUTRO"
+            justificativa = "Base certificada pelo Fiscal Temporal."
+        elif status in {"APROVADO_COM_RESSALVAS", "RESSALVA"}:
+            impacto = -0.5
+            direcao = "NEUTRO"
+            justificativa = "Base com ressalvas; confluencia deve ser usada com cautela."
+        elif status in {"REPROVADO", "REPROVADO_COM_PENDENCIAS"}:
+            impacto = -3.0
+            direcao = "BLOQUEIO_ANALITICO"
+            justificativa = "Base reprovada; nao usar como conhecimento confirmado."
+        else:
+            impacto = 0.0
+            direcao = "NEUTRO"
+            justificativa = "Status de certificacao desconhecido."
+
+        return Evidencia(
+            "FISCAL_TEMPORAL",
+            {"status": status},
+            2.0,
+            impacto,
+            direcao,
+            justificativa,
+        )
+
+    def _decidir_direcao(self, evidencias: List[Evidencia]) -> str:
+        compra = sum(e.peso for e in evidencias if e.direcao == "COMPRA")
+        venda = sum(e.peso for e in evidencias if e.direcao == "VENDA")
+
+        if compra > venda * 1.25:
+            return "COMPRA"
+        if venda > compra * 1.25:
+            return "VENDA"
+        return "NEUTRO"
+
+    def _qualidade(self, score: float, certificacao: Optional[Dict[str, Any]]) -> str:
+        status = str((certificacao or {}).get("status", "")).upper()
+
+        if status in {"REPROVADO", "REPROVADO_COM_PENDENCIAS"}:
+            return "BLOQUEADO_POR_CERTIFICACAO"
+
+        abs_score = abs(score)
+
+        if abs_score >= 8:
+            return "FORTE"
+        if abs_score >= 5:
+            return "MEDIA"
+        if abs_score >= 2:
+            return "FRACA"
+
+        return "NEUTRA"
+
+    def process(
+        self,
+        tick: Dict[str, Any],
+        agressao: Optional[Dict[str, Any]] = None,
+        contexto_historico: Optional[Dict[str, Any]] = None,
+        certificacao: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        self._registrar_historico(tick)
+
+        contexto_historico = self._obter_contexto_historico(
+            tick=tick,
+            contexto_historico=contexto_historico,
+        )
+
+        evidencias = [
+            self._evidencia_fluxo(tick),
+            self._evidencia_agressao(tick, agressao),
+            self._evidencia_vwap(tick),
+            self._evidencia_historica(contexto_historico),
+            self._evidencia_certificacao(certificacao),
+        ]
+
+        score = sum(e.impacto * e.peso for e in evidencias)
+        score = round(self._clamp(score, -10.0, 10.0), 2)
+
+        direcao = self._decidir_direcao(evidencias)
+        qualidade = self._qualidade(score, certificacao)
+
+        justificativas = [
+            e.justificativa
+            for e in evidencias
+            if e.justificativa
+        ]
+
+        alerta = None
+
+        if qualidade == "FORTE":
+            alerta = (
+                f"CONFLUENCIA_{direcao}_FORTE"
+                if direcao != "NEUTRO"
+                else "CONFLUENCIA_FORTE_NEUTRA"
+            )
+        elif qualidade == "BLOQUEADO_POR_CERTIFICACAO":
+            alerta = "CONFLUENCIA_BLOQUEADA_PELO_FISCAL"
+
+        return {
+            "score_confluencia": score,
+            "direcao": direcao,
+            "qualidade": qualidade,
+            "alerta": alerta,
+            "evidencias": [asdict(e) for e in evidencias],
+            "justificativa": " | ".join(justificativas),
+            "motor": "ConfluenceEngineV2",
+            "versao": "2.1",
+        }
+
+
+==============================================================================
+10. CONFLUENCE ENGINE LEGADO - TRECHO DE FLUXO
+==============================================================================
+ARQUIVO: core\confluence_engine.py
+FAIXA: 180 ate 280
+
+  180:                 "confianca": 0.0,
+  181:                 "direcao": "NEUTRO",
+  182:                 "status": "SEM_BERNARDO",
+  183:             }
+  184:
+  185:         try:
+  186:             return self.bernardo.consultar(
+  187:                 ativo=tick.get("ativo"),
+  188:                 fractal=tick.get("fractal"),
+  189:                 contexto=tick.get("contexto"),
+  190:                 padrao=contexto_historico.get("padrao"),
+  191:             )
+  192:         except Exception as erro:
+  193:             return {
+  194:                 "episodio_semelhante": False,
+  195:                 "similaridade": 0.0,
+  196:                 "ocorrencias": 0,
+  197:                 "resultado_medio": "ERRO_BERNARDO",
+  198:                 "confianca": 0.0,
+  199:                 "direcao": "NEUTRO",
+  200:                 "status": "ERRO_BERNARDO",
+  201:                 "erro": str(erro),
+  202:             }
+  203:
+  204:     def _evidencia_fluxo(self, tick: Dict[str, Any]) -> Evidencia:
+  205:         delta = self._num(tick.get("delta"))
+  206:         saldo = self._num(tick.get("saldo"))
+  207:
+  208:         bruto = (delta + saldo) / 20000
+  209:         impacto = self._clamp(bruto, -3.0, 3.0)
+  210:
+  211:         if delta > 0 and saldo > 0:
+  212:             direcao = "COMPRA"
+  213:             justificativa = "Delta e saldo positivos indicam fluxo comprador."
+  214:         elif delta < 0 and saldo < 0:
+  215:             direcao = "VENDA"
+  216:             justificativa = "Delta e saldo negativos indicam fluxo vendedor."
+  217:         else:
+  218:             direcao = "NEUTRO"
+  219:             justificativa = "Delta e saldo nao confirmam a mesma direcao."
+  220:
+  221:         return Evidencia(
+  222:             "FLUXO_DELTA_SALDO",
+  223:             {"delta": delta, "saldo": saldo},
+  224:             2.0,
+  225:             impacto,
+  226:             direcao,
+  227:             justificativa,
+  228:         )
+  229:
+  230:     def _evidencia_agressao(
+  231:         self,
+  232:         tick: Dict[str, Any],
+  233:         agressao: Optional[Dict[str, Any]],
+  234:     ) -> Evidencia:
+  235:         compra = self._num(tick.get("agressao_compra"))
+  236:         venda = self._num(tick.get("agressao_venda"))
+  237:         saldo_agressao = compra - venda
+  238:
+  239:         score_agressao = self._num(
+  240:             (agressao or {}).get("score_agressao"),
+  241:             default=saldo_agressao / 100000,
+  242:         )
+  243:
+  244:         impacto = self._clamp(score_agressao / 5, -3.0, 3.0)
+  245:         leitura = str((agressao or {}).get("leitura_agressao", "")).upper()
+  246:
+  247:         if "COMPRADORA" in leitura or saldo_agressao > 0:
+  248:             direcao = "COMPRA"
+  249:         elif "VENDEDORA" in leitura or saldo_agressao < 0:
+  250:             direcao = "VENDA"
+  251:         else:
+  252:             direcao = "NEUTRO"
+  253:
+  254:         return Evidencia(
+  255:             "AGRESSAO",
+  256:             {
+  257:                 "compra": compra,
+  258:                 "venda": venda,
+  259:                 "score_agressao": score_agressao,
+  260:                 "leitura": leitura,
+  261:             },
+  262:             1.5,
+  263:             impacto,
+  264:             direcao,
+  265:             "Agressao mede persistencia e intensidade do fluxo agressor.",
+  266:         )
+  267:
+  268:     def _evidencia_vwap(self, tick: Dict[str, Any]) -> Evidencia:
+  269:         ultimo = self._num(tick.get("ultimo"))
+  270:         vwap = self._num(tick.get("vwap"))
+  271:
+  272:         if ultimo <= 0 or vwap <= 0:
+  273:             return Evidencia(
+  274:                 "VWAP",
+  275:                 {"ultimo": ultimo, "vwap": vwap},
+  276:                 1.0,
+  277:                 0.0,
+  278:                 "NEUTRO",
+  279:                 "VWAP indisponivel ou invalida.",
+  280:             )
+
+
+==============================================================================
+11. REPLAY - LEITURA E FALLBACK DELTA SALDO
+==============================================================================
+ARQUIVO: backend\replay_diagnostico.py
+FAIXA: 230 ate 315
+
+  230:
+  231:             self.csv = str(caminho)
+  232:             self.data_pregao = str(data_pregao or "")
+  233:             self.linhas = linhas
+  234:             self.total = len(linhas)
+  235:             self.indice = 0
+  236:             self.ultimo_candle_time = None
+  237:             self.ultimo_erro = ""
+  238:
+  239:             if not linhas:
+  240:                 self.ultimo_erro = f"Nenhuma linha encontrada para data_pregao={data_pregao}"
+  241:                 return False
+  242:
+  243:             return True
+  244:
+  245:         except Exception as e:
+  246:             self.ultimo_erro = f"Erro ao carregar CSV replay: {e}"
+  247:             self.linhas = []
+  248:             self.total = 0
+  249:             self.indice = 0
+  250:             return False
+  251:
+  252:     def linha_para_candle(self, linha, indice, timeframe_painel="1_MIN"):
+  253:         abertura = self._num(self._campo(linha, ["open", "abertura", "abre", "o"], 0))
+  254:         maximo = self._num(self._campo(linha, ["high", "maximo", "mÃ¡ximo", "max", "h"], abertura))
+  255:         minimo = self._num(self._campo(linha, ["low", "minimo", "mÃ­nimo", "min", "l"], abertura))
+  256:         ultimo = self._num(self._campo(linha, ["close", "fechamento", "ultimo", "Ãºltimo", "last", "c"], abertura))
+  257:
+  258:         if ultimo <= 0:
+  259:             ultimo = abertura
+  260:
+  261:         volume = self._num(self._campo(linha, ["volume", "volume_quantidade", "vol"], 0))
+  262:         delta = self._num(self._campo(linha, ["delta"], 0))
+  263:         saldo = self._num(self._campo(linha, ["saldo", "agressao_saldo", "agressÃ£o_saldo"], delta))
+  264:         vwap = self._num(self._campo(linha, ["vwap", "VWAP"], ultimo))
+  265:
+  266:         t = self._timestamp(linha, indice)
+  267:         ativo = str(self._campo(linha, ["ativo", "symbol"], "WINFUT")).strip() or "WINFUT"
+  268:
+  269:         candle = {
+  270:             "time": t,
+  271:             "ativo": ativo,
+  272:             "contrato": "WIN_REPLAY_F_0",
+  273:             "fonte_dados": "REPLAY_CSV",
+  274:             "modo_dados": "REPLAY",
+  275:             "open": abertura,
+  276:             "high": max(maximo, abertura, ultimo),
+  277:             "low": min(minimo, abertura, ultimo),
+  278:             "close": ultimo,
+  279:             "ultimo": ultimo,
+  280:             "volume": volume,
+  281:             "volume_real": volume,
+  282:             "volume_normalizado_capado": volume,
+  283:             "volume_delta_estimado": volume,
+  284:             "volume_candle_estimado": volume,
+  285:             "volume_tipo": "REPLAY_CSV",
+  286:             "delta": delta,
+  287:             "saldo": saldo,
+  288:             "vwap": vwap,
+  289:             "status_fonte": "REPLAY_ATIVO",
+  290:             "fonte_estagnada": False,
+  291:             "status_painel": "REPLAY_OPERACIONAL_NAO_CERTIFICADO",
+  292:             "timeframe_painel": timeframe_painel,
+  293:             "regua_painel": "REPLAY_AGREGADO",
+  294:         }
+  295:
+  296:         return candle
+  297:
+  298:
+  299:
+  300:     def _limpar_estado_execucao(self):
+  301:         self.indice = 0
+  302:         self.ultimo_candle_time = None
+  303:         self.ultimo_emit_wall = 0.0
+  304:         self.bucket_replay_linhas = []
+  305:         self.bucket_replay_inicio_ts = None
+  306:         self.bucket_replay_limite_ts = None
+  307:
+  308:     def start(self, csv_path="", data_pregao="", intervalo_segundos=1.5):
+  309:         self._limpar_estado_execucao()
+  310:         ok = self.carregar_csv(csv_path, data_pregao)
+  311:
+  312:         try:
+  313:             self.intervalo_segundos = max(0.3, float(intervalo_segundos or 1.5))
+  314:         except Exception:
+  315:             self.intervalo_segundos = 1.5
+
+
+==============================================================================
+12. REPLAY - AGREGACAO TEMPORAL
+==============================================================================
+ARQUIVO: backend\replay_diagnostico.py
+FAIXA: 380 ate 455
+
+  380:         if "_MIN" in tf:
+  381:             try:
+  382:                 return max(60, int(tf.replace("_MIN", "")) * 60)
+  383:             except Exception:
+  384:                 return 60
+  385:
+  386:         return 60
+  387:
+  388:     def _qtd_origem_por_timeframe(self, timeframe_painel="1_MIN"):
+  389:         return max(1, int(self._segundos_timeframe(timeframe_painel) / 60))
+  390:
+  391:     def _montar_candle_bucket(self, timeframe_painel="1_MIN", completo=False):
+  392:         if not self.bucket_replay_linhas:
+  393:             return None
+  394:
+  395:         candles = [
+  396:             self.linha_para_candle(linha, indice, timeframe_painel)
+  397:             for linha, indice in self.bucket_replay_linhas
+  398:         ]
+  399:
+  400:         abertura = candles[0]["open"]
+  401:         fechamento = candles[-1]["close"]
+  402:         maximo = max(float(c["high"]) for c in candles)
+  403:         minimo = min(float(c["low"]) for c in candles)
+  404:         volume = sum(float(c.get("volume") or 0) for c in candles)
+  405:         delta = sum(float(c.get("delta") or 0) for c in candles)
+  406:         saldo = sum(float(c.get("saldo") or 0) for c in candles)
+  407:
+  408:         soma_peso = 0.0
+  409:         soma_vwap = 0.0
+  410:
+  411:         for c in candles:
+  412:             vol = float(c.get("volume") or 0)
+  413:             preco_vwap = float(c.get("vwap") or c.get("close") or 0)
+  414:             peso = vol if vol > 0 else 1.0
+  415:             soma_peso += peso
+  416:             soma_vwap += preco_vwap * peso
+  417:
+  418:         vwap = soma_vwap / soma_peso if soma_peso else fechamento
+  419:
+  420:         status_candle = "REPLAY_COMPLETO" if completo else "REPLAY_PARCIAL"
+  421:
+  422:         candle = {
+  423:             **candles[-1],
+  424:             "time": self.bucket_replay_inicio_ts,
+  425:             "open": abertura,
+  426:             "high": maximo,
+  427:             "low": minimo,
+  428:             "close": fechamento,
+  429:             "ultimo": fechamento,
+  430:             "volume": volume,
+  431:             "volume_real": volume,
+  432:             "volume_normalizado_capado": volume,
+  433:             "volume_delta_estimado": volume,
+  434:             "volume_candle_estimado": volume,
+  435:             "volume_tipo": "REPLAY_CSV_EM_FORMACAO",
+  436:             "delta": delta,
+  437:             "saldo": saldo,
+  438:             "vwap": vwap,
+  439:             "timeframe_painel": timeframe_painel,
+  440:             "qtd_candles_origem": len(candles),
+  441:             "qtd_candles_esperados": self._qtd_origem_por_timeframe(timeframe_painel),
+  442:             "status_candle": status_candle,
+  443:             "candle_em_formacao": not completo,
+  444:             "regua_painel": "REPLAY_AGREGADO",
+  445:         }
+  446:
+  447:         return candle
+  448:
+  449:     def proximo_candle(self, timeframe_painel="1_MIN"):
+  450:         if not self.ativo:
+  451:             return None
+  452:
+  453:         agora = time.time()
+  454:
+  455:         if self.ultimo_emit_wall and (agora - self.ultimo_emit_wall) < self.intervalo_segundos:
+
+
+==============================================================================
+13. FRONTEND - NORMALIZACAO DO PAYLOAD
+==============================================================================
+ARQUIVO: frontend\src\App.js
+FAIXA: 580 ate 640
+
+  580:       0
+  581:     );
+  582:
+  583:     const vendaCandleReal = Number(
+  584:       ultimoCandle.volume_venda ??
+  585:       ultimoCandle.venda ??
+  586:       ultimoCandle.pressao_venda ??
+  587:       0
+  588:     );
+  589:
+  590:     const compraTopo = Number(data.pressao_compra ?? agressao.persistencia_compra ?? 0);
+  591:     const vendaTopo = Number(data.pressao_venda ?? agressao.persistencia_venda ?? 0);
+  592:
+  593:     const usarPressaoCandleReal =
+  594:       Number.isFinite(compraCandleReal) &&
+  595:       Number.isFinite(vendaCandleReal) &&
+  596:       compraCandleReal + vendaCandleReal > 1000;
+  597:
+  598:     const compraPainelFonte = usarPressaoCandleReal ? compraCandleReal : compraTopo;
+  599:     const vendaPainelFonte = usarPressaoCandleReal ? vendaCandleReal : vendaTopo;
+  600:
+  601:     const temEntradaPainel =
+  602:      entradaBackend.includes("COMPRA") ||
+  603:      entradaBackend.includes("VENDA");
+  604:     const baseInfo = {
+  605:       score: engine.engine_score ?? data.score ?? data.forca ?? data.sinal?.forca,
+  606:       sinal: data.sinal?.sinal ?? data.sinal ?? "SEM ENTRADA",
+  607:       entrada: entradaBackend,
+  608:       tendencia: data.tendencia ?? data.sinal?.tendencia ?? "NEUTRO",
+  609:
+  610:       frequencia: data.frequencia_mercado ?? agressao.frequencia_mercado,
+  611:       intensidade: data.intensidade_fluxo ?? agressao.intensidade_fluxo,
+  612:       scoreAgressao: data.score_agressao ?? agressao.score_agressao,
+  613:       leituraAgressao: data.leitura_agressao ?? agressao.leitura_agressao,
+  614:
+  615:       saldo: data.saldo_agressor ?? ultimoCandle.saldo,
+  616:       delta: data.delta ?? ultimoCandle.delta,
+  617:       volume: data.volume ?? ultimoCandle.volume,
+  618:
+  619:       volumeNormalizadoCapado:
+  620:         ultimoCandle.volume_normalizado_capado ??
+  621:         data.volume_normalizado_capado ??
+  622:         data.volume ??
+  623:         ultimoCandle.volume,
+  624:
+  625:       volumeReal:
+  626:         ultimoCandle.volume_real ??
+  627:         data.volume_real,
+  628:
+  629:       volumeDeltaEstimado:
+  630:         ultimoCandle.volume_delta_estimado ??
+  631:         data.volume_delta_estimado,
+  632:
+  633:       volumeCandleEstimado:
+  634:         ultimoCandle.volume_candle_estimado ??
+  635:         data.volume_candle_estimado,
+  636:
+  637:       volumeTipo:
+  638:         ultimoCandle.volume_tipo ??
+  639:         data.volume_tipo ??
+  640:         "NAO_INFORMADO",
+
+
+==============================================================================
+14. FRONTEND - VARIAVEIS DO PAINEL
+==============================================================================
+ARQUIVO: frontend\src\App.js
+FAIXA: 1350 ate 1410
+
+ 1350:     async function carregarTtRawStatus() {
+ 1351:       try {
+ 1352:         const resposta = await fetch("http://127.0.0.1:8001/tt/raw/status");
+ 1353:         const json = await resposta.json();
+ 1354:
+ 1355:         if (!ativo) return;
+ 1356:
+ 1357:         setTtRawStatus(json);
+ 1358:         setTtRawErro("");
+ 1359:       } catch (erro) {
+ 1360:         if (!ativo) return;
+ 1361:
+ 1362:         setTtRawErro("TT_RAW_STATUS_INDISPONIVEL");
+ 1363:       }
+ 1364:     }
+ 1365:
+ 1366:     carregarTtRawStatus();
+ 1367:
+ 1368:     const timer = setInterval(carregarTtRawStatus, 15000);
+ 1369:
+ 1370:     return () => {
+ 1371:       ativo = false;
+ 1372:       clearInterval(timer);
+ 1373:     };
+ 1374:   }, []);
+ 1375:
+ 1376:   const ultimoPainel = dataInfo.ultimo ?? dataInfo.close ?? dataInfo.preco ?? "-";
+ 1377:   const maximaPainel = dataInfo.maximo ?? dataInfo.maxima ?? dataInfo.high ?? "-";
+ 1378:   const minimaPainel = dataInfo.minimo ?? dataInfo.minima ?? dataInfo.low ?? "-";
+ 1379:   const volumePainel = dataInfo.volume ?? "-";
+ 1380:   const volumeNormalizadoPainel = dataInfo.volumeNormalizadoCapado ?? dataInfo.volume ?? "-";
+ 1381:   const volumeCandleEstimadoPainel = dataInfo.volumeCandleEstimado ?? "-";
+ 1382:   const volumeTipoPainel = dataInfo.volumeTipo ?? "NAO_INFORMADO";
+ 1383:   const deltaPainel = dataInfo.delta ?? "-";
+ 1384:   const saldoPainel = dataInfo.saldo ?? "-";
+ 1385:   const vwapPainel = dataInfo.vwap ?? dataInfo.vwapReal ?? dataInfo.vwap_real ?? "-";
+ 1386:   const distVwapPainel = dataInfo.distanciaVwap ?? dataInfo.distancia_vwap ?? "-";
+ 1387:
+ 1388:   const modoOperacionalPainel =
+ 1389:     dataInfo.modoOperacional ||
+ 1390:     (dataInfo.painelOrigemTemporal === "RTD_EXCEL_AGREGADO" ? "AO_VIVO" : "DESCONHECIDO");
+ 1391:
+ 1392:   const fonteOperacionalPainel =
+ 1393:     dataInfo.fonteDados ||
+ 1394:     dataInfo.painelOrigemTemporal ||
+ 1395:     "DESCONHECIDA";
+ 1396:
+ 1397:   const timeframeOperacionalPainel =
+ 1398:     dataInfo.painelTimeframe ||
+ 1399:     "DESCONHECIDO";
+ 1400:
+ 1401:   const statusOperacionalPainel =
+ 1402:     dataInfo.painelStatus ||
+ 1403:     "DESCONHECIDO";
+ 1404:
+ 1405:   const statusFontePainel =
+ 1406:     dataInfo.statusFonte ||
+ 1407:     "NAO_INFORMADO";
+ 1408:
+ 1409:   const fonteEstagnadaPainel =
+ 1410:     Boolean(dataInfo.fonteEstagnada) ||
+
+
+==============================================================================
+15. FRONTEND - CARDS DELTA E SALDO
+==============================================================================
+ARQUIVO: frontend\src\App.js
+FAIXA: 2050 ate 2110
+
+ 2050:       >
+ 2051:         <div>
+ 2052:           <div style={{ color: corEstadoPainel, fontSize: "clamp(22px, 1.5vw, 30px)", fontWeight: "900", letterSpacing: 2 }}>
+ 2053:             {tituloAlertaRodape}
+ 2054:           </div>
+ 2055:           <div style={{ color: "#d0d7dc", fontSize: 12, fontWeight: "bold" }}>
+ 2056:             {motivoBloqueioPainel || alertaPrincipalPainel}
+ 2057:           </div>
+ 2058:         </div>
+ 2059:
+ 2060:         <div>
+ 2061:           <div style={{ color: "#d0d7dc", fontSize: 12, fontWeight: "900", textAlign: "center", letterSpacing: 2, marginBottom: 4 }}>
+ 2062:             ACAO
+ 2063:           </div>
+ 2064:           <div style={{ color: corEstadoPainel, fontSize: "clamp(24px, 2vw, 36px)", fontWeight: "900", textAlign: "center", letterSpacing: 3, lineHeight: 1.05 }}>
+ 2065:             {acaoPrincipalPainel}
+ 2066:           </div>
+ 2067:
+ 2068:           <div style={{ display: "grid", gridTemplateColumns: "repeat(18, 1fr)", gap: 4, marginTop: 10 }}>
+ 2069:             {Array.from({ length: 18 }).map((_, i) => (
+ 2070:               <div
+ 2071:                 key={i}
+ 2072:                 style={{
+ 2073:                   height: 22,
+ 2074:                   borderRadius: 3,
+ 2075:                   background: i < barrasAlertaPainel ? corEstadoPainel : "rgba(255,255,255,0.18)",
+ 2076:                   boxShadow: i < barrasAlertaPainel ? `0 0 12px ${corEstadoPainel}` : "none",
+ 2077:                 }}
+ 2078:               />
+ 2079:             ))}
+ 2080:           </div>
+ 2081:         </div>
+ 2082:
+ 2083:         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+ 2084:           <Box color="#12313d">ULTIMO<br />{formatar(ultimoPainel)}</Box>
+ 2085:           <Box color="#263238">VWAP<br />{formatar(vwapPainel)}</Box>
+ 2086:           <Box color={Number(deltaPainel || 0) >= 0 ? "#004d40" : "#4a0000"}>DELTA<br />{deltaPainel}</Box>
+ 2087:           <Box color={Number(saldoPainel || 0) >= 0 ? "#004d40" : "#4a0000"}>SALDO<br />{saldoPainel}</Box>
+ 2088:         </div>
+ 2089:
+ 2090:       </div>
+ 2091:     </div>
+ 2092:   );
+ 2093: }
+ 2094:
+ 2095: function HotZoneOverlay({ low, high, absorcao, compra, venda }) {
+ 2096:   const compraNum = Number(compra || 0);
+ 2097:   const vendaNum = Number(venda || 0);
+ 2098:
+ 2099:   let cor = "#ffaa00";
+ 2100:   let texto = "HOT ZONE NEUTRA";
+ 2101:
+ 2102:   if (absorcao) {
+ 2103:     cor = "#ff00ff";
+ 2104:     texto = "HOT ZONE Ã¢â‚¬Â¢ ABSORÃƒâ€¡ÃƒÆ’O";
+ 2105:   } else if (compraNum > vendaNum) {
+ 2106:     cor = "#00ff99";
+ 2107:     texto = "DEFESA COMPRADORA";
+ 2108:   } else if (vendaNum > compraNum) {
+ 2109:     cor = "#ff3333";
+ 2110:     texto = "DEFESA VENDEDORA";
+
+
+==============================================================================
+16. TESTES EXISTENTES RELACIONADOS
+==============================================================================
+C:\Users\User\projeto_fluxo\TRIN_ROOT\backend\server_test.py:3: from datetime import datetime, timedelta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\backend\server_test.py:19: hora = datetime.now() - timedelta(minutes=qtd)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\backend\server_test.py:33: hora += timedelta(minutes=1)
+
+
+==============================================================================
+17. CONTRATOS E GOVERNANCA RELACIONADOS
+==============================================================================
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\contrato_bastião.md:7: 🎯 RESPONSABILIDADE ÚNICA
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:575: ### 20.6 Agressao / fluxo / pressao
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:583: [ ] Score de agressao aparece.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:584: [ ] Leitura de agressao aparece.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:585: [ ] Delta aparece.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:586: [ ] Saldo aparece.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:599: [ ] Sequencia de delta aparece ou esta mapeada.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:759: ### 20.6 Agressao / fluxo / pressao
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:767: [ ] Score de agressao aparece.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:768: [ ] Leitura de agressao aparece.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:769: [ ] Delta aparece.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:770: [ ] Saldo aparece.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:783: [ ] Sequencia de delta aparece ou esta mapeada.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\01_CHECKLISTS\CHECKLIST_DEPURACAO_PROFUNDA_TRIN_ROOT.md:900: - possivel agressao contra liquidez;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_ARQUITETURAL_PRELIMINAR_HISTORIADOR.md:21: - intelligence/historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_ARQUITETURAL_PRELIMINAR_HISTORIADOR.md:42: - estatistica_delta.csv
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_ARQUITETURAL_PRELIMINAR_HISTORIADOR.md:55: - Ha separacao por temas: temporal, delta, volume, estatistica, contexto e padroes.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_ARQUITETURAL_PRELIMINAR_HISTORIADOR.md:129: - historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_ARQUITETURAL_PRELIMINAR_HISTORIADOR.md:157: - intelligence/historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_ARQUITETURAL_PRELIMINAR_HISTORIADOR.md:199: ### historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_ARQUITETURAL_PRELIMINAR_HISTORIADOR.md:200: Resume delta quando delta_medio existir no indice.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_bernardo.md:5: from datetime import datetime, timedelta, time
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_bernardo.md:297: atual = inicio + timedelta(minutes=minutos)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_bernardo.md:307: atual += timedelta(minutes=minutos)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_bernardo.md:320: "maximo", "minimo", "volume", "delta", "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_bernardo.md:341: "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_bernardo.md:342: "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_bernardo.md:343: "agressao_compra",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_bernardo.md:344: "agressao_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_bernardo.md:345: "agressao_venda",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_bernardo.md:364: "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_fiscal.md:31: - Delta.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_fiscal.md:32: - Saldo.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_POS_PATCH_HISTORIADOR_V1_0_1.md:48: - estatistica_delta.csv
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_INTEGRACAO_CANDLE_5S_REPLAY_DIAGNOSTICO.md:112: Responsabilidade unica:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_BASTIAO_TT_PENEIRADOR.md:255: - responsabilidade unica;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02A_IDEMPOTENCIA_PAYLOAD_2026_07_09.md:27: - memoria_agressao cresceu de 1 para 5;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02A_IDEMPOTENCIA_PAYLOAD_2026_07_09.md:46: - aggression_engine.calcular_memoria_agressao;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02A_IDEMPOTENCIA_PAYLOAD_2026_07_09.md:106: - delta;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02A_IDEMPOTENCIA_PAYLOAD_2026_07_09.md:107: - saldo;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02A_IDEMPOTENCIA_PAYLOAD_2026_07_09.md:121: - delta alterado;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02A_IDEMPOTENCIA_PAYLOAD_2026_07_09.md:122: - saldo alterado;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02A_IDEMPOTENCIA_PAYLOAD_2026_07_09.md:172: 1. cinco chamadas com o mesmo evento geram uma unica entrada na agressao;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02A_IDEMPOTENCIA_PAYLOAD_2026_07_09.md:176: 5. alteracao real de delta gera novo processamento;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02A_IDEMPOTENCIA_PAYLOAD_2026_07_09.md:177: 6. alteracao real de saldo gera novo processamento;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02B_CANDLE_VWAP_CANONICOS_2026_07_10.md:1: # AUDITORIA PRE-PATCH CR-02B — CANDLE CANONICO NOS MOTORES
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02B_CANDLE_VWAP_CANONICOS_2026_07_10.md:143: 5. definir o candle canonico como historico[-1];
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02B_CANDLE_VWAP_CANONICOS_2026_07_10.md:146: 8. registrar reversao no candle canonico;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02B_CANDLE_VWAP_CANONICOS_2026_07_10.md:148: 10. retornar o candle canonico.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_CR02B_CANDLE_VWAP_CANONICOS_2026_07_10.md:206: 6. reversao usa o candle canonico atualizado;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_PAINEL_LIMPO_RESULTADOS.md:33: - agressao
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_PAINEL_LIMPO_RESULTADOS.md:54: - delta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_PAINEL_LIMPO_RESULTADOS.md:55: - saldo
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_PAINEL_LIMPO_RESULTADOS.md:150: - Delta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_PRE_PATCH_PAINEL_LIMPO_RESULTADOS.md:151: - Saldo
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md:71: - delta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md:72: - saldo
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md:81: delta_mudou       : False
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md:82: saldo_mudou       : False
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md:125: - delta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md:126: - saldo
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md:131: - volume_saldo
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md:172: delta_mudou       : False
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md:173: saldo_mudou       : False
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_RTD_ESTAGNADO_CANDLEBUILDER_2026_07_07.md:185: - se candles novos continuam nascendo quando preço, volume, delta ou saldo mudam;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_STATUS_FONTE_RTD_MERCADO_ABERTO_2026_07_08.md:61: - preço, delta, saldo e volume mudando em mercado aberto.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_STATUS_FONTE_RTD_MERCADO_ABERTO_2026_07_08.md:71: - delta;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_STATUS_FONTE_RTD_MERCADO_ABERTO_2026_07_08.md:72: - saldo;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_STATUS_FONTE_RTD_MERCADO_ABERTO_2026_07_08.md:105: Quando há alteração real recente em preço, volume, delta, saldo ou VWAP.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_TT_RTD_CAPTURA_EXPERIMENTAL.md:67: - 98, 99, 100, 103 = campos relacionados a agressao/saldo
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_VOLUME_CANDLEBUILDER_PAINEL_2026_07_07.md:13: Durante validação observacional do CandleBuilderPainel em mercado aberto, os timeframes 2_MIN, 30s e 15s apresentaram candles com preço, delta, saldo e VWAP variando corretamente, porém o campo `volume` permaneceu repetidamente em 5000.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_VOLUME_CANDLEBUILDER_PAINEL_2026_07_07.md:63: - `REAL_DELTA_ESTIMADO`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_VOLUME_CANDLE_ESTIMADO_MERCADO_ABERTO_2026_07_08.md:117: - preço, delta e saldo variando.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_VOLUME_CANDLE_ESTIMADO_MERCADO_ABERTO_2026_07_08.md:149: volume_candle_estimado calcula delta entre leituras corretas, mas precisa normalização.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_VOLUME_CANDLE_ESTIMADO_MERCADO_ABERTO_2026_07_08.md:168: - volume_delta_estimado;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_VOLUME_CANDLE_ESTIMADO_MERCADO_ABERTO_2026_07_08.md:171: - delta;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\AUDITORIA_VOLUME_CANDLE_ESTIMADO_MERCADO_ABERTO_2026_07_08.md:172: - saldo.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\auditoria_ze.md:22: - Responsabilidade única.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR02A_IDEMPOTENCIA_PROCESSAMENTO_2026_07_10.md:22: - memoria_agressao crescendo de 1 para 5;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR02A_IDEMPOTENCIA_PROCESSAMENTO_2026_07_10.md:51: - delta;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR02A_IDEMPOTENCIA_PROCESSAMENTO_2026_07_10.md:52: - saldo;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR02A_IDEMPOTENCIA_PROCESSAMENTO_2026_07_10.md:96: - cinco chamadas iguais processam a agressao uma unica vez;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR02A_IDEMPOTENCIA_PROCESSAMENTO_2026_07_10.md:101: - mudanca de delta gera novo processamento;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR02A_IDEMPOTENCIA_PROCESSAMENTO_2026_07_10.md:102: - mudanca de saldo gera novo processamento;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR02B_CANDLE_CANONICO_MOTORES_2026_07_10.md:1: # LAUDO CR-02B — CANDLE CANONICO NOS MOTORES
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR02B_CANDLE_CANONICO_MOTORES_2026_07_10.md:66: 5. obter historico[-1] como candle canonico;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR02B_CANDLE_CANONICO_MOTORES_2026_07_10.md:70: 9. retornar o candle canonico.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR02B_CANDLE_CANONICO_MOTORES_2026_07_10.md:89: - reversao calculada sobre candle canonico atualizado;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:1: # LAUDO CR-03D — CONTRATO SEMÂNTICO DELTA / SALDO
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:13: Determinar se os campos `delta` e `saldo` representam evidências
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:44: | I2 | TR_DELTA |
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:45: | J2 | TR - Saldo Acumulado de Agressão |
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:47: | L2 | TR - Volume de Agressão - Saldo |
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:54: - `K2`, `L2` e `M2` representam compra, saldo e venda de agressão.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:72: | backend.delta confere I2 | 60 / 60 |
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:73: | backend.delta confere L2 | 60 / 60 |
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:74: | backend.saldo confere J2 | 60 / 60 |
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:75: | backend.volume_saldo confere L2 | 60 / 60 |
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:78: | backend.delta igual backend.saldo | 60 / 60 |
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:90: - inversão entre delta e saldo;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:111: `delta == saldo == volume_saldo`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:139: - valor absoluto do saldo;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:140: - valor absoluto do delta;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:143: Quando `saldo == delta`, a mesma pressão é contabilizada duas vezes.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:149: `saldo > 0 and delta > 0`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:153: `saldo < 0 and delta < 0`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:162: `saldo_total + delta_total`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:169: As regras de explosão também exigem simultaneamente saldo e delta.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:189: `bruto = (delta + saldo) / 20000`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:191: A direção é confirmada quando delta e saldo possuem o mesmo sinal.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:199: O ConfluenceEngine ainda adiciona a evidência `AGRESSAO`, cujo score foi
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:200: produzido pelo AggressionEngine usando delta e saldo.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:204: 1. a evidência `FLUXO_DELTA_SALDO`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:205: 2. o `score_agressao`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:206: 3. a evidência `AGRESSAO`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:207: 4. regras diretas do backend que usam delta e score de agressão.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:221: O backend transporta corretamente delta e saldo e entrega ambos aos motores.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:242: O Replay possui fallback que utiliza delta como saldo quando o campo saldo não
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:247: `saldo = delta`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:249: Esse fallback não publica de forma explícita que o saldo foi derivado.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:251: Depois, delta e saldo são agregados separadamente, podendo produzir aparência
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:273: - DELTA;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:274: - SALDO.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:293: - `delta`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:294: - `saldo`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:295: - `volume_saldo`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:299: relação entre delta e saldo.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:303: - `delta_fonte`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:304: - `saldo_fonte`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:305: - `delta_saldo_relacao`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:306: - `delta_saldo_independentes`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:307: - `saldo_fallback_delta`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:314: - `SALDO_DERIVADO_DELTA`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:315: - `DELTA_DERIVADO_SALDO`;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:320: `delta_saldo_relacao = EQUIVALENTES_OBSERVADOS`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:322: `delta_saldo_independentes = false`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:326: `delta_saldo_relacao = SALDO_DERIVADO_DELTA`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:328: `delta_saldo_independentes = false`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:330: `saldo_fallback_delta = true`
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:341: 4. impedir peso duplicado quando delta e saldo forem equivalentes ou derivados;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:348: - candle canônico;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:361: - não apagar delta;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:362: - não apagar saldo;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\02_AUDITORIAS\LAUDO_CR03D_CONTRATO_DELTA_SALDO_2026_07_10.md:410: dos nomes delta e saldo e atribui a ela peso de evidências independentes.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\04_METODOLOGIA\auditoria_hard.md:16: - Responsabilidade única.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\04_METODOLOGIA\metodologia_oficial.md:39: - Respeita responsabilidade única?
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\04_METODOLOGIA\responsabilidade_unica.md:1: # 🧱 PRINCÍPIO DA RESPONSABILIDADE ÚNICA — TRIN
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\06_CHECKPOINTS\CHECKPOINT_CANDLEBUILDER_PAINEL_2026_07_07.md:42: Antes do restart do backend, o painel exibia candles em 100.00, volume 0, delta 0 e saldo 0.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\06_CHECKPOINTS\CHECKPOINT_CANDLEBUILDER_PAINEL_2026_07_07.md:44: Após restart controlado, o backend passou a entregar preço real, VWAP, delta, saldo e volume_real.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\06_CHECKPOINTS\CHECKPOINT_CANDLEBUILDER_PAINEL_2026_07_07.md:125: - volume_delta_estimado
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_ATIVO_RESOLVER.md:19: ## Responsabilidade unica
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_BASTIAO_TT_PENEIRADOR.md:55: ## Responsabilidade unica
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\contrato_bastião.md:7: ## Responsabilidade única
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\contrato_bernardo.md:7: ## Responsabilidade única
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_CANDLE_5S_DIAGNOSTICO.md:58: ## 4. Responsabilidade unica
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_DADOS_REFERENCIA_MERCADO.md:139: Media de preco, volume, range, delta ou comportamento historico deve ser classificada com ressalva quando faltar:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_ENTRADAS_SAIDAS_HISTORIADOR.md:124: - estatistica_delta.csv
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_ENTRADAS_SAIDAS_HISTORIADOR.md:146: ## 3.4 estatistica_delta.csv
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_ENTRADAS_SAIDAS_HISTORIADOR.md:147: Resumo inicial de delta quando delta_medio existir no indice oficial.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\contrato_fiscal.md:7: ## Responsabilidade única
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\contrato_historiador.md:7: ## Responsabilidade única
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_INDICE_GERAL_BERNARDO.md:51: - delta_medio, quando disponivel
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_INDICE_GERAL_BERNARDO.md:138: - delta_medio
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_MANIFESTO_HISTORIADOR.md:165: - estatistica_delta.csv
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\contrato_motor_confluencia.md:7: ## Responsabilidade única
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\contrato_motor_confluencia.md:13: VWAP, Delta, fluxo, absorção, contexto, fractal, memória histórica, histórico estatístico e conhecimento do Historiador.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_REPLAY_5S_DIAGNOSTICO.md:57: ## 4. Responsabilidade unica
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_SCHEMA_CONHECIMENTO_HISTORIADOR.md:54: - estatistica_delta.csv
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_SCHEMA_CONHECIMENTO_HISTORIADOR.md:169: # 7. SCHEMA — estatistica_delta.csv
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_SCHEMA_CONHECIMENTO_HISTORIADOR.md:172: Resumir delta quando existir informacao indexada oficial.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_SCHEMA_CONHECIMENTO_HISTORIADOR.md:179: - delta_medio_disponivel
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_SCHEMA_CONHECIMENTO_HISTORIADOR.md:183: Delta detalhado futuro nao pode ser buscado em CSV bruto livremente.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_SCHEMA_DADOS_REFERENCIA_MERCADO.md:34: ## 2. Responsabilidade unica
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_SCHEMA_INDICE_GERAL_BERNARDO.md:203: ## delta_medio
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_SCHEMA_INDICE_GERAL_BERNARDO.md:207: Media de delta quando disponivel no indice.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\CONTRATO_SCHEMA_INDICE_GERAL_BERNARDO.md:337: - delta_medio ou volume_medio sao suficientes para padrao operacional;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\08_CONTRATOS\contrato_ze.md:7: ## Responsabilidade única
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\09_PADROES\padrao_csv.md:13: ativo,data,hora,timestamp,timezone,sessao,fractal_minutos,status_candle,qtd_candles_origem,abertura,maximo,minimo,ultimo,volume,volume_quantidade,delta,saldo,agressao_compra,agressao_saldo,agressao_venda,vwap
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\ROTEIRO_VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:58: - se preço, volume_real, delta, saldo e VWAP não mudarem, histórico não cresce
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\ROTEIRO_VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:95: - tipo permanece REAL_DELTA_ESTIMADO
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\termo_homologacao_ze_4_0.md:13: O Zé 4.0 executou geração de fractais, preservou arquivos existentes, gerou manifesto, logs e relatório de candles parciais, respeitando responsabilidade única.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:55: - delta;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:56: - saldo;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:86: Os candles apresentaram variação real de preço, delta, saldo e volume.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:191: - delta_mudou: True
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:192: - saldo_mudou: True
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:212: - delta_mudou: True
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:213: - saldo_mudou: True
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:236: - delta;
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\10_HOMOLOGACOES\VALIDACAO_MERCADO_ABERTO_CANDLEBUILDER_2026_07_08.md:237: - saldo.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:139: C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py                                  2306 17/06/...
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:155: C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\__pycache__\historiador_delta.cpython-314.pyc         3592 17/06/...
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:383: Line       :             position: candle.delta >= 0 ? "belowBar" : "aboveBar",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:387: Line       :             color: candle.delta >= 0 ? "#00ff99" : "#ff3333",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:391: Line       :             shape: candle.delta >= 0 ? "arrowUp" : "arrowDown",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:395: Line       :             text: candle.delta >= 0 ? "BUY EXP" : "SELL EXP",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:411: Line       :     const scoreAgressao = Number(info.scoreAgressao || 0);
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:419: Line       :     const seqDelta = Number(info.engineSeqDelta || 0);
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:423: Line       :       if (direcao === "COMPRA" || seqDelta > 0 || trap === "COMPRA") {
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:427: Line       :       if (direcao === "VENDA" || seqDelta < 0 || trap === "VENDA") {
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:431: Line       :       if (compra > venda && scoreAgressao > 0) {
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:435: Line       :       if (venda > compra && scoreAgressao < 0) {
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:639: Line       :     const agressao = data.agressao || {};
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:691: Line       :     const compraTopo = Number(data.pressao_compra ?? agressao.persistencia_compra ?? 0);
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:695: Line       :     const vendaTopo = Number(data.pressao_venda ?? agressao.persistencia_venda ?? 0);
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:751: Line       :       frequencia: data.frequencia_mercado ?? agressao.frequencia_mercado,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:755: Line       :       intensidade: data.intensidade_fluxo ?? agressao.intensidade_fluxo,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:759: Line       :       scoreAgressao: data.score_agressao ?? agressao.score_agressao,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:763: Line       :       leituraAgressao: data.leitura_agressao ?? agressao.leitura_agressao,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:767: Line       :       saldo: data.saldo_agressor ?? ultimoCandle.saldo,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:771: Line       :       delta: data.delta ?? ultimoCandle.delta,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:811: Line       :       volumeDeltaEstimado:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:815: Line       :         ultimoCandle.volume_delta_estimado ??
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:819: Line       :         data.volume_delta_estimado,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:899: Line       :         agressao.tipo_explosao ??
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:903: Line       :         agressao.explosao_detectada ??
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:911: Line       :       engineSeqDelta: data.engine_seq_delta ?? engine.engine_seq_delta,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:1680: Line       :   const scoreAgressao = Number(dataInfo.scoreAgressao || 0);
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:1688: Line       :           : scoreAgressao > 15
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:1692: Line       :           : scoreAgressao < -15
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:1740: Line       :   const deltaPainel = dataInfo.delta ?? "-";
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:1744: Line       :   const saldoPainel = dataInfo.saldo ?? "-";
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2309: Line       :           <Box color={Number(deltaPainel || 0) >= 0 ? "#004d40" : "#4a0000"}>DELTA<br
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2310: />{deltaPainel}</Box>
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2314: Line       :           <Box color={Number(saldoPainel || 0) >= 0 ? "#004d40" : "#4a0000"}>SALDO<br
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2315: />{saldoPainel}</Box>
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2588: Line       :         delta = self._num(self._campo(linha, ["delta"], 0))
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2592: Line       :         saldo = self._num(self._campo(linha, ["saldo", "agressao_saldo", "agressão_saldo"], delta))
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2628: Line       :             "volume_delta_estimado": volume,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2640: Line       :             "delta": delta,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2644: Line       :             "saldo": saldo,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2780: Line       :         delta = sum(float(c.get("delta") or 0) for c in candles)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2784: Line       :         saldo = sum(float(c.get("saldo") or 0) for c in candles)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2840: Line       :             "volume_delta_estimado": volume,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2852: Line       :             "delta": delta,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:2856: Line       :             "saldo": saldo,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3109: Line       : from datetime import datetime, timedelta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3117: Line       :     agora = datetime.now() - timedelta(minutes=qtd)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3121: Line       :         candle_time = agora + timedelta(minutes=i)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3217: Line       :     saldo_agressor = random.randint(-1000, 1000)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3221: Line       :     delta = random.randint(-500, 500)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3229: Line       :         saldo_agressor,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3237: Line       :         delta,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3285: Line       :         "saldo_agressor": saldo_agressor,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3289: Line       :         "delta": delta,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3317: Line       :         def gerar_sinal(saldo_agressor, volume, delta, preco):
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3625: Line       :         candle["delta"] = _num(candle.get("delta"), 0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3629: Line       :         candle["saldo"] = _num(candle.get("saldo", candle.get("saldo_agressor")), 0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3653: Line       :             "delta": 0,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3657: Line       :             "saldo": 0,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3722: Line       :                 candle.get("volume_delta_estimado", candle.get("volume_candle_estimado")),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3726: Line       :             novo["volume_delta_estimado"] = novo["volume_candle_estimado"]
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3730: Line       :             novo["volume_tipo"] = "REAL_DELTA_ESTIMADO"
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3774: Line       :             candle.get("volume_delta_estimado", candle.get("volume_candle_estimado")),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3778: Line       :         atual["volume_delta_estimado"] = atual["volume_candle_estimado"]
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3782: Line       :         atual["volume_tipo"] = "REAL_DELTA_ESTIMADO"
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3806: Line       :             "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3810: Line       :             "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3826: Line       :             "volume_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3838: Line       : def calcular_volume_delta_estimado(candle, referencia=None):
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3870: Line       :         delta = volume_atual - volume_anterior
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3874: Line       :         if delta < 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3878: Line       :         return round(delta, 2)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3890: Line       :     volume_delta = calcular_volume_delta_estimado(candle, referencia)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3898: Line       :     candle["volume_delta_estimado"] = volume_delta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3902: Line       :     candle["volume_candle_estimado"] = volume_delta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3906: Line       :     candle["volume_tipo"] = "REAL_DELTA_ESTIMADO"
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3930: Line       :         "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3934: Line       :         "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:3954: Line       :         "volume_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4111: Line       :         delta_volume_estimado = _num(candle.get("volume_delta_estimado"), 0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4115: Line       :         ultimo["volume_delta_estimado"] = _num(ultimo.get("volume_delta_estimado"), 0) +
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4116: delta_volume_estimado
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4121: delta_volume_estimado
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4125: Line       :         ultimo["volume_tipo"] = "REAL_DELTA_ESTIMADO"
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4133: Line       :             "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4137: Line       :             "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4153: Line       :             "volume_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4177: Line       :     saldo = _num(atual.get("saldo"), 0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4181: Line       :     compra = _num(atual.get("agressao_compra"), 0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4185: Line       :     venda = _num(atual.get("agressao_venda"), 0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4189: Line       :     # Quando o leitor nao trouxer compra/venda separados, derivamos do saldo.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4193: Line       :         compra = max(saldo, 0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4197: Line       :         venda = max(-saldo, 0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4205: Line       :         "delta": atual.get("delta"),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4209: Line       :         "saldo": atual.get("saldo"),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4221: Line       :         "agressao_compra": compra,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4225: Line       :         "agressao_venda": venda,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4229: Line       :         "score_agressao": memoria.get("score_agressao", 0),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4253: Line       :             "delta": 0,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4257: Line       :             "saldo": 0,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4297: Line       :             "delta": candle_fallback.get("delta", 0),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4301: Line       :             "saldo": candle_fallback.get("saldo", 0),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4387: Line       :             "engine_seq_delta": 0,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4407: Line       :         atual["saldo"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4411: Line       :         atual["delta"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4419: Line       :     memoria = aggression_engine.calcular_memoria_agressao(
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4423: Line       :         atual["saldo"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4427: Line       :         atual["delta"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4435: Line       :         atual["saldo"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4439: Line       :         atual["delta"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4447: Line       :         memoria["score_agressao"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4451: Line       :         atual["saldo"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4459: Line       :         atual["delta"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4471: Line       :     engine_seq_delta = engine_data.get("engine_seq_delta", 0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4475: Line       :     score_agressao = memoria.get("score_agressao", 0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4495: Line       :         and engine_seq_delta >= 2
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4499: Line       :         and atual["delta"] > 180
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4511: Line       :         and engine_seq_delta <= -2
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4515: Line       :         and atual["delta"] < -180
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4523: Line       :         and atual["delta"] < -120
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4531: Line       :         and atual["delta"] > 120
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4543: Line       :         and score_agressao > 5
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4555: Line       :         and score_agressao < -5
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4575: Line       :         and atual["delta"] < -100
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4579: Line       :         and score_agressao < -5
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4587: Line       :         and atual["delta"] > 100
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4591: Line       :         and score_agressao > 5
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4719: Line       :         agressao=memoria,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:4743: Line       :         "agressao": {
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5022: Line       : from datetime import datetime, timedelta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5034: Line       :     hora = datetime.now() - timedelta(minutes=qtd)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5042: Line       :         hora += timedelta(minutes=1)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5094: Line       :         self.memoria_agressao = []
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5098: Line       :     def calcular_frequencia(self, saldo_agressor, delta, volume):
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5102: Line       :             abs(saldo_agressor) / 1000 +
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5106: Line       :             abs(delta) / 1000 +
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5114: Line       :     def calcular_memoria_agressao(self, saldo_agressor, delta, volume):
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5118: Line       :         self.memoria_agressao.append({
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5122: Line       :             "saldo": saldo_agressor,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5126: Line       :             "delta": delta,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5134: Line       :         if len(self.memoria_agressao) > 20:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5138: Line       :             self.memoria_agressao = self.memoria_agressao[-20:]
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5142: Line       :             1 for item in self.memoria_agressao
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5146: Line       :             if item["saldo"] > 0 and item["delta"] > 0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5150: Line       :             1 for item in self.memoria_agressao
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5154: Line       :             if item["saldo"] < 0 and item["delta"] < 0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5158: Line       :         ultimo = self.memoria_agressao[-1]
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5162: Line       :         saldo_total = ultimo["saldo"]
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5166: Line       :         delta_total = ultimo["delta"]
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5174: Line       :             (compras / len(self.memoria_agressao)) * 100,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5178: Line       :             (vendas / len(self.memoria_agressao)) * 100,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5186: Line       :         if saldo_total > 0 and delta_total > 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5190: Line       :         elif saldo_total < 0 and delta_total < 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5194: Line       :         elif delta_total > 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5198: Line       :         elif delta_total < 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5206: Line       :             (saldo_total / 10000) +
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5210: Line       :             (delta_total / 10000)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5218: Line       :         score_agressao = round(
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5226: Line       :             score_agressao = round(score_agressao * 0.5, 2)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5230: Line       :         if persistencia_compra >= 60 and score_agressao > 8:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5234: Line       :         elif persistencia_venda >= 60 and score_agressao < -8:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5238: Line       :         elif score_agressao > 8:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5246: Line       :         elif score_agressao < -8:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5258: Line       :             "score_agressao": score_agressao,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5262: Line       :             "leitura_agressao": leitura,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5266: Line       :         saldo_agressor,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5270: Line       :         delta,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5278: Line       :         score_agressao,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5282: Line       :             saldo_agressor > 400 and
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5286: Line       :             delta > 220 and
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5294: Line       :             score_agressao > 8 and
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5298: Line       :             saldo_agressor < -400 and
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5302: Line       :             delta < -220 and
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5310: Line       :             score_agressao < -8 and
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5458: Line       :         delta = self._num(tick.get("delta"))
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5462: Line       :         saldo = self._num(tick.get("saldo"))
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5466: Line       :         bruto = (delta + saldo) / 20000
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5470: Line       :         if delta > 0 and saldo > 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5474: Line       :             justificativa = "Delta e saldo positivos indicam fluxo comprador."
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5478: Line       :         elif delta < 0 and saldo < 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5482: Line       :             justificativa = "Delta e saldo negativos indicam fluxo vendedor."
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5486: Line       :             justificativa = "Delta e saldo nao confirmam a mesma direcao."
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5490: Line       :             "FLUXO_DELTA_SALDO",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5494: Line       :             {"delta": delta, "saldo": saldo},
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5498: Line       :     def _evidencia_agressao(
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5502: Line       :         agressao: Optional[Dict[str, Any]],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5506: Line       :         compra = self._num(tick.get("agressao_compra"))
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5510: Line       :         venda = self._num(tick.get("agressao_venda"))
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5514: Line       :         saldo_agressao = compra - venda
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5518: Line       :         score_agressao = self._num(
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5522: Line       :             (agressao or {}).get("score_agressao"),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5526: Line       :             default=saldo_agressao / 100000,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5530: Line       :         impacto = self._clamp(score_agressao / 5, -3.0, 3.0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5534: Line       :         leitura = str((agressao or {}).get("leitura_agressao", "")).upper()
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5538: Line       :         if "COMPRADORA" in leitura or saldo_agressao > 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5542: Line       :         elif "VENDEDORA" in leitura or saldo_agressao < 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5546: Line       :             "AGRESSAO",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5550: Line       :                 "score_agressao": score_agressao,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5554: Line       :             "Agressao mede persistencia e intensidade do fluxo agressor.",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5730: Line       :         agressao: Optional[Dict[str, Any]] = None,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5750: Line       :             self._evidencia_agressao(tick, agressao),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5866: Line       :         delta = self._num(tick.get("delta"))
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5870: Line       :         saldo = self._num(tick.get("saldo"))
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5874: Line       :         bruto = (delta + saldo) / 20000
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5878: Line       :         if delta > 0 and saldo > 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5882: Line       :             justificativa = "Delta e saldo positivos indicam fluxo comprador."
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5886: Line       :         elif delta < 0 and saldo < 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5890: Line       :             justificativa = "Delta e saldo negativos indicam fluxo vendedor."
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5894: Line       :             justificativa = "Delta e saldo nao confirmam a mesma direcao."
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5898: Line       :             "FLUXO_DELTA_SALDO",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5902: Line       :             {"delta": delta, "saldo": saldo},
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5906: Line       :     def _evidencia_agressao(
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5910: Line       :         agressao: Optional[Dict[str, Any]],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5914: Line       :         compra = self._num(tick.get("agressao_compra"))
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5918: Line       :         venda = self._num(tick.get("agressao_venda"))
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5922: Line       :         saldo_agressao = compra - venda
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5926: Line       :         score_agressao = self._num(
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5930: Line       :             (agressao or {}).get("score_agressao"),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5934: Line       :             default=saldo_agressao / 100000,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5938: Line       :         impacto = self._clamp(score_agressao / 5, -3.0, 3.0)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5942: Line       :         leitura = str((agressao or {}).get("leitura_agressao", "")).upper()
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5946: Line       :         if "COMPRADORA" in leitura or saldo_agressao > 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5950: Line       :         elif "VENDEDORA" in leitura or saldo_agressao < 0:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5954: Line       :             "AGRESSAO",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5958: Line       :                 "score_agressao": score_agressao,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:5962: Line       :             "Agressao mede persistencia e intensidade do fluxo agressor.",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:6134: Line       :         agressao: Optional[Dict[str, Any]] = None,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:6150: Line       :             self._evidencia_agressao(tick, agressao),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:6798: Line       :         ("R001", "REVERSAO_VWAP", "Reversao proxima da VWAP com perda de agressao contraria"),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:6802: Line       :         ("R004", "ABSORCAO_COMPRADORA", "Agressao vendedora absorvida sem continuidade de queda"),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:6806: Line       :         ("R005", "ABSORCAO_VENDEDORA", "Agressao compradora absorvida sem continuidade de alta"),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:6818: Line       :         ("R008", "ROMPIMENTO_COM_FLUXO", "Rompimento acompanhado por delta, volume e saldo favoraveis"),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:7035: Line       :         {"assunto": "DELTA", "categoria": "FLUXO", "descricao": "Memoria relacionada a diferenca entre
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:7036: agressao compradora e vendedora", "termos": "DELTA,AGRESSAO,FLUXO"},
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:7040: Line       :         {"assunto": "SALDO", "categoria": "FLUXO", "descricao": "Memoria relacionada ao saldo acumulado
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:7041: de agressao", "termos": "SALDO,ACUMULADO,AGRESSAO"},
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:7100: Line       :         ("DELTA", "ROMPIMENTO", "CONFIRMA_OU_NEGA", 0.88),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:7104: Line       :         ("DELTA", "SCALPING", "SINALIZA_EXPLOSAO_PARA", 0.86),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:7108: Line       :         ("SALDO", "CONTEXTO", "INDICA_DOMINIO_DE", 0.76),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:7372: Line       :     "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:7376: Line       :     "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8194: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8196: Line       : # HISTORIADOR DELTA v1.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8198: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8200: Line       : # Missao: consolidar estatisticas de delta quando existirem no indice.
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8202: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8204: Line       : def gerar_estatistica_delta():
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8206: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8208: Line       :     colunas_base = ["ativo", "fractal", "arquivos", "linhas_total", "delta_medio_disponivel",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8211: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8213: Line       :         return salvar_csv(pd.DataFrame(columns=colunas_base), "estatistica_delta.csv")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8215: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8217: Line       :     possui_delta = "delta_medio" in indice.columns
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8219: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8221: Line       :     if possui_delta:
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8223: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8225: Line       :         indice["delta_medio_num"] = numero_serie(indice["delta_medio"])
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8227: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8229: Line       :             "delta_medio_disponivel": round(float(grupo["delta_medio_num"].mean()), 2) if possui_delta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8230: and grupo["delta_medio_num"].notna().any() else "N/D",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8232: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8234: Line       :             "observacao": "Indice possui delta_medio" if possui_delta else "Delta detalhado exige leitura
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8237: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8239: Line       :     return salvar_csv(pd.DataFrame(registros).sort_values(["ativo", "fractal"]), "estatistica_delta.csv")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8241: Path       : C:\Users\User\projeto_fluxo\TRIN_ROOT\intelligence\historiador_delta.py
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8243: Line       :     print(f"Historiador delta concluido: {gerar_estatistica_delta()}")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8259: Line       :         ("HP001", "REVERSAO_VWAP", "Reversao perto da VWAP apos perda de agressao contraria"),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8275: Line       :         ("HP005", "ROMPIMENTO_COM_FLUXO", "Rompimento acompanhado de volume, delta e saldo favoraveis"),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8296: Line       : from historiador_delta import gerar_estatistica_delta
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8412: Line       :     saidas.append(gerar_estatistica_delta())
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8526: Line       :     "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8530: Line       :     "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8534: Line       :     "agressao_compra",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8538: Line       :     "agressao_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8542: Line       :     "agressao_venda",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8582: Line       :             "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8586: Line       :             "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8590: Line       :             "agressao_compra",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8594: Line       :             "agressao_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8598: Line       :             "agressao_venda",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8618: Line       :         df["delta"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8622: Line       :         df["saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8626: Line       :         df["agressao_compra"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8630: Line       :         df["agressao_saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8634: Line       :         df["agressao_venda"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8650: Line       :         df["delta"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8654: Line       :         df["saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8658: Line       :         df["agressao_compra"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8662: Line       :         df["agressao_saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8666: Line       :         df["agressao_venda"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8686: Line       :         "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8690: Line       :         "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8694: Line       :         "agressao_compra",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8698: Line       :         "agressao_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8702: Line       :         "agressao_venda",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8798: Line       :                 "delta": float(bloco["delta"].sum()),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8802: Line       :                 "saldo": float(ultimo["saldo"]),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8806: Line       :                 "agressao_compra": float(bloco["agressao_compra"].sum()),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8810: Line       :                 "agressao_saldo": float(bloco["agressao_saldo"].sum()),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:8814: Line       :                 "agressao_venda": float(bloco["agressao_venda"].sum()),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9054: Line       :     "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9058: Line       :     "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9062: Line       :     "agressao_compra",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9066: Line       :     "agressao_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9070: Line       :     "agressao_venda",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9110: Line       :             "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9114: Line       :             "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9118: Line       :             "agressao_compra",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9122: Line       :             "agressao_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9126: Line       :             "agressao_venda",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9146: Line       :         df["delta"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9150: Line       :         df["saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9154: Line       :         df["agressao_compra"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9158: Line       :         df["agressao_saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9162: Line       :         df["agressao_venda"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9178: Line       :         df["delta"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9182: Line       :         df["saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9186: Line       :         df["agressao_compra"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9190: Line       :         df["agressao_saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9194: Line       :         df["agressao_venda"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9214: Line       :         "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9218: Line       :         "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9222: Line       :         "agressao_compra",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9226: Line       :         "agressao_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9230: Line       :         "agressao_venda",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9322: Line       :                 "delta": float(bloco["delta"].sum()),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9326: Line       :                 "saldo": float(ultimo["saldo"]),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9330: Line       :                 "agressao_compra": float(bloco["agressao_compra"].sum()),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9334: Line       :                 "agressao_saldo": float(bloco["agressao_saldo"].sum()),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9338: Line       :                 "agressao_venda": float(bloco["agressao_venda"].sum()),
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9543: Line       :             "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9547: Line       :             "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9551: Line       :             "agressao_compra",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9555: Line       :             "agressao_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9559: Line       :             "agressao_venda",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9575: Line       :         df["delta"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9579: Line       :         df["saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9583: Line       :         df["agressao_compra"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9587: Line       :         df["agressao_saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9591: Line       :         df["agressao_venda"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9607: Line       :         df["delta"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9611: Line       :         df["saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9615: Line       :         df["agressao_compra"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9619: Line       :         df["agressao_saldo"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9623: Line       :         df["agressao_venda"] = 0.0
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9639: Line       :         "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9643: Line       :         "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9647: Line       :         "agressao_compra",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9651: Line       :         "agressao_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9655: Line       :         "agressao_venda",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9671: Line       :         "delta": "sum",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9675: Line       :         "saldo": "last",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9679: Line       :         "agressao_compra": "sum",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9683: Line       :         "agressao_saldo": "sum",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9687: Line       :         "agressao_venda": "sum",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9703: Line       :         "delta",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9707: Line       :         "saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9711: Line       :         "agressao_compra",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9715: Line       :         "agressao_saldo",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9719: Line       :         "agressao_venda",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9727: Line       :         print("Arquivo histórico não possui Delta/Saldo/Agressões.")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:9731: Line       :         print("Arquivo possui fluxo TRIN. Delta/Saldo/Agressões agregados.")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10194: Line       :         delta = numero(ws.Range("I2").Value)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10198: Line       :         saldo = numero(ws.Range("J2").Value)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10210: Line       :             f"Delta: {delta} | "
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10214: Line       :             f"Saldo: {saldo} | "
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10371: Line       : df["delta"] = pd.to_numeric(df["delta"], errors="coerce")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10375: Line       : df["saldo"] = (
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10379: Line       :     df["saldo"]
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10383: Line       : df["saldo"] = pd.to_numeric(df["saldo"], errors="coerce")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10387: Line       : df["agressao_compra"] = (
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10391: Line       :     df["agressao_compra"]
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10395: Line       : df["agressao_compra"] = pd.to_numeric(
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10399: Line       :     df["agressao_compra"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10403: Line       : df["agressao_venda"] = (
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10407: Line       :     df["agressao_venda"]
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10411: Line       : df["agressao_venda"] = pd.to_numeric(
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10415: Line       :     df["agressao_venda"],
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10419: Line       : print("\nDELTA")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10423: Line       : print(df["delta"].tail())
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10427: Line       : print("\nSALDO")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10431: Line       : print(df["saldo"].tail())
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10435: Line       : print("\nSALDO ORIGINAL")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10439: Line       : print(df["saldo"].tail())
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10451: Line       : ax2.plot(df.index, df["delta"], label="Delta", linewidth=1.2)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10455: Line       : ax2.set_title("TRIN - Delta")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10459: Line       : ax2.set_ylabel("Delta")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10463: Line       : ax3.plot(df.index, df["saldo"], label="Saldo", linewidth=1.2)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10467: Line       : ax3.set_title("TRIN - Saldo")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10471: Line       : ax3.set_ylabel("Saldo")
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10475: Line       : ax4.plot(df.index, df["agressao_compra"], label="Compra", linewidth=1.2)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10483: Line       : ax5.plot(df.index, df["agressao_venda"], label="Venda", linewidth=1.2)
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10670: position: candle.delta >= 0 ? "belowBar" : "aboveBar",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10671: color: candle.delta >= 0 ? "#00ff99" : "#ff3333",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10672: shape: candle.delta >= 0 ? "arrowUp" : "arrowDown",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10673: text: candle.delta >= 0 ? "BUY EXP" : "SELL EXP",
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10690: const scoreAgressao = Number(info.scoreAgressao || 0);
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10692: const seqDelta = Number(info.engineSeqDelta || 0);
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10746: if (direcao === "COMPRA" || seqDelta > 0 || trap === "COMPRA") {
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10754: if (direcao === "VENDA" || seqDelta < 0 || trap === "VENDA") {
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10832: Line       :     const agressao = data.agressao || {};
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10853: Line       :     const compraTopo = Number(data.pressao_compra ?? agressao.persistencia_compra ?? 0);
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10856: Line       :     const vendaTopo = Number(data.pressao_venda ?? agressao.persistencia_venda ?? 0);
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10868: Line       :       frequencia: data.frequencia_mercado ?? agressao.frequencia_mercado,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10871: Line       :       intensidade: data.intensidade_fluxo ?? agressao.intensidade_fluxo,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10874: Line       :       scoreAgressao: data.score_agressao ?? agressao.score_agressao,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10877: Line       :       leituraAgressao: data.leitura_agressao ?? agressao.leitura_agressao,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10880: Line       :       saldo: data.saldo_agressor ?? ultimoCandle.saldo,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10883: Line       :       delta: data.delta ?? ultimoCandle.delta,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10898: Line       :         data.volume_delta_estimado,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:10949: Line       :       engineSeqDelta: data.engine_seq_delta ?? engine.engine_seq_delta,
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:11261: Line       :   const scoreAgressao = Number(dataInfo.scoreAgressao || 0);
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:11333: Line       :   const deltaPainel = dataInfo.delta ?? "-";
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:11336: Line       :   const saldoPainel = dataInfo.saldo ?? "-";
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:11758: Line       :         def gerar_sinal(saldo_agressor, volume, delta, preco):
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\DEPURACAO_COCKPIT_2026_07_09_2129\COLETA_COCKPIT_ESTADO_ATUAL.txt:11798: Line       : def calcular_volume_delta_estimado(candle, referencia=None):
+C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\LEIA_PRIMEIRO\LEVANTAMENTO_FUNCIONAL_TRIN_DO_INICIO_AO_ESTADO_ATUAL.md:73: - leitura de delta/saldo/agressao;
+
+
+==============================================================================
+18. HISTORICO GIT DOS CONSUMIDORES
+==============================================================================
+3bb3400 TRIN alinha candle canonico nos motores
+490e41c TRIN torna processamento operacional idempotente
+a707760 TRIN isola estado operacional entre ao vivo e replay
+ac67888 TRIN implementa replay diagnostico com data e candle em formacao
+4775a03 TRIN bloqueia candle novo com RTD estagnado
+da407f4 TRIN exibe volume estimado no painel
+f22ee43 TRIN adiciona volume estimado ao CandleBuilder
+0a3424a TRIN calibra contexto e placar estatistico do cockpit
+d706957 TRIN define painel operacional em estilo cockpit
+22eef99 TRIN corrige leitor RTD operacional PLAN1
+bb4311d TRIN adiciona agregador operacional de timeframe do painel
+0572411 TRIN estabiliza historico do painel sem duplicar timestamps
+431d73b TRIN recupera frontend oficial e integra backend institucional v6
+940f4da Homologa Motor Cognitivo v2.2 integrado com Historiador Fiscal e Bernardo
+c906e9b BERNARDO HOMOLOGADO E CONGELADO - auditoria arquitetural conclu├¡da
+
+
+==============================================================================
+19. MATRIZ PRELIMINAR DE RESPONSABILIDADES
+==============================================================================
+CANDIDATOS A PROPRIETARIO DA NORMALIZACAO:
+
+1. Leitor RTD
+   - conhece a origem fisica das celulas;
+   - nao deve interpretar regras dos motores.
+
+2. Candle canonico no backend
+   - ponto comum entre AO VIVO e consumidores;
+   - candidato principal para publicar metadados semanticos.
+
+3. Replay
+   - deve declarar fallback e origem;
+   - nao deve criar independencia artificial.
+
+4. AggressionEngine
+   - deve consumir dados semanticamente classificados;
+   - nao deve decidir sozinho a origem dos campos.
+
+5. ConfluenceEngine
+   - deve combinar evidencias ja normalizadas;
+   - nao deve tratar equivalencia como confirmacao independente.
+
+6. Frontend
+   - deve apenas exibir status e proveniencia;
+   - nao deve corrigir ou reinterpretar dados.
+
+
+==============================================================================
+20. GIT - PRESERVACAO FINAL
+==============================================================================
+## TRIN_CLEAN...origin/TRIN_CLEAN
