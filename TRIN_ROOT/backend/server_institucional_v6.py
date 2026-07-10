@@ -772,6 +772,7 @@ def assinatura_evento_operacional(atual):
         "volume_candle_estimado",
         "delta",
         "saldo",
+        "vwap",
         "vwap_real",
     ]
 
@@ -799,6 +800,92 @@ def _copiar_calculo_operacional(calculo):
         "sinal_data": dict(calculo["sinal_data"]),
         "resultado_confluencia": calculo["resultado_confluencia"],
     }
+
+
+
+# CR-03C - VWAP oficial por modo:
+# AO VIVO prioriza vwap_real do RTD/Excel.
+# REPLAY prioriza vwap presente no candle historico.
+# VWAPEngine permanece como fallback derivado.
+def _numero_vwap(valor):
+    try:
+        numero = float(valor)
+    except (TypeError, ValueError):
+        return None
+
+    if numero != numero or numero in (float("inf"), float("-inf")):
+        return None
+
+    return numero
+
+
+def _valor_vwap_oficial(candle, modo_replay=False, fallback=None):
+    candle = candle or {}
+    campos = ("vwap", "vwap_real") if modo_replay else ("vwap_real", "vwap")
+
+    for campo in campos:
+        valor = _numero_vwap(candle.get(campo))
+        if valor is not None:
+            return valor
+
+    return _numero_vwap(fallback)
+
+
+def _fonte_vwap_oficial(candle, modo_replay=False):
+    candle = candle or {}
+
+    if modo_replay:
+        if _numero_vwap(candle.get("vwap")) is not None:
+            return "REPLAY_CSV_VWAP"
+        if _numero_vwap(candle.get("vwap_real")) is not None:
+            return "REPLAY_CSV_VWAP_REAL"
+        return "VWAP_ENGINE_CALCULADA"
+
+    if _numero_vwap(candle.get("vwap_real")) is not None:
+        return "RTD_EXCEL_VWAP_REAL"
+    if _numero_vwap(candle.get("vwap")) is not None:
+        return "RTD_EXCEL_VWAP"
+    return "VWAP_ENGINE_CALCULADA"
+
+
+def _serie_vwap_oficial(candles, modo_replay=False, fallback=None):
+    fallback_por_tempo = {}
+
+    for ponto in fallback or []:
+        if not isinstance(ponto, dict):
+            continue
+
+        tempo = ponto.get("time")
+        valor = _numero_vwap(ponto.get("value"))
+
+        if tempo is not None and valor is not None:
+            fallback_por_tempo[tempo] = valor
+
+    serie = []
+
+    for candle in candles or []:
+        if not isinstance(candle, dict):
+            continue
+
+        tempo = candle.get("time")
+        if tempo is None:
+            continue
+
+        valor = _valor_vwap_oficial(
+            candle,
+            modo_replay=modo_replay,
+            fallback=fallback_por_tempo.get(tempo),
+        )
+
+        if valor is None:
+            continue
+
+        serie.append({
+            "time": tempo,
+            "value": round(valor, 2),
+        })
+
+    return serie
 
 
 def gerar_payload():
@@ -927,9 +1014,17 @@ def gerar_payload():
          }
 
         vwap, banda_sup, banda_inf = vwap_engine.calcular_vwap_e_bandas()
-        vwap_atual = vwap[-1]["value"] if vwap else atual["close"]
+        vwap_calculada_atual = vwap[-1]["value"] if vwap else atual["close"]
+        vwap_atual = _valor_vwap_oficial(
+            atual,
+            modo_replay=replay_reader.ativo,
+            fallback=vwap_calculada_atual,
+        )
 
-        distancia_vwap = round(abs(atual["close"] - vwap_atual), 2) if vwap else 0
+        if vwap_atual is None:
+            vwap_atual = float(atual["close"])
+
+        distancia_vwap = round(abs(float(atual["close"]) - vwap_atual), 2)
 
         freq, status, intensidade = aggression_engine.calcular_frequencia(
             atual["saldo"],
@@ -1156,8 +1251,27 @@ def gerar_payload():
             "resultado_confluencia": resultado_confluencia,
         }
 
+    historico_painel = (
+        agregar_historico_painel(historico, painel_timeframe_atual)
+        or historico
+    )
+
+    vwap_painel = _serie_vwap_oficial(
+        historico_painel,
+        modo_replay=replay_reader.ativo,
+        fallback=vwap,
+    )
+
+    if not vwap_painel and vwap:
+        vwap_painel = vwap
+
+    vwap_fonte = _fonte_vwap_oficial(
+        atual,
+        modo_replay=replay_reader.ativo,
+    )
+
     payload = {
-        "historico": agregar_historico_painel(historico, painel_timeframe_atual) or historico,
+        "historico": historico_painel,
         "engine": engine_data,
         "processamento_operacional": {
             "status": "CACHE_REUTILIZADO" if cache_reutilizado else "NOVO_EVENTO_PROCESSADO",
@@ -1168,7 +1282,11 @@ def gerar_payload():
             "assinatura_evento": [list(item) for item in assinatura_evento],
         },
 
-        "vwap": vwap,
+        "vwap": vwap_painel,
+        "vwap_atual": vwap_atual,
+        "vwap_oficial": vwap_atual,
+        "vwap_real": vwap_atual if not replay_reader.ativo else None,
+        "vwap_fonte": vwap_fonte,
         "vwap_superior": banda_sup,
         "vwap_inferior": banda_inf,
         "distancia_vwap": distancia_vwap,
