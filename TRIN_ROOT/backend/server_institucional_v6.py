@@ -416,6 +416,21 @@ def contrato_delta_saldo_payload(candle):
     return {campo: candle.get(campo) for campo in CAMPOS_CONTRATO_DELTA_SALDO}
 
 
+def _contexto_semantico_aggression_engine(candle):
+    """Entrega ao AggressionEngine o contrato CR-03D sem reinterpretar a fonte."""
+    candle = candle or {}
+    return {
+        "fluxo_agressor_canonico": candle.get("fluxo_agressor_canonico"),
+        "delta_saldo_independentes": candle.get(
+            "delta_saldo_independentes",
+            True,
+        ),
+        "delta_saldo_relacao": candle.get(
+            "delta_saldo_relacao",
+            "INDETERMINADO",
+        ),
+    }
+
 
 def _ativo_base_from_ativo(ativo):
     texto = str(ativo or "WIN").upper().strip()
@@ -1231,16 +1246,20 @@ def gerar_payload():
 
         distancia_vwap = round(abs(float(atual["close"]) - vwap_atual), 2)
 
+        contexto_agressao = _contexto_semantico_aggression_engine(atual)
+
         freq, status, intensidade = aggression_engine.calcular_frequencia(
             atual["saldo"],
             atual["delta"],
-            atual["volume"]
+            atual["volume"],
+            **contexto_agressao,
         )
 
         memoria = aggression_engine.calcular_memoria_agressao(
             atual["saldo"],
             atual["delta"],
-            atual["volume"]
+            atual["volume"],
+            **contexto_agressao,
         )
 
         explosao, tipo_explosao = aggression_engine.detectar_explosao_fluxo(
@@ -1248,7 +1267,8 @@ def gerar_payload():
             atual["delta"],
             atual["volume"],
             memoria["score_agressao"],
-            intensidade
+            intensidade,
+            **contexto_agressao,
         )
 
         agora = int(datetime.now().timestamp())
