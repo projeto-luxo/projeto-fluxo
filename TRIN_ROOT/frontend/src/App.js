@@ -547,6 +547,7 @@ if (absorcao) {
 
     const engine = data.engine || {};
     const agressao = data.agressao || {};
+    const contratoDeltaSaldo = data.contrato_delta_saldo || {};
 
     // IntegraÃ§Ã£o cognitiva TRIN â€” ConfluenceEngine v2.2
     const confluencia = data.confluencia || {};
@@ -554,6 +555,12 @@ if (absorcao) {
       data.evidencias_confluencia ||
       confluencia.evidencias ||
       [];
+
+    const evidenciaFluxo =
+      evidenciasConfluencia.find((e) => e.nome === "FLUXO_DELTA_SALDO") || {};
+
+    const evidenciaAgressaoConfluencia =
+      evidenciasConfluencia.find((e) => e.nome === "AGRESSAO") || {};
 
     const evidenciaFiscal =
       evidenciasConfluencia.find((e) => e.nome === "FISCAL_TEMPORAL") || {};
@@ -611,6 +618,81 @@ if (absorcao) {
       intensidade: data.intensidade_fluxo ?? agressao.intensidade_fluxo,
       scoreAgressao: data.score_agressao ?? agressao.score_agressao,
       leituraAgressao: data.leitura_agressao ?? agressao.leitura_agressao,
+
+      // CR-03D4: proveniencia e contrato semantico Delta / Saldo.
+      deltaFonte:
+        contratoDeltaSaldo.delta_fonte ??
+        ultimoCandle.delta_fonte ??
+        "NAO_INFORMADA",
+
+      saldoFonte:
+        contratoDeltaSaldo.saldo_fonte ??
+        ultimoCandle.saldo_fonte ??
+        "NAO_INFORMADA",
+
+      deltaSaldoRelacao:
+        contratoDeltaSaldo.delta_saldo_relacao ??
+        confluencia.delta_saldo_relacao ??
+        ultimoCandle.delta_saldo_relacao ??
+        "INDETERMINADO",
+
+      deltaSaldoIndependentes:
+        contratoDeltaSaldo.delta_saldo_independentes ??
+        confluencia.delta_saldo_independentes ??
+        ultimoCandle.delta_saldo_independentes ??
+        false,
+
+      saldoFallbackDelta:
+        contratoDeltaSaldo.saldo_fallback_delta ??
+        ultimoCandle.saldo_fallback_delta ??
+        false,
+
+      fluxoAgressorCanonico:
+        contratoDeltaSaldo.fluxo_agressor_canonico ??
+        confluencia.fluxo_agressor_canonico ??
+        ultimoCandle.fluxo_agressor_canonico,
+
+      fluxoAgressorFonte:
+        contratoDeltaSaldo.fluxo_agressor_fonte ??
+        evidenciaFluxo?.valor?.fluxo_agressor_fonte ??
+        ultimoCandle.fluxo_agressor_fonte ??
+        "NAO_INFORMADA",
+
+      fluxoAgressorStatus:
+        contratoDeltaSaldo.fluxo_agressor_status ??
+        evidenciaFluxo?.valor?.fluxo_agressor_status ??
+        ultimoCandle.fluxo_agressor_status ??
+        "INDETERMINADO",
+
+      modoEvidenciaAgressao:
+        data.modo_evidencia_agressao ??
+        agressao.modo_evidencia_agressao ??
+        evidenciaAgressaoConfluencia?.valor?.modo_evidencia_agressao ??
+        "INDETERMINADO",
+
+      modoEvidenciaFluxo:
+        data.modo_evidencia_fluxo ??
+        confluencia.modo_evidencia_fluxo ??
+        evidenciaFluxo?.valor?.modo_evidencia_fluxo ??
+        "INDETERMINADO",
+
+      fluxoAgressaoCorrelacionados:
+        data.fluxo_agressao_correlacionados ??
+        confluencia.fluxo_agressao_correlacionados ??
+        evidenciaAgressaoConfluencia?.valor?.correlacionada_fluxo_canonico ??
+        false,
+
+      correlacaoFluxoAgressao:
+        data.correlacao_fluxo_agressao ??
+        confluencia.correlacao_fluxo_agressao ??
+        evidenciaAgressaoConfluencia?.valor?.correlacao_fluxo_agressao ??
+        "INDETERMINADA",
+
+      agressaoConfirmacaoDirecionalIndependente:
+        data.agressao_confirmacao_direcional_independente ??
+        confluencia.agressao_confirmacao_direcional_independente ??
+        evidenciaAgressaoConfluencia?.valor?.confirmacao_direcional_independente ??
+        true,
 
       saldo: data.saldo_agressor ?? ultimoCandle.saldo,
       delta: data.delta ?? ultimoCandle.delta,
@@ -1382,6 +1464,65 @@ if (temEntradaReal) {
   const volumeTipoPainel = dataInfo.volumeTipo ?? "NAO_INFORMADO";
   const deltaPainel = dataInfo.delta ?? "-";
   const saldoPainel = dataInfo.saldo ?? "-";
+
+  // CR-03D4: leitura visual do contrato semantico sem alterar calculos.
+  const deltaFontePainel = dataInfo.deltaFonte || "NAO_INFORMADA";
+  const saldoFontePainel = dataInfo.saldoFonte || "NAO_INFORMADA";
+  const fluxoFontePainel = dataInfo.fluxoAgressorFonte || "NAO_INFORMADA";
+  const relacaoDeltaSaldoPainel = String(
+    dataInfo.deltaSaldoRelacao || "INDETERMINADO"
+  ).toUpperCase();
+
+  const deltaSaldoIndependentesPainel =
+    dataInfo.deltaSaldoIndependentes === true;
+
+  const contratoSemDadosPainel =
+    relacaoDeltaSaldoPainel === "SEM_DADOS" ||
+    relacaoDeltaSaldoPainel === "INDETERMINADO";
+
+  const evidenciasCorrelacionadasPainel =
+    Boolean(dataInfo.fluxoAgressaoCorrelacionados) ||
+    (
+      !deltaSaldoIndependentesPainel &&
+      !contratoSemDadosPainel
+    );
+
+  const modoEvidenciaFluxoPainel =
+    String(dataInfo.modoEvidenciaFluxo || "INDETERMINADO").toUpperCase();
+
+  const modoEvidenciaAgressaoPainel =
+    String(dataInfo.modoEvidenciaAgressao || "INDETERMINADO").toUpperCase();
+
+  const modoSemanticoPainel =
+    modoEvidenciaFluxoPainel === modoEvidenciaAgressaoPainel
+      ? modoEvidenciaFluxoPainel
+      : `${modoEvidenciaFluxoPainel} / ${modoEvidenciaAgressaoPainel}`;
+
+  const corContratoSemanticoPainel =
+    contratoSemDadosPainel
+      ? "#8a969e"
+      : deltaSaldoIndependentesPainel
+        ? "#00d9ff"
+        : "#ffaa00";
+
+  const textoRelacaoDeltaSaldoPainel =
+    relacaoDeltaSaldoPainel === "EQUIVALENTES_OBSERVADOS"
+      ? "EQUIVALENTES OBSERVADOS"
+      : relacaoDeltaSaldoPainel === "SALDO_DERIVADO_DELTA"
+        ? "SALDO DERIVADO DO DELTA"
+        : relacaoDeltaSaldoPainel === "DELTA_DERIVADO_SALDO"
+          ? "DELTA DERIVADO DO SALDO"
+          : relacaoDeltaSaldoPainel === "INDEPENDENTES"
+            ? "EVIDENCIAS INDEPENDENTES"
+            : relacaoDeltaSaldoPainel.replaceAll("_", " ");
+
+  const avisoContratoSemanticoPainel =
+    contratoSemDadosPainel
+      ? "CONTRATO SEM DADOS SUFICIENTES"
+      : evidenciasCorrelacionadasPainel
+        ? "EVIDENCIAS CORRELACIONADAS · SEM DUPLA CONTAGEM"
+        : "EVIDENCIAS INDEPENDENTES";
+
   const vwapPainel = dataInfo.vwap ?? dataInfo.vwapReal ?? dataInfo.vwap_real ?? "-";
   const distVwapPainel = dataInfo.distanciaVwap ?? dataInfo.distancia_vwap ?? "-";
 
@@ -1715,6 +1856,101 @@ if (temEntradaReal) {
           <div>• Vol norm: <b>{formatar(volumeNormalizadoPainel)}</b></div>
           <div>• Vol candle: <b>{formatar(volumeCandleEstimadoPainel)}</b></div>
           <div>• Tipo: <b>{volumeTipoPainel}</b></div>
+        </div>
+
+        {/* CR-03D4: contrato semantico visivel ao operador. */}
+        <div
+          title={[
+            `Delta: ${deltaFontePainel}`,
+            `Saldo: ${saldoFontePainel}`,
+            `Fluxo canonico: ${fluxoFontePainel}`,
+            `Correlacao: ${dataInfo.correlacaoFluxoAgressao || "INDETERMINADA"}`,
+          ].join("\n")}
+          style={{
+            border: `1px solid ${corContratoSemanticoPainel}88`,
+            background: contratoSemDadosPainel
+              ? "rgba(55,65,72,0.28)"
+              : evidenciasCorrelacionadasPainel
+                ? "rgba(61,38,0,0.58)"
+                : "rgba(0,38,52,0.52)",
+            borderRadius: 12,
+            padding: "11px 12px",
+            marginBottom: 18,
+            color: "#d7dde1",
+            fontSize: 11,
+            lineHeight: 1.45,
+            boxShadow: `inset 0 0 18px ${corContratoSemanticoPainel}10, 0 0 18px ${corContratoSemanticoPainel}12`,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 8,
+              marginBottom: 8,
+            }}
+          >
+            <div
+              style={{
+                color: corContratoSemanticoPainel,
+                fontWeight: "900",
+                fontSize: 11,
+                letterSpacing: 1,
+              }}
+            >
+              CONTRATO DELTA / SALDO
+            </div>
+
+            <div
+              style={{
+                color: corContratoSemanticoPainel,
+                border: `1px solid ${corContratoSemanticoPainel}88`,
+                borderRadius: 999,
+                padding: "2px 7px",
+                fontSize: 9,
+                fontWeight: "900",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {modoSemanticoPainel}
+            </div>
+          </div>
+
+          <div>
+            • Relacao: <b style={{ color: corContratoSemanticoPainel }}>
+              {textoRelacaoDeltaSaldoPainel}
+            </b>
+          </div>
+          <div>
+            • Independentes: <b>{deltaSaldoIndependentesPainel ? "SIM" : "NAO"}</b>
+          </div>
+          <div title={deltaFontePainel}>
+            • Origem Delta: <b>{resumirFonteSemantica(deltaFontePainel)}</b>
+          </div>
+          <div title={saldoFontePainel}>
+            • Origem Saldo: <b>{resumirFonteSemantica(saldoFontePainel)}</b>
+          </div>
+          <div title={fluxoFontePainel}>
+            • Fluxo canonico: <b>{resumirFonteSemantica(fluxoFontePainel)}</b>
+          </div>
+
+          <div
+            style={{
+              marginTop: 8,
+              padding: "6px 8px",
+              borderRadius: 7,
+              color: corContratoSemanticoPainel,
+              background: `${corContratoSemanticoPainel}12`,
+              border: `1px solid ${corContratoSemanticoPainel}55`,
+              fontSize: 9,
+              fontWeight: "900",
+              letterSpacing: 0.45,
+              textAlign: "center",
+            }}
+          >
+            {avisoContratoSemanticoPainel}
+          </div>
         </div>
 
         {/* CR-03A: Replay movido para a coluna lateral esquerda */}
@@ -2083,8 +2319,18 @@ if (temEntradaReal) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           <Box color="#12313d">ULTIMO<br />{formatar(ultimoPainel)}</Box>
           <Box color="#263238">VWAP<br />{formatar(vwapPainel)}</Box>
-          <Box color={Number(deltaPainel || 0) >= 0 ? "#004d40" : "#4a0000"}>DELTA<br />{deltaPainel}</Box>
-          <Box color={Number(saldoPainel || 0) >= 0 ? "#004d40" : "#4a0000"}>SALDO<br />{saldoPainel}</Box>
+          <Box
+            color={Number(deltaPainel || 0) >= 0 ? "#004d40" : "#4a0000"}
+            title={`DELTA · ${deltaFontePainel} · ${textoRelacaoDeltaSaldoPainel}`}
+          >
+            DELTA<br />{deltaPainel}
+          </Box>
+          <Box
+            color={Number(saldoPainel || 0) >= 0 ? "#004d40" : "#4a0000"}
+            title={`SALDO · ${saldoFontePainel} · ${textoRelacaoDeltaSaldoPainel}`}
+          >
+            SALDO<br />{saldoPainel}
+          </Box>
         </div>
 
       </div>
@@ -2364,9 +2610,10 @@ function Titulo({ children }) {
   );
 }
 
-function Box({ children, color }) {
+function Box({ children, color, title }) {
   return (
     <div
+      title={title}
       style={{
         backgroundColor: color,
         color: "white",
@@ -2382,6 +2629,37 @@ function Box({ children, color }) {
       {children}
     </div>
   );
+}
+
+function resumirFonteSemantica(fonte) {
+  const texto = String(fonte || "NAO_INFORMADA").toUpperCase();
+
+  const aliases = {
+    RTD_EXCEL_I2_DERIVADO_L2: "I2 <- L2 (RTD)",
+    RTD_EXCEL_J2_TOPICO_103: "J2 · TOPICO 103",
+    RTD_EXCEL_VOLUME_AGRESSAO_SALDO_L2: "L2 · SALDO AGRESSAO",
+    REPLAY_CSV_CAMPO_DELTA: "REPLAY · CAMPO DELTA",
+    REPLAY_CSV_CAMPO_SALDO: "REPLAY · CAMPO SALDO",
+    REPLAY_CSV_CAMPO_AGRESSAO_SALDO: "REPLAY · AGRESSAO SALDO",
+    REPLAY_FALLBACK_DELTA: "REPLAY · FALLBACK DELTA",
+    REPLAY_CSV_SEM_DELTA: "REPLAY · SEM DELTA",
+    REPLAY_CSV_SEM_SALDO: "REPLAY · SEM SALDO",
+    SEM_DADOS: "SEM DADOS",
+  };
+
+  const semAgregado = texto.replace(/^REPLAY_AGREGADO:/, "");
+
+  if (aliases[semAgregado]) {
+    return aliases[semAgregado];
+  }
+
+  const legivel = semAgregado
+    .replace(/^RTD_EXCEL_/, "")
+    .replaceAll("_", " ");
+
+  return legivel.length > 30
+    ? `${legivel.slice(0, 27)}...`
+    : legivel;
 }
 
 function formatarGlobal(valor) {
