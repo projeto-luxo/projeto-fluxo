@@ -665,13 +665,8 @@ def atualizar_historico():
     candle["fonte_estagnada"] = False
     candle["status_fonte"] = "RTD_ATUALIZANDO"
 
-    candle_engine.adicionar_candle(candle)
-    candle["reversao_detectada"] = candle_engine.calcular_reversao()
-
-    vwap_engine.adicionar_candle(candle)
-    # Regra v6.1: nao duplicar timestamp no historico do painel.
-    # O painel usa snapshot RTD/Excel em tempo real; se houver nova leitura no mesmo segundo,
-    # atualiza o candle atual em vez de criar outro candle com o mesmo time.
+    # Regra CR-02B:
+    # consolida o historico antes de alimentar CandleEngine e VWAPEngine.
     if historico and historico[-1].get("time") == candle.get("time"):
         ultimo = historico[-1]
 
@@ -685,11 +680,20 @@ def atualizar_historico():
         )
         ultimo["close"] = candle.get("close")
         ultimo["volume"] = candle.get("volume")
-        ultimo["volume_normalizado_capado"] = candle.get("volume_normalizado_capado", candle.get("volume"))
+        ultimo["volume_normalizado_capado"] = candle.get(
+            "volume_normalizado_capado",
+            candle.get("volume"),
+        )
 
         delta_volume_estimado = _num(candle.get("volume_delta_estimado"), 0)
-        ultimo["volume_delta_estimado"] = _num(ultimo.get("volume_delta_estimado"), 0) + delta_volume_estimado
-        ultimo["volume_candle_estimado"] = _num(ultimo.get("volume_candle_estimado"), 0) + delta_volume_estimado
+        ultimo["volume_delta_estimado"] = (
+            _num(ultimo.get("volume_delta_estimado"), 0)
+            + delta_volume_estimado
+        )
+        ultimo["volume_candle_estimado"] = (
+            _num(ultimo.get("volume_candle_estimado"), 0)
+            + delta_volume_estimado
+        )
         ultimo["volume_tipo"] = "REAL_DELTA_ESTIMADO"
 
         for chave in [
@@ -701,21 +705,26 @@ def atualizar_historico():
             "volume_compra",
             "volume_venda",
             "volume_saldo",
-            "reversao_detectada",
             "explosao_detectada",
             "tipo_explosao",
         ]:
             if chave in candle:
                 ultimo[chave] = candle[chave]
 
-        return ultimo
+        candle_canonico = ultimo
+    else:
+        historico.append(candle)
 
-    historico.append(candle)
+        if len(historico) > MAX_HISTORICO_RAW:
+            historico.pop(0)
 
-    if len(historico) > MAX_HISTORICO_RAW:
-        historico.pop(0)
+        candle_canonico = historico[-1]
 
-    return candle
+    candle_engine.adicionar_ou_atualizar_candle(candle_canonico)
+    candle_canonico["reversao_detectada"] = candle_engine.calcular_reversao()
+    vwap_engine.adicionar_ou_atualizar_candle(candle_canonico)
+
+    return candle_canonico
 
 
 def _montar_tick_confluencia(atual, vwap_atual, memoria, engine_data):
