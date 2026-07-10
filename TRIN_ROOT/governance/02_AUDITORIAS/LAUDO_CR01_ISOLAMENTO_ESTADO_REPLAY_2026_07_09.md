@@ -2,9 +2,9 @@
 
 ## Identificacao
 
-Data: 2026-07-09  
-Projeto: TRIN  
-Modulo principal: Backend / Replay diagnostico  
+Data: 2026-07-09
+Projeto: TRIN
+Modulo principal: Backend / Replay diagnostico
 Arquivos alterados:
 
 - backend/server_institucional_v6.py
@@ -120,14 +120,14 @@ Fica proibido:
 
 ## Classificacao final
 
-CR-01_CODIGO: APROVADO  
-TESTE_ISOLADO: APROVADO  
-REINICIO_BACKEND: APROVADO  
-TRANSICAO_INSTITUCIONAL_CONTRATO_COERENTE: INCONCLUSIVA  
-MOTIVO_PENDENCIA: AUSENCIA_FONTE_WINQ26_1MIN_COMPATIVEL  
-ROLLBACK: NAO_NECESSARIO  
-COMMIT_TECNICO: AUTORIZAVEL_COM_RESSALVA  
-HOMOLOGACAO_FINAL: PENDENTE  
+CR-01_CODIGO: APROVADO
+TESTE_ISOLADO: APROVADO
+REINICIO_BACKEND: APROVADO
+TRANSICAO_INSTITUCIONAL_CONTRATO_COERENTE: INCONCLUSIVA
+MOTIVO_PENDENCIA: AUSENCIA_FONTE_WINQ26_1MIN_COMPATIVEL
+ROLLBACK: NAO_NECESSARIO
+COMMIT_TECNICO: AUTORIZAVEL_COM_RESSALVA
+HOMOLOGACAO_FINAL: PENDENTE
 
 ## Proximo requisito de homologacao
 
@@ -141,8 +141,8 @@ Disponibilizar uma fonte historica 1_MIN que possua:
 
 Somente depois disso deve ser repetido o teste operacional real:
 
-AO VIVO  
--> REPLAY  
+AO VIVO
+-> REPLAY
 -> AO VIVO
 
 ## Parecer
