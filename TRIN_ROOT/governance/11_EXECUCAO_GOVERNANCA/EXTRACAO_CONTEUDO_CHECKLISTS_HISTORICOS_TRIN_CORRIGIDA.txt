@@ -1,0 +1,735 @@
+﻿===== EXTRACAO CORRIGIDA DOS CHECKLISTS HISTORICOS TRIN =====
+Gerado em: 07/09/2026 19:49:39
+Repo root: C:/Users/User/projeto_fluxo
+
+===== ARQUIVOS ENCONTRADOS NO HISTORICO =====
+CHECKLIST.md/checklist.md
+CHECKLIST.md/checklist.nd
+checklist_teste_controlado_ze_do_eucrazio_4_0.md
+TRIN_ROOT/data/checklist.md
+TRIN_ROOT/governance/01_CHECKLISTS/checklist_arquitetura.md
+TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_CALENDARIO_CONTRATOS_B3.md
+TRIN_ROOT/governance/01_CHECKLISTS/checklist_modulos.md
+TRIN_ROOT/governance/01_CHECKLISTS/checklist_normas.md
+TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO.md
+TRIN_ROOT/governance/04_METODOLOGIA/CHECKLIST_OFICIAL_NORMAS_TRIN.md
+TRIN_ROOT/intelligence/checklist_teste_controlado_ze_do_eucrazio_4_0.md
+
+
+============================================================
+ARQUIVO: CHECKLIST.md/checklist.md
+ULTIMO COMMIT ENCONTRADO: 201a38c1cfc1728abe6f479d7c5c8417b61c95be
+============================================================
+
+
+============================================================
+ARQUIVO: CHECKLIST.md/checklist.nd
+ULTIMO COMMIT ENCONTRADO: c22390d2f37b8283706c13ab6b68cf4cb8c9086c
+============================================================
+
+
+============================================================
+ARQUIVO: checklist_teste_controlado_ze_do_eucrazio_4_0.md
+ULTIMO COMMIT ENCONTRADO: 661195411bf3c0a99732f3b1d652698cf9c391b3
+============================================================
+
+
+============================================================
+ARQUIVO: TRIN_ROOT/data/checklist.md
+ULTIMO COMMIT ENCONTRADO: c906e9b8d72008eddc99ced87c391b74b9609392
+============================================================
+
+# ­ƒÜÇ Projeto TRIN ÔÇö Checklist Atualizado
+
+"Intelig├¬ncia sem mem├│ria ├® improviso. Mem├│ria organizada transforma experi├¬ncia em conhecimento."
+ 
+   "Intelig├¬ncia sem mem├│ria ├® improviso.
+    Mem├│ria organizada transforma experi├¬ncia em conhecimento."
+         "Primeiro aprendemos a guardar.
+          Depois aprendemos a lembrar.
+          S├│ ent├úo aprendemos a pensar."
+
+   Quem guarda apenas dados acumula arquivos.
+   Quem organiza experi├¬ncias constr├│i sabedoria."
+  "Toda intelig├¬ncia nasce da experi├¬ncia. Toda experi├¬ncia nasce da mem├│ria."
+
+## Ô£à Etapa 1 ÔÇö Base (CONCLU├ìDO)
+
+* [x] Backend FastAPI rodando
+* [x] Endpoint `/data` funcionando
+* [x] Frontend React rodando
+* [x] Integra├º├úo frontend + backend
+* [x] Projeto versionado localmente
+* [x] Comunica├º├úo em tempo real funcionando
+
+---
+
+## Ô£à Etapa 2 ÔÇö Organiza├º├úo (PARCIAL)
+
+* [ ] Criar `.gitignore`
+* [ ] Remover `__pycache__`
+* [ ] Remover `node_modules` do versionamento
+* [ ] Estruturar pastas finais
+* [ ] Criar `README.md` profissional
+* [ ] Backup GitHub
+
+---
+
+## Ô£à Etapa 3 ÔÇö Visual (CONCLU├ìDO)
+
+* [x] Layout institucional inicial
+* [x] Hist├│rico de candles
+* [x] Atualiza├º├úo autom├ítica
+* [x] Gr├ífico candlestick funcionando
+* [x] Painel lateral institucional
+* [x] Linhas de STOP
+* [x] Linhas de PARCIAL
+* [x] Linhas de ALVO
+* [x] VWAP institucional
+* [x] Candles amarelos de revers├úo
+* [x] Score institucional visual
+* [x] Tend├¬ncia institucional visual
+
+---
+
+## Ô£à Etapa 4 ÔÇö Intelig├¬ncia de Fluxo (EM EVOLU├ç├âO)
+
+### ­ƒöÑ N├ìVEL 4.1
+
+* [x] Revers├úo institucional
+* [x] Candle amarelo autom├ítico
+
+### ­ƒöÑ N├ìVEL 4.2
+
+* [x] Detector de absor├º├úo
+* [x] Painel absor├º├úo compra/venda
+
+### ­ƒöÑ N├ìVEL 4.3
+
+* [x] Detector de exaust├úo institucional
+* [x] Painel exaust├úo visual
+
+### ­ƒöÑ N├ìVEL 4.4
+
+* [x] Score institucional colorido
+* [x] Contexto operacional visual
+
+### ­ƒöÑ N├ìVEL 4.5
+
+* [x] Tend├¬ncia institucional autom├ítica
+* [x] Mercado lateral identificado
+
+### ­ƒöÑ N├ìVEL 4.6 (PR├ôXIMO)
+
+* [ ] Heatmap institucional
+* [ ] Zona quente de absor├º├úo
+* [ ] Overlay institucional no gr├ífico
+
+---
+
+## ­ƒö« Etapa 5 ÔÇö Profissionaliza├º├úo
+
+* [ ] Painel estilo ASG
+* [ ] Heatmap avan├ºado
+* [ ] Tape reading visual
+* [ ] Replay mode
+* [ ] Alertas sonoros
+* [ ] Detector de armadilhas
+* [ ] Detector de spoofing
+* [ ] Multiativos
+* [ ] Multi-timeframe
+* [ ] IA de classifica├º├úo de contexto
+* [ ] Conex├úo Profit Pro
+* [ ] Conex├úo NinjaTrader
+* [ ] Backend online
+* [ ] Frontend online
+* [ ] Dom├¡nio pr├│prio
+
+---
+
+# ­ƒôî Regras do Projeto
+
+* Sempre salvar antes de fechar
+* Nunca alterar m├║ltiplas ├íreas cr├¡ticas ao mesmo tempo
+* Testar backend isolado antes do frontend
+* Se quebrar ÔåÆ parar e corrigir
+* Fazer backup GitHub frequentemente
+* Evoluir em n├¡veis controlados
+* Manter App.js e server.py organizados
+
+---
+
+# ­ƒºá Estado Atual do Projeto
+
+## STATUS:
+
+­ƒƒó OPERACIONAL
+
+## STACK:
+
+* Frontend: React
+* Backend: FastAPI
+* Gr├ífico: lightweight-charts
+* Atualiza├º├úo: tempo real
+
+## FUNCIONANDO:
+
+* Candles realistas
+* VWAP
+* Revers├úo
+* Absor├º├úo
+* Exaust├úo
+* Tend├¬ncia institucional
+* Score institucional
+* Fluxo operacional
+* Painel lateral institucional
+
+---
+
+# ­ƒÄ» Pr├│xima Miss├úo
+
+## N├ìVEL 4.6 ÔÇö Heatmap Institucional
+
+Objetivos:
+
+* desenhar zonas quentes
+* identificar regi├Áes institucionais
+* mostrar defesa compradora/vendedora
+* melhorar leitura visual do fluxo
+* aproximar visual ASG institucional  
+
+RITUAL PREPARA├ç├âO MENTAL DE OPERADOR C├Ü DE SUVELA 
+
+Tela escura
+
+Ôåô
+
+Mensagem contextual
+(com efeito datilografado)
+
+Ôåô
+
+Pequena anima├º├úo ou contexto visual
+
+Ôåô
+
+Reflex├úo de 10 a 15 segundos
+
+Ôåô
+
+Carregamento da Biblioteca Hist├│rica
+
+Ôåô
+
+Abertura do painel TRIN
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/01_CHECKLISTS/checklist_arquitetura.md
+ULTIMO COMMIT ENCONTRADO: c906e9b8d72008eddc99ced87c391b74b9609392
+============================================================
+
+# ­ƒÅø´©Å CHECKLIST OFICIAL DE ARQUITETURA ÔÇö TRIN
+
+## Fila oficial de m├│dulos
+
+```text
+­ƒÅø´©Å Bernardo
+Ôåô
+­ƒÉé Z├® do Eucr├ízio
+Ôåô
+­ƒº¼ Fiscal Temporal
+Ôåô
+­ƒøí´©Å Basti├úo
+Ôåô
+­ƒôÜ Historiador
+Ôåô
+­ƒºá Motor de Conflu├¬ncia
+Ôåô
+ÔÜû´©Å Motor Geral de Pontua├º├úo
+Ôåô
+­ƒôê Pesos Din├ómicos
+Ôåô
+­ƒÄ» ├ìndice de Confian├ºa TRIN
+Ôåô
+­ƒñû Aprendizagem
+Ôåô
+TRIN Completo
+```
+
+## Fluxo arquitetural oficial
+
+```text
+Mercado
+Ôåô
+Profit
+Ôåô
+RTD
+Ôåô
+Excel
+Ôåô
+Python
+Ôåô
+Gravador
+Ôåô
+Biblioteca Hist├│rica
+Ôåô
+API do Bernardo
+Ôåô
+Bernardo
+Ôåô
+Z├® do Eucr├ízio
+Ôåô
+Fiscal Temporal
+Ôåô
+Bernardo atualiza mem├│ria
+Ôåô
+Historiador
+Ôåô
+Motor de Conflu├¬ncia
+Ôåô
+Motor Geral de Pontua├º├úo
+Ôåô
+Aprendizagem
+Ôåô
+TRIN
+Ôåô
+Operador
+```
+
+## Princ├¡pios arquiteturais
+
+- [ ] Arquitetura antes do c├│digo.
+- [ ] Mem├│ria antes da intelig├¬ncia.
+- [ ] Motor antes da est├®tica.
+- [ ] Cada m├│dulo possui uma responsabilidade principal.
+- [ ] Nenhum m├│dulo futuro depende diretamente de outro m├│dulo futuro.
+- [ ] Depend├¬ncias devem apontar apenas para m├│dulos homologados.
+- [ ] Dados brutos nunca s├úo alterados.
+- [ ] Todo dado derivado deve possuir origem rastre├ível.
+- [ ] Todo m├│dulo deve possuir contrato.
+- [ ] Todo m├│dulo deve produzir logs e manifesto quando aplic├ível.
+- [ ] Nenhuma intelig├¬ncia consome CSV diretamente; deve passar pela API do Bernardo/Bernardo.
+
+## Regra Dado ÔåÆ Informa├º├úo ÔåÆ Contexto ÔåÆ Conhecimento ÔåÆ Decis├úo
+
+Cada m├│dulo deve subir apenas um degrau:
+
+```text
+Gravador ÔåÆ dado
+Bernardo ÔåÆ informa├º├úo organizada
+Z├® ÔåÆ reconstru├º├úo temporal
+Fiscal Temporal ÔåÆ certifica├º├úo
+Historiador ÔåÆ conhecimento hist├│rico
+Motor ÔåÆ contexto e pontua├º├úo
+Operador ÔåÆ decis├úo
+```
+
+## Status atual
+
+- Bernardo: congelado arquiteturalmente como camada oficial de persist├¬ncia cognitiva.
+- Z├® do Eucr├ízio 4.0: aprovado em teste controlado; homologado para integra├º├úo com Fiscal Temporal; n├úo congelado definitivamente.
+- Fiscal Temporal: pr├│ximo m├│dulo estrutural.
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_CALENDARIO_CONTRATOS_B3.md
+ULTIMO COMMIT ENCONTRADO: 8419292130b7016bbc386003bbd8497cc362edce
+============================================================
+
+# CHECKLIST — Calendario B3 de Contratos
+
+## Fase 1 — Estrutura
+[x] Criar pasta config/calendarios
+[x] Criar modelo calendario_contratos_b3.csv
+[x] Criar padrao de governanca do calendario
+
+## Fase 2 — Fonte oficial
+[ ] Baixar/consultar calendario oficial B3 de vencimentos financeiros
+[ ] Baixar/consultar calendario oficial B3 de feriados/sessoes
+[ ] Registrar fonte e data de revisao
+[ ] Nao aceitar datas sem fonte
+
+## Fase 3 — Contratos WIN
+[ ] Preencher contratos WIN do ano corrente
+[ ] Registrar data_vencimento_oficial
+[ ] Registrar UDN
+[ ] Registrar LF
+[ ] Registrar inicio_validade
+[ ] Registrar fim_validade
+[ ] Marcar status_confiabilidade
+
+## Fase 4 — Resolver contrato ativo
+[ ] Criar ContratoAtivoResolver
+[ ] Resolver contrato esperado pela data atual
+[ ] Recusar calendario ausente
+[ ] Recusar data fora da cobertura
+[ ] Recusar conflito de regra
+
+## Fase 5 — Bastiao
+[ ] Bastiao valida contrato esperado
+[ ] Bastiao compara contrato esperado x Excel
+[ ] Bastiao compara contrato esperado x Backend
+[ ] Bastiao emite APROVADO / RESSALVA / REPROVADO / BLOQUEADO
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/01_CHECKLISTS/checklist_modulos.md
+ULTIMO COMMIT ENCONTRADO: c906e9b8d72008eddc99ced87c391b74b9609392
+============================================================
+
+# ­ƒôï CHECKLIST OFICIAL DE M├ôDULOS ÔÇö TRIN
+
+Todo m├│dulo deve possuir:
+
+- [ ] Etapa Zero documentada.
+- [ ] Auditoria Arquitetural.
+- [ ] Contrato oficial.
+- [ ] Implementa├º├úo controlada.
+- [ ] Teste controlado.
+- [ ] Log operacional.
+- [ ] Manifesto quando aplic├ível.
+- [ ] Auditoria HARD p├│s-implementa├º├úo.
+- [ ] Termo de homologa├º├úo.
+- [ ] Checkpoint Git.
+
+## Classifica├º├Áes oficiais
+
+```text
+PLANEJADO
+EM PROJETO
+EM TESTE CONTROLADO
+APROVADO COM RESSALVAS
+HOMOLOGADO PARA INTEGRA├ç├âO
+CONGELADO ARQUITETURALMENTE
+ARQUIVADO
+```
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/01_CHECKLISTS/checklist_normas.md
+ULTIMO COMMIT ENCONTRADO: c906e9b8d72008eddc99ced87c391b74b9609392
+============================================================
+
+# ­ƒô£ CHECKLIST OFICIAL DE NORMAS ÔÇö TRIN
+
+## Normas de trabalho
+
+- [ ] Uma altera├º├úo por vez.
+- [ ] Nenhuma refatora├º├úo por impulso.
+- [ ] Nenhum m├│dulo novo sem Etapa Zero.
+- [ ] Nenhum c├│digo antes da Auditoria Arquitetural.
+- [ ] Nenhum m├│dulo congelado sem Auditoria HARD.
+- [ ] Nenhuma altera├º├úo estrutural sem checkpoint Git.
+- [ ] GitHub ├® o cofre oficial do projeto.
+- [ ] Estabilidade antes da velocidade.
+- [ ] Conhecimento antes da IA.
+- [ ] Se houver conflito entre c├│digo e governan├ºa, prevalece a governan├ºa.
+
+## Proibido
+
+- [ ] Alterar v├írios m├│dulos simultaneamente sem vers├úo nova.
+- [ ] Quebrar m├│dulo homologado.
+- [ ] Apagar hist├│rico sem backup.
+- [ ] Calibrar com dados falsos como se fossem reais.
+- [ ] Criar m├│dulo por impulso.
+- [ ] Permitir que um m├│dulo execute fun├º├úo de outro.
+- [ ] Tratar checklist como substituto de Auditoria HARD.
+
+## Auditoria HARD
+
+Toda auditoria cr├¡tica deve tentar reprovar o m├│dulo.
+
+> No TRIN, elogios n├úo homologam m├│dulos. Somente uma Auditoria HARD, conduzida com a inten├º├úo de encontrar falhas, pode conceder aprova├º├úo arquitetural.
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO.md
+ULTIMO COMMIT ENCONTRADO: 8a242fe08b2654a9752d4c8e011ee3aa6fbeffca
+============================================================
+
+# CHECKLIST_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO.md
+
+## Status
+
+CHECKLIST_PRE_OPERACIONAL  
+Projeto: TRIN  
+Modulo: CandleBuilderPainel  
+Condicao: executar somente com mercado aberto  
+
+---
+
+## 1. Objetivo
+
+Definir o roteiro de validacao real do CandleBuilderPainel em mercado aberto.
+
+Este checklist nao altera codigo.
+
+Ele serve para orientar a proxima etapa de teste operacional dos candles agregados a partir de snapshots RTD/Excel.
+
+---
+
+## 2. Pre-condicoes obrigatorias
+
+Antes de iniciar a validacao:
+
+- Git deve estar limpo.
+- Excel RTD deve estar recebendo dados.
+- Profit deve estar aberto e conectado.
+- Backend do TRIN deve estar ativo.
+- Frontend do TRIN deve estar ativo.
+- Mercado deve estar aberto.
+- Timeframe inicial deve ser intraday.
+- DIARIO e SEMANAL devem continuar bloqueados.
+
+---
+
+## 3. O que deve ser validado
+
+### 3.1 Preco
+
+Validar se cada candle apresenta corretamente:
+
+- abertura;
+- maxima;
+- minima;
+- fechamento;
+- ultimo preco recebido;
+- coerencia visual com o fluxo do mercado.
+
+---
+
+### 3.2 Tempo
+
+Validar se o CandleBuilder respeita:
+
+- virada correta de candle;
+- duracao correta do timeframe selecionado;
+- nao duplicacao de timestamps;
+- continuidade temporal;
+- comportamento apos troca de timeframe.
+
+---
+
+### 3.3 Timeframes intraday
+
+Testar, um por vez:
+
+- 15s
+- 30s
+- 1_MIN
+- 2_MIN
+- 5_MIN
+- 10_MIN
+- 15_MIN
+- 30_MIN
+- 60_MIN
+
+Regra:
+
+Nao testar todos de forma apressada.  
+Validar primeiro timeframes curtos, depois maiores.
+
+---
+
+### 3.4 Bloqueio de governanca
+
+Confirmar que permanecem bloqueados:
+
+- DIARIO
+- SEMANAL
+
+Resultado esperado:
+
+BLOQUEADO_POR_GOVERNANCA
+
+---
+
+### 3.5 Volume agregado
+
+Validar com cuidado especial:
+
+- se o volume esta variando;
+- se o volume nao esta fixo;
+- se o volume nao esta capado;
+- se o volume acumulado faz sentido dentro do candle;
+- se a origem do volume e snapshot RTD esta clara.
+
+Observacao:
+
+Volume ainda nao esta homologado.  
+Qualquer comportamento estranho deve gerar auditoria propria, nao patch imediato.
+
+---
+
+## 4. O que nao fazer durante o teste
+
+Nao fazer:
+
+- alterar codigo durante o pregao;
+- liberar DIARIO;
+- liberar SEMANAL;
+- mexer nas pendencias do Ze;
+- mexer nas ressalvas do Bernardo;
+- promover CandleBuilder para historico oficial;
+- usar CandleBuilder como fonte do Historiador;
+- usar CandleBuilder como memoria oficial do Bernardo;
+- corrigir volume sem auditoria propria.
+
+---
+
+## 5. Evidencias a coletar
+
+Durante o teste, coletar:
+
+- print do painel em 1_MIN;
+- print do painel em 5_MIN;
+- print do bloqueio DIARIO/SEMANAL;
+- horario do teste;
+- ativo testado;
+- timeframe testado;
+- observacao sobre volume;
+- observacao sobre virada de candle;
+- eventuais mensagens do backend;
+- eventuais erros do console/frontend.
+
+---
+
+## 6. Criterios de aprovacao
+
+O CandleBuilderPainel podera ser considerado aprovado operacionalmente para painel intraday se:
+
+- candles virarem no tempo correto;
+- timestamps nao duplicarem;
+- preco respeitar abertura, maxima, minima e fechamento;
+- troca de timeframe nao quebrar o painel;
+- DIARIO e SEMANAL permanecerem bloqueados;
+- status continuar OPERACIONAL_NAO_CERTIFICADO;
+- volume nao apresentar anomalia grave.
+
+---
+
+## 7. Criterios de ressalva
+
+Gerar ressalva se:
+
+- preco funcionar, mas volume permanecer duvidoso;
+- candle virar corretamente, mas houver pequena divergencia visual;
+- timeframe funcionar, mas precisar de melhor rastreabilidade;
+- backend responder corretamente, mas frontend exibir atraso.
+
+---
+
+## 8. Criterios de reprovacao
+
+Reprovar a validacao se:
+
+- candle nao virar;
+- timestamps duplicarem;
+- abertura/maxima/minima/fechamento ficarem incoerentes;
+- troca de timeframe quebrar o grafico;
+- DIARIO ou SEMANAL forem liberados indevidamente;
+- volume ficar fixo/capado sem explicacao;
+- painel travar ou perder fluxo.
+
+---
+
+## 9. Decisao final esperada
+
+Ao final do teste com mercado aberto, gerar laudo separado com um dos status:
+
+- APROVADO_OPERACIONAL_COM_RESSALVAS
+- REPROVADO_COM_PENDENCIAS
+- TESTE_INCONCLUSIVO
+
+Este checklist nao homologa historico.
+
+A homologacao historica depende de Fiscal Temporal, Bernardo e regras proprias de certificacao.
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/04_METODOLOGIA/CHECKLIST_OFICIAL_NORMAS_TRIN.md
+ULTIMO COMMIT ENCONTRADO: 5ec84bdbaf36b93e406143dfd2c6404df55991dd
+============================================================
+
+# CHECKLIST OFICIAL DE NORMAS — TRIN
+
+## Normas de trabalho
+
+- [ ] Uma alteração por vez.
+- [ ] Nenhuma refatoração por impulso.
+- [ ] Nenhum módulo novo sem Etapa Zero.
+- [ ] Nenhum código antes da Auditoria Arquitetural.
+- [ ] Nenhum módulo congelado sem Auditoria HARD.
+- [ ] Nenhuma alteração estrutural sem checkpoint Git.
+- [ ] GitHub é o cofre oficial do projeto.
+- [ ] Estabilidade antes da velocidade.
+- [ ] Conhecimento antes da IA.
+- [ ] Se houver conflito entre código e governança, prevalece a governança.
+
+## Proibido
+
+- [ ] Alterar vários módulos simultaneamente sem versão nova.
+- [ ] Quebrar módulo homologado.
+- [ ] Apagar histórico sem backup.
+- [ ] Calibrar com dados falsos como se fossem reais.
+- [ ] Criar módulo por impulso.
+- [ ] Permitir que um módulo execute função de outro.
+- [ ] Tratar checklist como substituto de Auditoria HARD.
+
+## Auditoria HARD
+
+Toda auditoria crítica deve tentar reprovar o módulo.
+
+> No TRIN, elogios não homologam módulos.
+> Somente uma Auditoria HARD, conduzida com a intenção de encontrar falhas,
+> pode conceder aprovação arquitetural.
+
+============================================================
+ARQUIVO: TRIN_ROOT/intelligence/checklist_teste_controlado_ze_do_eucrazio_4_0.md
+ULTIMO COMMIT ENCONTRADO: c906e9b8d72008eddc99ced87c391b74b9609392
+============================================================
+
+# Ô£à CHECKLIST DE TESTE CONTROLADO ÔÇö Z├ë DO EUCR├üZIO 4.0
+
+## Antes de rodar
+
+```text
+[ ] Git atualizado
+[ ] Backup feito
+[ ] Bernardo n├úo ser├í alterado
+[ ] Fiscal Temporal ainda n├úo ser├í chamado
+[ ] MODO_TESTE_CONTROLADO = True
+[ ] MAX_ARQUIVOS_TESTE = 1
+[ ] SOBRESCREVER_SAIDA = False
+```
+
+## Comando sugerido
+
+```powershell
+cd "C:\Users\User\projeto_fluxo"
+python backend\ze_do_eucrazio_4_0.py
+```
+
+## Conferir ap├│s rodar
+
+```text
+[ ] Arquivo 2 min gerado
+[ ] Arquivo 3 min gerado
+[ ] Demais fractais gerados
+[ ] Nenhum arquivo original alterado
+[ ] Pastas criadas corretamente
+[ ] CSV separado por ;
+[ ] Encoding utf-8-sig
+[ ] Header presente
+[ ] Coluna timestamp presente
+[ ] Coluna timezone presente
+[ ] Coluna sessao presente
+[ ] Coluna status_candle presente
+[ ] Coluna qtd_candles_origem presente
+[ ] Candles parciais registrados
+[ ] Log TXT gerado
+[ ] Manifesto JSON gerado
+```
+
+## Aten├º├úo
+
+Se aparecer muitos candles PARCIAIS, n├úo ├® necessariamente erro.
+
+Pode ser consequ├¬ncia natural de fractais n├úo divisores ou de sess├Áes com quantidade irregular de candles.
+
+A certifica├º├úo final ser├í responsabilidade do Fiscal Temporal.

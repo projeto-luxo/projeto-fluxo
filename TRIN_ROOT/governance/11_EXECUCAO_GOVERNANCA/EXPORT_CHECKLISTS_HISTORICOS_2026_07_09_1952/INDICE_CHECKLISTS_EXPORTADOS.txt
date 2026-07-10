@@ -1,0 +1,81 @@
+﻿===== INDICE DE CHECKLISTS HISTORICOS TRIN =====
+Gerado em: 07/09/2026 19:52:21
+Repo root: C:/Users/User/projeto_fluxo
+
+------------------------------------------------------------
+ITEM: 1
+ARQUIVO_ORIGINAL: CHECKLIST.md/checklist.md
+ULTIMO_COMMIT: 201a38c
+ASSUNTO: TRIN remove pastas legadas da raiz apos consolidacao no TRIN_ROOT
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\001_201a38c_CHECKLIST.md_checklist.md
+
+------------------------------------------------------------
+ITEM: 2
+ARQUIVO_ORIGINAL: CHECKLIST.md/checklist.nd
+ULTIMO_COMMIT: c22390d
+ASSUNTO: coorrigindo checklist estrutura correta
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\002_c22390d_CHECKLIST.md_checklist.nd
+
+------------------------------------------------------------
+ITEM: 3
+ARQUIVO_ORIGINAL: checklist_teste_controlado_ze_do_eucrazio_4_0.md
+ULTIMO_COMMIT: 6611954
+ASSUNTO: TRIN limpa arquivos soltos legados da raiz
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\003_6611954_checklist_teste_controlado_ze_do_eucrazio_4_0.md
+
+------------------------------------------------------------
+ITEM: 4
+ARQUIVO_ORIGINAL: TRIN_ROOT/data/checklist.md
+ULTIMO_COMMIT: c906e9b
+ASSUNTO: BERNARDO HOMOLOGADO E CONGELADO - auditoria arquitetural conclu├¡da
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\004_c906e9b_TRIN_ROOT_data_checklist.md
+
+------------------------------------------------------------
+ITEM: 5
+ARQUIVO_ORIGINAL: TRIN_ROOT/governance/01_CHECKLISTS/checklist_arquitetura.md
+ULTIMO_COMMIT: c906e9b
+ASSUNTO: BERNARDO HOMOLOGADO E CONGELADO - auditoria arquitetural conclu├¡da
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\005_c906e9b_TRIN_ROOT_governance_01_CHECKLISTS_checklist_arquitetura.md
+
+------------------------------------------------------------
+ITEM: 6
+ARQUIVO_ORIGINAL: TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_CALENDARIO_CONTRATOS_B3.md
+ULTIMO_COMMIT: 8419292
+ASSUNTO: TRIN cria estrutura oficial do calendario B3 de contratos
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\006_8419292_TRIN_ROOT_governance_01_CHECKLISTS_CHECKLIST_CALENDARIO_CONTRATOS_B3.md
+
+------------------------------------------------------------
+ITEM: 7
+ARQUIVO_ORIGINAL: TRIN_ROOT/governance/01_CHECKLISTS/checklist_modulos.md
+ULTIMO_COMMIT: c906e9b
+ASSUNTO: BERNARDO HOMOLOGADO E CONGELADO - auditoria arquitetural conclu├¡da
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\007_c906e9b_TRIN_ROOT_governance_01_CHECKLISTS_checklist_modulos.md
+
+------------------------------------------------------------
+ITEM: 8
+ARQUIVO_ORIGINAL: TRIN_ROOT/governance/01_CHECKLISTS/checklist_normas.md
+ULTIMO_COMMIT: c906e9b
+ASSUNTO: BERNARDO HOMOLOGADO E CONGELADO - auditoria arquitetural conclu├¡da
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\008_c906e9b_TRIN_ROOT_governance_01_CHECKLISTS_checklist_normas.md
+
+------------------------------------------------------------
+ITEM: 9
+ARQUIVO_ORIGINAL: TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO.md
+ULTIMO_COMMIT: 8a242fe
+ASSUNTO: TRIN registra checklist de validacao do CandleBuilder em mercado aberto
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\009_8a242fe_TRIN_ROOT_governance_01_CHECKLISTS_CHECKLIST_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO.md
+
+------------------------------------------------------------
+ITEM: 10
+ARQUIVO_ORIGINAL: TRIN_ROOT/governance/04_METODOLOGIA/CHECKLIST_OFICIAL_NORMAS_TRIN.md
+ULTIMO_COMMIT: 5ec84bd
+ASSUNTO: TRIN registra normas oficiais e adendo do Bastiao contrato ativo
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\010_5ec84bd_TRIN_ROOT_governance_04_METODOLOGIA_CHECKLIST_OFICIAL_NORMAS_TRIN.md
+
+------------------------------------------------------------
+ITEM: 11
+ARQUIVO_ORIGINAL: TRIN_ROOT/intelligence/checklist_teste_controlado_ze_do_eucrazio_4_0.md
+ULTIMO_COMMIT: c906e9b
+ASSUNTO: BERNARDO HOMOLOGADO E CONGELADO - auditoria arquitetural conclu├¡da
+EXPORTADO_COMO: C:\Users\User\projeto_fluxo\TRIN_ROOT\governance\11_EXECUCAO_GOVERNANCA\EXPORT_CHECKLISTS_HISTORICOS_2026_07_09_1952\011_c906e9b_TRIN_ROOT_intelligence_checklist_teste_controlado_ze_do_eucrazio_4_0.md
+

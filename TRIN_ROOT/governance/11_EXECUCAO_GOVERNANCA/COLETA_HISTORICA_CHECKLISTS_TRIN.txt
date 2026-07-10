@@ -1,0 +1,206 @@
+﻿===== COLETA HISTORICA REAL DE CHECKLISTS TRIN =====
+Gerado em: 07/09/2026 19:41:19
+
+===== STATUS ATUAL =====
+## TRIN_CLEAN...origin/TRIN_CLEAN
+?? governance/11_EXECUCAO_GOVERNANCA/COLETA_HISTORICA_CHECKLISTS_TRIN.txt
+
+===== TODOS OS CAMINHOS COM CHECKLIST NO HISTORICO GIT =====
+CHECKLIST.md/checklist.md
+CHECKLIST.md/checklist.nd
+checklist_teste_controlado_ze_do_eucrazio_4_0.md
+TRIN_ROOT/data/checklist.md
+TRIN_ROOT/governance/01_CHECKLISTS/checklist_arquitetura.md
+TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_CALENDARIO_CONTRATOS_B3.md
+TRIN_ROOT/governance/01_CHECKLISTS/checklist_modulos.md
+TRIN_ROOT/governance/01_CHECKLISTS/checklist_normas.md
+TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO.md
+TRIN_ROOT/governance/04_METODOLOGIA/CHECKLIST_OFICIAL_NORMAS_TRIN.md
+TRIN_ROOT/intelligence/checklist_teste_controlado_ze_do_eucrazio_4_0.md
+
+===== CONTEUDO ATUAL DOS CHECKLISTS EXISTENTES =====
+
+===== COMMITS QUE MEXERAM COM CHECKLISTS =====
+COMMIT 4e8d298 | 2026-07-09 | TRIN registra auditoria pre-patch Replay 5S diagnostico
+COMMIT e5140b6 | 2026-07-09 | TRIN registra contrato do Replay 5S diagnostico
+COMMIT b90d8d8 | 2026-07-09 | TRIN consolida mapa geral de retomada
+COMMIT 99a4c74 | 2026-07-09 | TRIN registra auditoria pre-integracao Candle 5S Replay
+COMMIT 410d55b | 2026-07-09 | TRIN registra checkpoint TT e Candle 5S diagnostico
+COMMIT 12e8d9a | 2026-07-09 | TRIN registra contrato do Candle 5S diagnostico
+COMMIT cbc9b49 | 2026-07-09 | TRIN implementa Candle 5S diagnostico v0
+COMMIT 64fb782 | 2026-07-09 | TRIN implementa Candle 5S diagnostico v0
+COMMIT eae1dcc | 2026-07-09 | TRIN reforca gravador TT contra Excel ocupado
+COMMIT 31fdc42 | 2026-07-09 | TRIN implementa Bastiao TT Peneirador v0
+COMMIT ac67888 | 2026-07-09 | TRIN implementa replay diagnostico com data e candle em formacao
+COMMIT d074415 | 2026-07-09 | TRIN adiciona gravador TT bruto diagnostico
+COMMIT 8c04c55 | 2026-07-09 | TRIN registra auditoria pre-patch do Bastiao TT Peneirador
+COMMIT be92211 | 2026-07-09 | TRIN registra contrato do Bastiao TT Peneirador
+COMMIT 7f4383c | 2026-07-08 | TRIN corrige alinhamento temporal das series do grafico
+COMMIT 5f57846 | 2026-07-08 | TRIN registra auditoria do volume estimado em mercado aberto
+COMMIT 33030dd | 2026-07-08 | TRIN registra auditoria do status fonte RTD em mercado aberto
+COMMIT 99c9b68 | 2026-07-08 | TRIN complementa validacao dos timeframes curtos em mercado aberto
+COMMIT 810f30a | 2026-07-08 | TRIN registra validacao parcial do CandleBuilder em mercado aberto
+COMMIT 6c24bdb | 2026-07-07 | TRIN registra auditoria pre-limpeza de encoding frontend
+COMMIT 5f9ecfd | 2026-07-07 | TRIN cria roteiro de validacao do CandleBuilder em mercado aberto
+COMMIT cde0975 | 2026-07-07 | TRIN cria roteiro de validacao do CandleBuilder em mercado aberto
+COMMIT ce0bfda | 2026-07-07 | TRIN exibe status da fonte RTD no painel
+COMMIT aa28244 | 2026-07-07 | TRIN registra auditoria de RTD estagnado
+COMMIT 4775a03 | 2026-07-07 | TRIN bloqueia candle novo com RTD estagnado
+COMMIT ed754bc | 2026-07-07 | TRIN reconstr├│i grafico quando historico muda
+COMMIT 373f8ad | 2026-07-07 | TRIN registra checkpoint do CandleBuilderPainel
+COMMIT da407f4 | 2026-07-07 | TRIN exibe volume estimado no painel
+COMMIT f22ee43 | 2026-07-07 | TRIN adiciona volume estimado ao CandleBuilder
+COMMIT 8fd6b11 | 2026-07-07 | TRIN registra auditoria do volume do CandleBuilder
+COMMIT 818f4a9 | 2026-07-07 | TRIN ajusta segundos dinamicos no grafico
+COMMIT 3da14fa | 2026-07-07 | TRIN exibe identidade operacional no grafico
+COMMIT 540d943 | 2026-07-07 | TRIN calibra cabecalho institucional do cockpit
+COMMIT 33599b2 | 2026-07-07 | TRIN calibra rodape de alerta e acao operacional
+COMMIT a7c3548 | 2026-07-07 | TRIN calibra legendas smart money do cockpit
+COMMIT 0949262 | 2026-07-07 | TRIN organiza hierarquia visual do cockpit operacional
+COMMIT 1188bf7 | 2026-07-07 | TRIN calibra acao operacional na topbar do cockpit
+COMMIT 28fdd2f | 2026-07-07 | TRIN resume contexto fiscal na topbar do cockpit
+COMMIT 465ab10 | 2026-07-07 | TRIN traduz estado tecnico para leitura operacional no cockpit
+COMMIT 4145018 | 2026-07-07 | TRIN limpa topbar operacional do cockpit
+COMMIT 9275e04 | 2026-07-07 | TRIN calibra estado operacional da topbar do cockpit
+COMMIT 171e7f3 | 2026-07-07 | TRIN organiza estado operacional e direcao do cockpit
+COMMIT dad444c | 2026-07-07 | TRIN explicita autorizacao operacional no cockpit
+COMMIT 4e817d2 | 2026-07-07 | TRIN separa confluencia tecnica e bloqueio operacional no cockpit
+COMMIT ee1e290 | 2026-07-06 | TRIN calibra contexto central bloqueado pelo fiscal
+COMMIT a62e8dd | 2026-07-06 | TRIN calibra status fiscal no cockpit
+COMMIT 0a3424a | 2026-07-06 | TRIN calibra contexto e placar estatistico do cockpit
+COMMIT fbe68bc | 2026-07-06 | TRIN calibra cockpit com candle real e bloqueio fiscal
+COMMIT 89ec515 | 2026-07-06 | TRIN calibra painel para explicar bloqueio fiscal
+COMMIT bf9d491 | 2026-07-06 | TRIN calibra grafico para ignorar candle fallback 100
+COMMIT d706957 | 2026-07-06 | TRIN define painel operacional em estilo cockpit
+COMMIT badc256 | 2026-07-06 | TRIN registra auditoria pre-patch do painel limpo
+COMMIT 216fb44 | 2026-07-06 | TRIN blinda leitor institucional contra erros RTD Excel
+COMMIT bf3923d | 2026-06-30 | TRIN isola navegador do painel no launcher
+COMMIT 84acb16 | 2026-06-30 | TRIN adiciona atalhos de inicializacao do painel
+COMMIT 22eef99 | 2026-06-30 | TRIN corrige leitor RTD operacional PLAN1
+COMMIT d7480bc | 2026-06-30 | TRIN exibe diagnostico TT RAW no painel
+COMMIT 787f769 | 2026-06-30 | TRIN registra auditoria pre-patch do painel TT RAW
+COMMIT ed68a43 | 2026-06-30 | TRIN adiciona endpoint diagnostico TT RAW
+COMMIT ab1fc0a | 2026-06-30 | TRIN registra auditoria experimental da captura TT RTD
+COMMIT 8e6d614 | 2026-06-29 | TRIN registra auditoria pre-patch do modo replay do painel
+COMMIT ceb8e49 | 2026-06-27 | TRIN registra decisao arquitetural do modo replay do painel
+COMMIT 94478b7 | 2026-06-27 | TRIN registra checkpoint das lacunas sem fonte matriz
+COMMIT 32c38d6 | 2026-06-27 | TRIN registra busca por fonte matriz das lacunas remanescentes
+COMMIT 3c756c4 | 2026-06-26 | TRIN registra decisao sobre lacunas sem fonte matriz
+COMMIT dc91f3c | 2026-06-26 | TRIN registra auditoria das lacunas remanescentes pos leilao
+COMMIT 9a321d7 | 2026-06-26 | TRIN registra checkpoint do Fiscal para candles por leilao
+COMMIT f0a98b0 | 2026-06-26 | TRIN ajusta Fiscal para candles inexistentes por leilao
+COMMIT f0e9936 | 2026-06-26 | TRIN registra auditoria pre-patch do Fiscal para candles por leilao
+COMMIT 7705f2b | 2026-06-26 | TRIN registra cadastro de candles inexistentes por leilao
+COMMIT eefb343 | 2026-06-26 | TRIN registra decisao sobre candles inexistentes por leilao
+COMMIT 2b95a7d | 2026-06-26 | TRIN registra auditoria complementar das lacunas por leilao
+COMMIT a75ad26 | 2026-06-22 | TRIN registra auditoria de origem das lacunas WIN 1min
+COMMIT 3e2f42f | 2026-06-22 | TRIN registra ordem de execucao para validacao do CandleBuilder
+COMMIT 8a242fe | 2026-06-22 | TRIN registra checklist de validacao do CandleBuilder em mercado aberto
+A	TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO.md
+COMMIT c8c4e88 | 2026-06-22 | TRIN registra checkpoint de schema e auditoria do CandleBuilder
+COMMIT 2619d61 | 2026-06-22 | TRIN registra auditoria curta do CandleBuilderPainel
+COMMIT 1c7e672 | 2026-06-22 | TRIN registra schema dos dados de referencia de mercado
+COMMIT ebff89a | 2026-06-22 | TRIN registra contrato de dados de referencia de mercado
+COMMIT 7b81388 | 2026-06-22 | TRIN adiciona seletor visual de timeframe do painel
+COMMIT bb4311d | 2026-06-22 | TRIN adiciona agregador operacional de timeframe do painel
+COMMIT aa1f73b | 2026-06-22 | TRIN adiciona endpoints de timeframe do painel sem alterar grafico
+COMMIT 16cbecf | 2026-06-22 | TRIN registra auditoria pos-patch do painel temporal snapshot RTD
+COMMIT 0572411 | 2026-06-22 | TRIN estabiliza historico do painel sem duplicar timestamps
+COMMIT f663ee4 | 2026-06-22 | TRIN declara regua temporal do painel como snapshot RTD
+COMMIT a2bdcee | 2026-06-22 | TRIN registra auditoria pos-patch do Fiscal Temporal v4.2.2
+COMMIT e658b3c | 2026-06-22 | TRIN aplica Fiscal Temporal v4.2.2 anti-enxurrada
+COMMIT 4e086f1 | 2026-06-22 | TRIN registra auditoria pos-patch do Historiador v1.0.1
+COMMIT d731741 | 2026-06-22 | TRIN adiciona manifesto e validacao controlada ao Historiador
+COMMIT c976780 | 2026-06-22 | TRIN registra parecer de prontidao para patch do Historiador
+COMMIT 87bf016 | 2026-06-22 | TRIN registra contrato do manifesto do Historiador
+COMMIT 6324e07 | 2026-06-22 | TRIN registra schema das saidas do Historiador
+COMMIT 4e35f2d | 2026-06-22 | TRIN registra schema do indice geral do Bernardo
+COMMIT 4ec999e | 2026-06-22 | TRIN registra contrato do indice geral do Bernardo
+COMMIT 0c14758 | 2026-06-22 | TRIN registra contrato de entradas e saidas do Historiador
+COMMIT c1b798b | 2026-06-21 | TRIN registra auditoria arquitetural preliminar do Historiador
+COMMIT 1a8c671 | 2026-06-21 | TRIN registra auditoria arquitetural preliminar do Historiador
+COMMIT e3407b5 | 2026-06-21 | TRIN aplica patch controlado Fiscal Temporal v4.2.1
+COMMIT 491737f | 2026-06-21 | TRIN registra auditoria hard preliminar do Fiscal Temporal v4.2
+COMMIT 68ae54f | 2026-06-21 | TRIN registra checkpoint da fase Bastiao contrato ativo
+COMMIT 0506bcf | 2026-06-21 | TRIN atualiza contratos oficiais dos modulos
+COMMIT 5ec84bd | 2026-06-21 | TRIN registra normas oficiais e adendo do Bastiao contrato ativo
+A	TRIN_ROOT/governance/04_METODOLOGIA/CHECKLIST_OFICIAL_NORMAS_TRIN.md
+COMMIT 922277d | 2026-06-21 | TRIN preenche calendario B3 WIN 2026 e aprova contrato ativo
+COMMIT d93aced | 2026-06-21 | TRIN integra Bastiao de contrato ativo ao backend e painel
+COMMIT ea1f70f | 2026-06-21 | TRIN cria Bastiao validador de contrato ativo
+COMMIT 43a4770 | 2026-06-20 | TRIN adiciona teste controlado do ContratoAtivoResolver
+COMMIT 806efad | 2026-06-20 | TRIN cria esqueleto do ContratoAtivoResolver
+COMMIT 8419292 | 2026-06-20 | TRIN cria estrutura oficial do calendario B3 de contratos
+A	TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_CALENDARIO_CONTRATOS_B3.md
+COMMIT a27b167 | 2026-06-20 | TRIN registra contrato arquitetural do ContratoAtivoResolver
+COMMIT 6429e28 | 2026-06-20 | TRIN remove planilha RTD viva do Git mantendo uso local
+COMMIT 190e7ae | 2026-06-20 | TRIN registra experimento de atualizacao de contrato RTD
+COMMIT 02d3d36 | 2026-06-20 | TRIN registra Bastiao como validador do contrato ativo
+COMMIT 592a46f | 2026-06-20 | TRIN corrige montagem provisoria de candles RTD
+COMMIT 6875f04 | 2026-06-20 | TRIN remove memoria e historico do Git mantendo uso local
+COMMIT 201a38c | 2026-06-20 | TRIN remove pastas legadas da raiz apos consolidacao no TRIN_ROOT
+D	CHECKLIST.md/checklist.md
+COMMIT 6611954 | 2026-06-20 | TRIN limpa arquivos soltos legados da raiz
+D	checklist_teste_controlado_ze_do_eucrazio_4_0.md
+COMMIT 431d73b | 2026-06-20 | TRIN recupera frontend oficial e integra backend institucional v6
+COMMIT 940f4da | 2026-06-18 | Homologa Motor Cognitivo v2.2 integrado com Historiador Fiscal e Bernardo
+COMMIT 481ed7d | 2026-06-17 | HISTORIADOR v1.0 HOMOLOGADO
+COMMIT c906e9b | 2026-06-17 | BERNARDO HOMOLOGADO E CONGELADO - auditoria arquitetural conclu├¡da
+A	TRIN_ROOT/data/checklist.md
+A	TRIN_ROOT/governance/01_CHECKLISTS/checklist_arquitetura.md
+A	TRIN_ROOT/governance/01_CHECKLISTS/checklist_modulos.md
+A	TRIN_ROOT/governance/01_CHECKLISTS/checklist_normas.md
+A	TRIN_ROOT/intelligence/checklist_teste_controlado_ze_do_eucrazio_4_0.md
+COMMIT f2c94bf | 2026-06-15 | TRIN FASE 3 - confluencia calibrada e integrada ao detector
+COMMIT a02f488 | 2026-06-12 | Homologa operacionalmente Ze do Eucr├ízio 4.2
+A	checklist_teste_controlado_ze_do_eucrazio_4_0.md
+COMMIT ec04c42 | 2026-06-12 | Padroniza estrutura oficial da Biblioteca Historica
+COMMIT d83b7d9 | 2026-06-11 | Bernardo v4.0 - arquitetura congelada e mem├│ria cognitiva
+M	CHECKLIST.md/checklist.md
+COMMIT f3a7f34 | 2026-06-11 | Bernardo v2.5 homologado - Motor de Consulta implementado
+COMMIT 748534d | 2026-06-11 | Removida referencia de repositorio duplicado projeto-fluxo
+COMMIT 373d882 | 2026-06-11 | TRIN 5.9.3 - Bernardo v2.4 homologado - Modulos 17 e 19 conclu├¡dos
+M	CHECKLIST.md/checklist.md
+COMMIT 147b9cb | 2026-06-10 | TRIN CHECKPOINT JUNHO 2026 - Marco Zero Institucional + Biblioteca Historica + Bernardo v2.2 + Modulos 15 e 16 homologados
+M	CHECKLIST.md/checklist.md
+COMMIT 9f3a598 | 2026-05-26 | TRIN 5.9.2 MVP stable before Profit integration
+M	CHECKLIST.md/checklist.md
+COMMIT fb6bf44 | 2026-05-25 | TRIN 5.9.1 RC backend scalping institutional alignment
+COMMIT 510f23c | 2026-05-25 | TRIN 5.9 EXEC institutional validation
+COMMIT 307aac3 | 2026-05-24 | TRIN 5.9 EXEC intelligent filtering
+COMMIT 55a0169 | 2026-05-24 | TRIN 5.9 EXEC - ghost execution cleanup
+COMMIT fc952e3 | 2026-05-21 | TRIN 5.9 EXEC. dinamic institucional risk management
+COMMIT 8e23ff3 | 2026-05-21 | TRIN 5.9 AC - dynamic institutional risk management
+COMMIT bab59bb | 2026-05-20 | TRIN 5.8.8 RC - dynamic institutional risk management
+COMMIT c4b5625 | 2026-05-19 | TRIN 5.8.1 stable - engine + aggression + institutional management
+COMMIT 717d07a | 2026-05-19 | Checklist oficial atualizado TRIN 5.8.1 stable
+M	CHECKLIST.md/checklist.md
+COMMIT 6e05352 | 2026-05-19 | Checkpoint TRIN 5.8.1 WS painel recuperado e est├ível
+COMMIT 974a678 | 2026-05-17 | TRIN 5.8.1 baseline validada
+COMMIT 1d5b3a4 | 2026-05-15 | TRIN 5.8.1 frontend e backend sincronizados, Hot Zone e gr├ífico funcional
+M	CHECKLIST.md/checklist.md
+COMMIT f6462e6 | 2026-05-15 | TRIN 5.8.1 hot zone restaurada frontend estavel
+COMMIT 920acb4 | 2026-05-15 | TRIN estado estavel ws online frontend backend sincronizados
+M	CHECKLIST.md/checklist.md
+COMMIT 2afedfd | 2026-05-13 | TRIN 5.8.1 ESTAVEL PAINEL INTITUCIONAL
+COMMIT 82d47b5 | 2026-05-13 | TRIN 5.7 BASE ESTAVEL WS
+COMMIT 0e4e116 | 2026-05-11 | TRIN 5.5 WEBSOCKET REAL FUNCIONANDO
+COMMIT 706dfc2 | 2026-05-11 | TRIN 5.4 RADAR PRO PRESSAO VIVA
+COMMIT 11d400e | 2026-05-11 | TRIN 5.3 PAINEL DE PRESS├âO
+COMMIT e5a71c9 | 2026-05-11 | TRIN 5.2 HEATMAP INSTITUCIONAL
+COMMIT 8f38737 | 2026-05-11 | BACKUP TRIN5.1 RADAR VIVO
+COMMIT 7530c3d | 2026-05-11 | BACKUP TRIN 5.1
+COMMIT 3f1256a | 2026-05-11 | TRIM FLOW PRO 4.8 PAINEL INSTITUCIONAL
+COMMIT 46be356 | 2026-05-11 | TRIN FLOW PRO 4.7 ESTAVEL
+COMMIT 7a51069 | 2026-05-10 | TRIN 4.4 visual institucional funcionando
+COMMIT 2ea488b | 2026-05-08 | TRIN FLOW PRO 4.1 ESTAVEL
+COMMIT 37212c7 | 2026-05-06 | TRIN: vers├úo est├ível atual (frontend + backend)
+M	CHECKLIST.md/checklist.md
+COMMIT c397d12 | 2026-05-04 | TRIN v1 completo - backend + frontend
+COMMIT 9b0e0a2 | 2026-04-25 |  ultmo progresso
+COMMIT 9c59765 | 2026-04-24 | limpez: removendo arquivos desnecessarios
+COMMIT c22390d | 2026-04-24 | coorrigindo checklist estrutura correta
+R100	CHECKLIST.md/checklist.nd	CHECKLIST.md/checklist.md
+COMMIT 6d2d47d | 2026-04-24 | adicionando gitignore
+A	CHECKLIST.md/checklist.nd
+COMMIT e4f83fe | 2026-04-23 | projeto inicial funcionando

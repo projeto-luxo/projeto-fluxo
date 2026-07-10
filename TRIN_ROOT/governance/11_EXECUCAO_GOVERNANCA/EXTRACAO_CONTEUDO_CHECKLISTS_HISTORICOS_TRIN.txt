@@ -1,0 +1,80 @@
+﻿===== EXTRACAO DE CONTEUDO DOS CHECKLISTS HISTORICOS TRIN =====
+Gerado em: 07/09/2026 19:46:55
+
+
+============================================================
+ARQUIVO: CHECKLIST.md/checklist.md
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
+
+============================================================
+ARQUIVO: CHECKLIST.md/checklist.nd
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
+
+============================================================
+ARQUIVO: checklist_teste_controlado_ze_do_eucrazio_4_0.md
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
+
+============================================================
+ARQUIVO: TRIN_ROOT/data/checklist.md
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/01_CHECKLISTS/checklist_arquitetura.md
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_CALENDARIO_CONTRATOS_B3.md
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/01_CHECKLISTS/checklist_modulos.md
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/01_CHECKLISTS/checklist_normas.md
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/01_CHECKLISTS/CHECKLIST_VALIDACAO_CANDLEBUILDER_MERCADO_ABERTO.md
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
+
+============================================================
+ARQUIVO: TRIN_ROOT/governance/04_METODOLOGIA/CHECKLIST_OFICIAL_NORMAS_TRIN.md
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
+
+============================================================
+ARQUIVO: TRIN_ROOT/intelligence/checklist_teste_controlado_ze_do_eucrazio_4_0.md
+ULTIMO COMMIT ENCONTRADO: 
+============================================================
+
+NAO FOI POSSIVEL ENCONTRAR CONTEUDO PARA ESTE ARQUIVO.
