@@ -144,6 +144,78 @@ preco_atual = 100.0
 ultima_explosao_tipo = "SEM EXPLOSÃO"
 ultima_explosao_tempo = 0
 
+ultimo_reset_estado_operacional = {
+    "executado": False,
+    "sequencia": 0,
+    "timestamp": None,
+    "motivo": "INICIALIZACAO_BACKEND",
+    "modo_destino": "AO_VIVO",
+    "estado_anterior": {},
+    "estado_posterior": {},
+}
+
+
+def _tamanho_lista_interna(objeto, atributo):
+    valor = getattr(objeto, atributo, None)
+    return len(valor) if isinstance(valor, list) else 0
+
+
+def resetar_estado_operacional(motivo, modo_destino):
+    """Recria todas as memorias mutaveis do cockpit de forma auditavel.
+
+    Escopo CR-01A: impede que memoria AO VIVO atravesse para o Replay
+    diagnostico e que memoria do Replay retorne ao modo AO VIVO.
+    """
+    global engine, vwap_engine, candle_engine, aggression_engine, motor_confluencia
+    global historico, ultima_explosao_tipo, ultima_explosao_tempo
+    global ultimo_reset_estado_operacional
+
+    estado_anterior = {
+        "historico": len(historico),
+        "vwap_candles": _tamanho_lista_interna(vwap_engine, "candles"),
+        "candle_engine_candles": _tamanho_lista_interna(candle_engine, "candles"),
+        "agressao_fluxo_recente": _tamanho_lista_interna(aggression_engine, "fluxo_recente"),
+        "agressao_memoria": _tamanho_lista_interna(aggression_engine, "memoria_agressao"),
+        "confluencia_history": _tamanho_lista_interna(motor_confluencia, "history"),
+    }
+
+    engine = TRINEngine()
+    vwap_engine = VWAPEngine()
+    candle_engine = CandleEngine()
+    aggression_engine = AggressionEngine()
+    motor_confluencia = ConfluenceEngineV2()
+
+    historico = []
+    ultima_explosao_tipo = "SEM EXPLOSÃO"
+    ultima_explosao_tempo = 0
+
+    sequencia = int(ultimo_reset_estado_operacional.get("sequencia", 0)) + 1
+    estado_posterior = {
+        "historico": len(historico),
+        "vwap_candles": _tamanho_lista_interna(vwap_engine, "candles"),
+        "candle_engine_candles": _tamanho_lista_interna(candle_engine, "candles"),
+        "agressao_fluxo_recente": _tamanho_lista_interna(aggression_engine, "fluxo_recente"),
+        "agressao_memoria": _tamanho_lista_interna(aggression_engine, "memoria_agressao"),
+        "confluencia_history": _tamanho_lista_interna(motor_confluencia, "history"),
+    }
+
+    ultimo_reset_estado_operacional = {
+        "executado": True,
+        "sequencia": sequencia,
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "motivo": str(motivo),
+        "modo_destino": str(modo_destino),
+        "estado_anterior": estado_anterior,
+        "estado_posterior": estado_posterior,
+    }
+
+    print(
+        "[CR-01 RESET ESTADO]",
+        json.dumps(ultimo_reset_estado_operacional, ensure_ascii=False),
+    )
+
+    return dict(ultimo_reset_estado_operacional)
+
 
 def _num(valor, default=0.0):
     try:
@@ -1101,37 +1173,78 @@ async def tt_raw_status():
 
 @app.get("/painel/replay/status")
 async def replay_status():
-    return replay_reader.status()
+    resultado = replay_reader.status()
+    resultado["estado_operacional_reset"] = dict(ultimo_reset_estado_operacional)
+    return resultado
 
 
 @app.get("/painel/replay/start")
 async def replay_start(csv_path: str = "", data_pregao: str = "", intervalo_segundos: float = 1.5):
-    global historico
+    estava_em_replay = bool(replay_reader.ativo)
 
-    resultado = replay_reader.start(csv_path=csv_path, data_pregao=data_pregao, intervalo_segundos=intervalo_segundos)
+    resultado = replay_reader.start(
+        csv_path=csv_path,
+        data_pregao=data_pregao,
+        intervalo_segundos=intervalo_segundos,
+    )
 
     if resultado.get("ok"):
-        historico = []
+        motivo = "REPLAY_RESTART" if estava_em_replay else "REPLAY_START"
+        resultado["estado_operacional_reset"] = resetar_estado_operacional(
+            motivo=motivo,
+            modo_destino="REPLAY_DIAGNOSTICO",
+        )
+        resultado["reset_executado_nesta_chamada"] = True
+
+    elif estava_em_replay and not replay_reader.ativo:
+        resultado["estado_operacional_reset"] = resetar_estado_operacional(
+            motivo="REPLAY_START_FALHOU_RETORNO_AO_VIVO",
+            modo_destino="AO_VIVO",
+        )
+        resultado["reset_executado_nesta_chamada"] = True
+
+    else:
+        resultado["reset_executado_nesta_chamada"] = False
 
     return resultado
 
 
 @app.get("/painel/replay/stop")
 async def replay_stop():
-    global historico
-
+    estava_em_replay = bool(replay_reader.ativo)
     resultado = replay_reader.stop()
-    historico = []
+
+    if estava_em_replay:
+        resultado["estado_operacional_reset"] = resetar_estado_operacional(
+            motivo="REPLAY_STOP",
+            modo_destino="AO_VIVO",
+        )
+        resultado["reset_executado_nesta_chamada"] = True
+    else:
+        resultado["reset_executado_nesta_chamada"] = False
+        resultado["observacao"] = (
+            "Replay ja estava parado. Estado operacional AO VIVO preservado."
+        )
 
     return resultado
 
 
 @app.get("/painel/replay/reset")
 async def replay_reset():
-    global historico
-
+    estava_em_replay = bool(replay_reader.ativo)
     resultado = replay_reader.reset()
-    historico = []
+
+    if estava_em_replay:
+        resultado["estado_operacional_reset"] = resetar_estado_operacional(
+            motivo="REPLAY_RESET",
+            modo_destino="REPLAY_DIAGNOSTICO",
+        )
+        resultado["reset_executado_nesta_chamada"] = True
+    else:
+        resultado["reset_executado_nesta_chamada"] = False
+        resultado["observacao"] = (
+            "Replay esta parado. Estado operacional AO VIVO preservado."
+        )
 
     return resultado
 

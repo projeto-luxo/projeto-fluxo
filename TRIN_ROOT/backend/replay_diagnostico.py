@@ -297,7 +297,16 @@ class ReplayDiagnostico:
 
 
 
+    def _limpar_estado_execucao(self):
+        self.indice = 0
+        self.ultimo_candle_time = None
+        self.ultimo_emit_wall = 0.0
+        self.bucket_replay_linhas = []
+        self.bucket_replay_inicio_ts = None
+        self.bucket_replay_limite_ts = None
+
     def start(self, csv_path="", data_pregao="", intervalo_segundos=1.5):
+        self._limpar_estado_execucao()
         ok = self.carregar_csv(csv_path, data_pregao)
 
         try:
@@ -336,18 +345,18 @@ class ReplayDiagnostico:
 
     def stop(self):
         self.ativo = False
+        self._limpar_estado_execucao()
 
         return {
             "ok": True,
             "ativo": False,
             "modo_dados": "AO_VIVO",
             "status": "REPLAY_PARADO",
-            "observacao": "Replay parado. Historico visual deve ser limpo pelo backend chamador.",
+            "observacao": "Replay parado. Estado interno do Replay foi limpo.",
         }
 
     def reset(self):
-        self.indice = 0
-        self.ultimo_candle_time = None
+        self._limpar_estado_execucao()
 
         return {
             "ok": True,
