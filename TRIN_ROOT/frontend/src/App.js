@@ -999,7 +999,7 @@ if (temEntradaReal) {
 
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
-      height: Math.max(320, chartContainerRef.current.clientHeight || window.innerHeight - 20),
+      height: Math.max(1, chartContainerRef.current.clientHeight),
       layout: {
         background: { type: "solid", color: "#020816" },
         textColor: "#ffffff",
@@ -1130,15 +1130,22 @@ if (temEntradaReal) {
 
       chartRef.current.applyOptions({
         width: chartContainerRef.current.clientWidth,
-        height: Math.max(320, chartContainerRef.current.clientHeight || window.innerHeight - 20),
+        height: Math.max(1, chartContainerRef.current.clientHeight),
       });
 
       chartRef.current.timeScale().fitContent();
     };
 
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(handleResize)
+        : null;
+
+    resizeObserver?.observe(chartContainerRef.current);
     window.addEventListener("resize", handleResize);
 
     return () => {
+      resizeObserver?.disconnect();
       window.removeEventListener("resize", handleResize);
 
       if (socketRef.current) {
@@ -1574,113 +1581,20 @@ if (temEntradaReal) {
       style={{
         height: "100vh",
         width: "100vw",
-        padding: replayStatus.ativo ? 8 : 14,
+        padding: 10,
         boxSizing: "border-box",
         background: "radial-gradient(circle at center, #172324 0%, #081013 42%, #010409 100%)",
         color: "#ffffff",
         overflow: "hidden",
         display: "grid",
-        gridTemplateColumns: replayStatus.ativo ? "18% 12% 70%" : "30% 18% 52%",
-        gridTemplateRows: replayStatus.ativo ? "1fr 110px" : "1fr 150px",
-        gap: replayStatus.ativo ? 8 : 12,
+        gridTemplateColumns: "minmax(300px, 18%) minmax(280px, 16%) minmax(0, 1fr)",
+        gridTemplateRows: "minmax(0, 1fr) 150px",
+        gap: 10,
+        minWidth: 0,
+        minHeight: 0,
         fontFamily: "Arial, sans-serif",
       }}
     >
-
-      {/* CHAVE_REPLAY_DIAGNOSTICO_DATA_02 */}
-      <div
-        style={{
-          position: "fixed",
-          top: 8,
-          right: 12,
-          zIndex: 9999,
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          background: replayStatus.ativo ? "rgba(80,45,0,0.96)" : "rgba(0,35,26,0.96)",
-          border: replayStatus.ativo ? "1px solid #ffaa00" : "1px solid #00ff99",
-          borderRadius: 999,
-          padding: "7px 9px",
-          boxShadow: replayStatus.ativo
-            ? "0 0 18px rgba(255,170,0,0.65)"
-            : "0 0 18px rgba(0,255,153,0.45)",
-        }}
-      >
-        <input
-          type="date"
-          value={replayDataPregao}
-          onChange={(e) => setReplayDataPregao(e.target.value)}
-          style={{
-            background: "rgba(0,0,0,0.45)",
-            color: "#ffffff",
-            border: "1px solid rgba(255,255,255,0.18)",
-            borderRadius: 999,
-            padding: "5px 8px",
-            fontSize: 11,
-            fontWeight: "900",
-          }}
-        />
-
-        <button
-          onClick={carregarDataReplay}
-          title="Carregar o pregão escolhido no Replay"
-          style={{
-            border: "1px solid rgba(255,255,255,0.18)",
-            background: replayStatus.ativo ? "rgba(255,170,0,0.16)" : "rgba(255,255,255,0.08)",
-            color: replayStatus.ativo ? "#ffd27a" : "#cfd8dc",
-            borderRadius: 999,
-            padding: "5px 8px",
-            fontSize: 10,
-            fontWeight: "900",
-            letterSpacing: 0.5,
-            cursor: "pointer",
-          }}
-        >
-          CARREGAR DATA
-        </button>
-
-        <button
-          onClick={alternarModoReplay}
-          title="Alternar entre AO_VIVO e REPLAY diagnostico"
-          style={{
-            border: "none",
-            background: "transparent",
-            color: replayStatus.ativo ? "#ffd27a" : "#00ff99",
-            fontSize: 11,
-            fontWeight: "900",
-            letterSpacing: 1,
-            cursor: "pointer",
-          }}
-        >
-          {replayStatus.ativo ? "REPLAY ON" : "AO VIVO"}
-        </button>
-      </div>
-
-      {replayStatus.ativo && (
-        <div
-          style={{
-            position: "fixed",
-            top: 48,
-            right: 12,
-            zIndex: 9999,
-            color: "#ffd27a",
-            background: "rgba(20,12,0,0.92)",
-            border: "1px solid rgba(255,170,0,0.55)",
-            borderRadius: 10,
-            padding: "7px 10px",
-            fontSize: 10,
-            fontWeight: "900",
-            lineHeight: 1.35,
-            boxShadow: "0 0 18px rgba(255,170,0,0.25)",
-            maxWidth: 300,
-          }}
-        >
-          REPLAY DIAGNOSTICO<br />
-          NAO OPERACIONAL · NAO CERTIFICADO<br />
-          PREGAO: {replayDataPregao || replayStatus.data_pregao}<br />
-          {replayStatus.indice}/{replayStatus.total}
-        </div>
-      )}
 
       <style>
         {`
@@ -1700,19 +1614,47 @@ if (temEntradaReal) {
             50% { opacity: 1; box-shadow: 0 0 35px #ffaa00; }
             100% { opacity: .45; box-shadow: 0 0 18px #ffaa00; }
           }
+
+          .trin-side-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 217, 255, 0.45) rgba(255, 255, 255, 0.04);
+          }
+
+          .trin-side-scroll::-webkit-scrollbar {
+            width: 7px;
+          }
+
+          .trin-side-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 999px;
+          }
+
+          .trin-side-scroll::-webkit-scrollbar-thumb {
+            background: rgba(0, 217, 255, 0.42);
+            border-radius: 999px;
+            border: 1px solid rgba(0, 217, 255, 0.18);
+          }
+
+          .trin-side-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 217, 255, 0.70);
+          }
         `}
       </style>
 
       <div
+        className="trin-side-scroll"
         style={{
           gridColumn: "1",
-          gridRow: "1",
-          padding: "30px 28px",
+          gridRow: "1 / 3",
+          minWidth: 0,
+          minHeight: 0,
+          padding: "24px 20px",
           borderRadius: 24,
           background: "linear-gradient(180deg, rgba(13,22,24,0.70), rgba(1,5,8,0.94))",
           border: "1px solid rgba(0,217,255,0.14)",
           boxShadow: "inset 0 0 55px rgba(0,255,180,0.04), 0 0 28px rgba(0,217,255,0.08)",
-          overflow: "hidden",
+          overflowX: "hidden",
+          overflowY: "auto",
         }}
       >
         <div style={{ color: "#00d9ff", fontSize: 13, fontWeight: "900", marginBottom: 30 }}>
@@ -1773,6 +1715,128 @@ if (temEntradaReal) {
           <div>• Vol norm: <b>{formatar(volumeNormalizadoPainel)}</b></div>
           <div>• Vol candle: <b>{formatar(volumeCandleEstimadoPainel)}</b></div>
           <div>• Tipo: <b>{volumeTipoPainel}</b></div>
+        </div>
+
+        {/* CR-03A: Replay movido para a coluna lateral esquerda */}
+        <div
+          style={{
+            border: replayStatus.ativo
+              ? "1px solid rgba(255,170,0,0.55)"
+              : "1px solid rgba(0,255,153,0.35)",
+            background: replayStatus.ativo
+              ? "rgba(45,28,0,0.72)"
+              : "rgba(0,35,26,0.58)",
+            borderRadius: 12,
+            padding: "12px",
+            marginBottom: 18,
+            boxShadow: replayStatus.ativo
+              ? "0 0 18px rgba(255,170,0,0.18)"
+              : "0 0 18px rgba(0,255,153,0.10)",
+          }}
+        >
+          <div
+            style={{
+              color: replayStatus.ativo ? "#ffd27a" : "#00ff99",
+              fontSize: 11,
+              fontWeight: "900",
+              letterSpacing: 1,
+              marginBottom: 10,
+            }}
+          >
+            REPLAY DIAGNOSTICO
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "minmax(0, 1fr) auto",
+              gap: 8,
+              marginBottom: 8,
+            }}
+          >
+            <input
+              type="date"
+              value={replayDataPregao}
+              onChange={(e) => setReplayDataPregao(e.target.value)}
+              style={{
+                minWidth: 0,
+                width: "100%",
+                boxSizing: "border-box",
+                background: "rgba(0,0,0,0.45)",
+                color: "#ffffff",
+                border: "1px solid rgba(255,255,255,0.18)",
+                borderRadius: 8,
+                padding: "7px 8px",
+                fontSize: 11,
+                fontWeight: "900",
+              }}
+            />
+
+            <button
+              onClick={carregarDataReplay}
+              title="Carregar o pregao escolhido no Replay"
+              style={{
+                border: "1px solid rgba(255,255,255,0.18)",
+                background: replayStatus.ativo
+                  ? "rgba(255,170,0,0.16)"
+                  : "rgba(255,255,255,0.08)",
+                color: replayStatus.ativo ? "#ffd27a" : "#cfd8dc",
+                borderRadius: 8,
+                padding: "7px 9px",
+                fontSize: 10,
+                fontWeight: "900",
+                cursor: "pointer",
+              }}
+            >
+              CARREGAR
+            </button>
+          </div>
+
+          <button
+            onClick={alternarModoReplay}
+            title="Alternar entre AO_VIVO e REPLAY diagnostico"
+            style={{
+              width: "100%",
+              border: replayStatus.ativo
+                ? "1px solid rgba(255,170,0,0.55)"
+                : "1px solid rgba(0,255,153,0.35)",
+              background: replayStatus.ativo
+                ? "rgba(255,170,0,0.12)"
+                : "rgba(0,255,153,0.08)",
+              color: replayStatus.ativo ? "#ffd27a" : "#00ff99",
+              borderRadius: 8,
+              padding: "8px 10px",
+              fontSize: 11,
+              fontWeight: "900",
+              letterSpacing: 1,
+              cursor: "pointer",
+            }}
+          >
+            {replayStatus.ativo ? "REPLAY ON" : "AO VIVO"}
+          </button>
+
+          <div
+            style={{
+              marginTop: 9,
+              color: replayStatus.ativo ? "#ffd27a" : "#9fb8b0",
+              fontSize: 10,
+              fontWeight: "900",
+              lineHeight: 1.4,
+            }}
+          >
+            {replayStatus.ativo ? (
+              <>
+                NAO OPERACIONAL · NAO CERTIFICADO<br />
+                PREGAO: {replayDataPregao || replayStatus.data_pregao}<br />
+                POSICAO: {replayStatus.indice}/{replayStatus.total}
+              </>
+            ) : (
+              <>
+                MODO OPERACIONAL: AO VIVO<br />
+                REPLAY DIAGNOSTICO PARADO
+              </>
+            )}
+          </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 22, marginBottom: 18 }}>
@@ -1850,7 +1914,9 @@ if (temEntradaReal) {
       <div
         style={{
           gridColumn: "2",
-          gridRow: "1",
+          gridRow: "1 / 3",
+          minWidth: 0,
+          minHeight: 0,
           position: "relative",
           borderRadius: 24,
           background: "linear-gradient(180deg, rgba(11,18,20,0.58), rgba(0,3,8,0.90))",
@@ -1860,21 +1926,21 @@ if (temEntradaReal) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "32px 20px",
+          padding: "26px 14px",
           overflow: "hidden",
         }}
       >
-        <div style={{ alignSelf: "stretch", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+        <div style={{ alignSelf: "stretch", display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 8 }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ color: "#8a969e", fontSize: 12, fontWeight: "900" }}>CONTEXTO</div>
-            <div style={{ color: corEstadoPainel, fontSize: 34, fontWeight: "900", marginTop: 8 }}>
+            <div style={{ color: corEstadoPainel, fontSize: "clamp(20px, 1.55vw, 28px)", fontWeight: "900", marginTop: 8, whiteSpace: "nowrap", overflowWrap: "normal" }}>
               {contextoIndicadorPainel}
             </div>
           </div>
 
           <div style={{ textAlign: "center" }}>
             <div style={{ color: "#8a969e", fontSize: 12, fontWeight: "900" }}>CONFL</div>
-            <div style={{ color: corEstadoPainel, fontSize: 34, fontWeight: "900", marginTop: 8 }}>
+            <div style={{ color: corEstadoPainel, fontSize: "clamp(20px, 1.55vw, 28px)", fontWeight: "900", marginTop: 8, whiteSpace: "nowrap", overflowWrap: "normal" }}>
               {formatar(dataInfo.scoreConfluencia)}
             </div>
             <div style={{ color: corEstadoPainel, fontSize: 11, fontWeight: "900", letterSpacing: 1, marginTop: 3 }}>
@@ -1885,7 +1951,7 @@ if (temEntradaReal) {
 
         <div
           style={{
-            width: 250,
+            width: "min(250px, 100%)",
             height: 190,
             border: "1px solid rgba(255,255,255,0.18)",
             borderRadius: 28,
@@ -1908,8 +1974,8 @@ if (temEntradaReal) {
           />
         </div>
 
-        <div style={{ textAlign: "center" }}>
-          <div style={{ color: corEstadoPainel, fontSize: 32, fontWeight: "900" }}>
+        <div style={{ textAlign: "center", width: "100%" }}>
+          <div style={{ color: corEstadoPainel, fontSize: "clamp(26px, 1.8vw, 32px)", fontWeight: "900", whiteSpace: "nowrap" }}>
             {estadoCentralPainel}
           </div>
           <div style={{ color: "#b0bec5", fontSize: 13, fontWeight: "bold", marginTop: 6 }}>
@@ -1936,6 +2002,8 @@ if (temEntradaReal) {
         style={{
           gridColumn: "3",
           gridRow: "1",
+          minWidth: 0,
+          minHeight: 0,
           borderRadius: 18,
           border: `1px solid ${corEstadoPainel}`,
           background: "#020712",
@@ -1956,26 +2024,32 @@ if (temEntradaReal) {
           />
         )}
 
-        <div ref={chartContainerRef} style={{ height: "100%" }} />
+        <div
+          ref={chartContainerRef}
+          style={{ width: "100%", height: "100%", minWidth: 0, minHeight: 0 }}
+        />
       </div>
 
       <div
         style={{
-          gridColumn: "1 / 4",
+          gridColumn: "3",
           gridRow: "2",
+          minWidth: 0,
+          minHeight: 0,
           borderRadius: 18,
           background: "linear-gradient(90deg, rgba(4,10,13,0.97), rgba(3,15,12,0.94), rgba(4,10,13,0.97))",
           border: `1px solid ${corEstadoPainel}`,
           boxShadow: `0 0 30px ${corEstadoPainel}66`,
           display: "grid",
-          gridTemplateColumns: "240px 1fr 330px",
-          gap: 18,
+          gridTemplateColumns: "minmax(170px, 0.75fr) minmax(320px, 1.7fr) minmax(240px, 0.9fr)",
+          gap: 12,
           alignItems: "center",
-          padding: "16px 24px",
+          padding: "12px 18px",
+          overflow: "hidden",
         }}
       >
         <div>
-          <div style={{ color: corEstadoPainel, fontSize: 32, fontWeight: "900", letterSpacing: 2 }}>
+          <div style={{ color: corEstadoPainel, fontSize: "clamp(22px, 1.5vw, 30px)", fontWeight: "900", letterSpacing: 2 }}>
             {tituloAlertaRodape}
           </div>
           <div style={{ color: "#d0d7dc", fontSize: 12, fontWeight: "bold" }}>
@@ -1987,16 +2061,16 @@ if (temEntradaReal) {
           <div style={{ color: "#d0d7dc", fontSize: 12, fontWeight: "900", textAlign: "center", letterSpacing: 2, marginBottom: 4 }}>
             ACAO
           </div>
-          <div style={{ color: corEstadoPainel, fontSize: 38, fontWeight: "900", textAlign: "center", letterSpacing: 3 }}>
+          <div style={{ color: corEstadoPainel, fontSize: "clamp(24px, 2vw, 36px)", fontWeight: "900", textAlign: "center", letterSpacing: 3, lineHeight: 1.05 }}>
             {acaoPrincipalPainel}
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(18, 1fr)", gap: 5, marginTop: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(18, 1fr)", gap: 4, marginTop: 10 }}>
             {Array.from({ length: 18 }).map((_, i) => (
               <div
                 key={i}
                 style={{
-                  height: 34,
+                  height: 22,
                   borderRadius: 3,
                   background: i < barrasAlertaPainel ? corEstadoPainel : "rgba(255,255,255,0.18)",
                   boxShadow: i < barrasAlertaPainel ? `0 0 12px ${corEstadoPainel}` : "none",
@@ -2296,8 +2370,8 @@ function Box({ children, color }) {
       style={{
         backgroundColor: color,
         color: "white",
-        padding: "10px 11px",
-        marginBottom: 8,
+        padding: "8px 10px",
+        marginBottom: 0,
         borderRadius: 8,
         fontWeight: "bold",
         lineHeight: 1.25,
