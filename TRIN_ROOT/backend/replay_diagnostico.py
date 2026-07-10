@@ -82,6 +82,31 @@ class ReplayDiagnostico:
 
         return padrao
 
+    def _campo_com_origem(self, linha, nomes):
+        for nome in nomes:
+            if nome in linha and str(linha.get(nome, "")).strip() != "":
+                return linha.get(nome), str(nome)
+
+        mapa = {str(k).strip().lower(): k for k in linha.keys()}
+
+        for nome in nomes:
+            chave = mapa.get(str(nome).strip().lower())
+            if chave is not None and str(linha.get(chave, "")).strip() != "":
+                return linha.get(chave), str(chave)
+
+        return None, None
+
+    def _rotulo_campo_replay(self, campo, padrao):
+        if not campo:
+            return padrao
+
+        texto = "".join(
+            caractere if caractere.isalnum() else "_"
+            for caractere in str(campo).upper().strip()
+        )
+        texto = "_".join(parte for parte in texto.split("_") if parte)
+        return f"REPLAY_CSV_CAMPO_{texto}" if texto else padrao
+
     def _timestamp(self, linha, indice=0):
         bruto = self._campo(linha, ["time", "timestamp", "datahora", "datetime"], None)
 
@@ -259,8 +284,73 @@ class ReplayDiagnostico:
             ultimo = abertura
 
         volume = self._num(self._campo(linha, ["volume", "volume_quantidade", "vol"], 0))
-        delta = self._num(self._campo(linha, ["delta"], 0))
-        saldo = self._num(self._campo(linha, ["saldo", "agressao_saldo", "agressão_saldo"], delta))
+
+        delta_bruto, delta_campo = self._campo_com_origem(linha, ["delta"])
+        saldo_bruto, saldo_campo = self._campo_com_origem(
+            linha,
+            ["saldo", "agressao_saldo", "agressão_saldo"],
+        )
+        volume_saldo_bruto, volume_saldo_campo = self._campo_com_origem(
+            linha,
+            ["volume_saldo"],
+        )
+
+        delta_presente = delta_campo is not None
+        saldo_presente = saldo_campo is not None
+        volume_saldo_presente = volume_saldo_campo is not None
+
+        delta = self._num(delta_bruto, 0)
+        saldo_fallback_delta = bool(not saldo_presente and delta_presente)
+        saldo = self._num(saldo_bruto, delta if saldo_fallback_delta else 0)
+        volume_saldo = self._num(volume_saldo_bruto, 0)
+
+        delta_fonte = self._rotulo_campo_replay(
+            delta_campo,
+            "REPLAY_CSV_SEM_DELTA",
+        )
+        saldo_fonte = (
+            "REPLAY_FALLBACK_DELTA"
+            if saldo_fallback_delta
+            else self._rotulo_campo_replay(saldo_campo, "REPLAY_CSV_SEM_SALDO")
+        )
+
+        if not delta_presente and not saldo_presente:
+            delta_saldo_relacao = "SEM_DADOS"
+        elif saldo_fallback_delta:
+            delta_saldo_relacao = "SALDO_DERIVADO_DELTA"
+        elif delta_presente and saldo_presente:
+            delta_saldo_relacao = (
+                "EQUIVALENTES_OBSERVADOS"
+                if abs(delta - saldo) <= 1e-9
+                else "INDEPENDENTES"
+            )
+        else:
+            delta_saldo_relacao = "INDETERMINADO"
+
+        delta_saldo_independentes = delta_saldo_relacao == "INDEPENDENTES"
+
+        if volume_saldo_presente:
+            fluxo_agressor_canonico = volume_saldo
+            fluxo_agressor_fonte = self._rotulo_campo_replay(
+                volume_saldo_campo,
+                "REPLAY_CSV_VOLUME_SALDO",
+            )
+        elif saldo_presente:
+            fluxo_agressor_canonico = saldo
+            fluxo_agressor_fonte = saldo_fonte
+        elif delta_presente:
+            fluxo_agressor_canonico = delta
+            fluxo_agressor_fonte = delta_fonte
+        else:
+            fluxo_agressor_canonico = 0.0
+            fluxo_agressor_fonte = "SEM_DADOS"
+
+        fluxo_agressor_status = (
+            "CANONICO_DISPONIVEL"
+            if fluxo_agressor_fonte != "SEM_DADOS"
+            else "SEM_DADOS"
+        )
+
         vwap = self._num(self._campo(linha, ["vwap", "VWAP"], ultimo))
 
         t = self._timestamp(linha, indice)
@@ -285,6 +375,15 @@ class ReplayDiagnostico:
             "volume_tipo": "REPLAY_CSV",
             "delta": delta,
             "saldo": saldo,
+            **({"volume_saldo": volume_saldo} if volume_saldo_presente else {}),
+            "delta_fonte": delta_fonte,
+            "saldo_fonte": saldo_fonte,
+            "delta_saldo_relacao": delta_saldo_relacao,
+            "delta_saldo_independentes": delta_saldo_independentes,
+            "saldo_fallback_delta": saldo_fallback_delta,
+            "fluxo_agressor_canonico": fluxo_agressor_canonico,
+            "fluxo_agressor_fonte": fluxo_agressor_fonte,
+            "fluxo_agressor_status": fluxo_agressor_status,
             "vwap": vwap,
             "status_fonte": "REPLAY_ATIVO",
             "fonte_estagnada": False,
@@ -404,6 +503,50 @@ class ReplayDiagnostico:
         volume = sum(float(c.get("volume") or 0) for c in candles)
         delta = sum(float(c.get("delta") or 0) for c in candles)
         saldo = sum(float(c.get("saldo") or 0) for c in candles)
+        fluxo_agressor_canonico = sum(
+            float(c.get("fluxo_agressor_canonico") or 0)
+            for c in candles
+        )
+
+        relacoes = {
+            str(c.get("delta_saldo_relacao") or "INDETERMINADO")
+            for c in candles
+        }
+        delta_saldo_relacao = (
+            next(iter(relacoes)) if len(relacoes) == 1 else "INDETERMINADO"
+        )
+        delta_saldo_independentes = bool(candles) and all(
+            bool(c.get("delta_saldo_independentes", False))
+            for c in candles
+        )
+        saldo_fallback_delta = bool(candles) and all(
+            bool(c.get("saldo_fallback_delta", False))
+            for c in candles
+        )
+
+        delta_fontes = sorted({str(c.get("delta_fonte") or "SEM_DADOS") for c in candles})
+        saldo_fontes = sorted({str(c.get("saldo_fonte") or "SEM_DADOS") for c in candles})
+        fluxo_fontes = sorted({str(c.get("fluxo_agressor_fonte") or "SEM_DADOS") for c in candles})
+
+        delta_fonte = "REPLAY_AGREGADO:" + "|".join(delta_fontes)
+        saldo_fonte = "REPLAY_AGREGADO:" + "|".join(saldo_fontes)
+        fluxo_agressor_fonte = "REPLAY_AGREGADO:" + "|".join(fluxo_fontes)
+        fluxo_agressor_status = (
+            "SEM_DADOS"
+            if all(c.get("fluxo_agressor_status") == "SEM_DADOS" for c in candles)
+            else "CANONICO_AGREGADO"
+        )
+
+        volume_saldo_presentes = [
+            float(c.get("volume_saldo") or 0)
+            for c in candles
+            if "volume_saldo" in c
+        ]
+        volume_saldo = (
+            sum(volume_saldo_presentes)
+            if len(volume_saldo_presentes) == len(candles)
+            else None
+        )
 
         soma_peso = 0.0
         soma_vwap = 0.0
@@ -435,6 +578,15 @@ class ReplayDiagnostico:
             "volume_tipo": "REPLAY_CSV_EM_FORMACAO",
             "delta": delta,
             "saldo": saldo,
+            **({"volume_saldo": volume_saldo} if volume_saldo is not None else {}),
+            "delta_fonte": delta_fonte,
+            "saldo_fonte": saldo_fonte,
+            "delta_saldo_relacao": delta_saldo_relacao,
+            "delta_saldo_independentes": delta_saldo_independentes,
+            "saldo_fallback_delta": saldo_fallback_delta,
+            "fluxo_agressor_canonico": fluxo_agressor_canonico,
+            "fluxo_agressor_fonte": fluxo_agressor_fonte,
+            "fluxo_agressor_status": fluxo_agressor_status,
             "vwap": vwap,
             "timeframe_painel": timeframe_painel,
             "qtd_candles_origem": len(candles),

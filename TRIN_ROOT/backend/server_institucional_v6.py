@@ -252,6 +252,170 @@ def _num(valor, default=0.0):
         return default
 
 
+# CR-03D1 - contrato semantico canonico Delta / Saldo.
+# Publica proveniencia e dependencia sem alterar os valores brutos nem os motores.
+CAMPOS_CONTRATO_DELTA_SALDO = (
+    "delta",
+    "saldo",
+    "volume_saldo",
+    "delta_fonte",
+    "saldo_fonte",
+    "delta_saldo_relacao",
+    "delta_saldo_independentes",
+    "saldo_fallback_delta",
+    "fluxo_agressor_canonico",
+    "fluxo_agressor_fonte",
+    "fluxo_agressor_status",
+)
+
+ESTADOS_RELACAO_DELTA_SALDO = {
+    "INDEPENDENTES",
+    "EQUIVALENTES_OBSERVADOS",
+    "SALDO_DERIVADO_DELTA",
+    "DELTA_DERIVADO_SALDO",
+    "INDETERMINADO",
+    "SEM_DADOS",
+}
+
+
+def _valor_semantico_disponivel(candle, chave):
+    if not isinstance(candle, dict) or chave not in candle:
+        return False
+
+    valor = candle.get(chave)
+    if valor is None:
+        return False
+
+    texto = str(valor).strip().lower()
+    return texto not in {"", "none", "nan", "n/d"}
+
+
+def _valores_equivalentes(valor_a, valor_b, tolerancia=1e-9):
+    return abs(_num(valor_a, 0) - _num(valor_b, 0)) <= tolerancia
+
+
+def normalizar_contrato_delta_saldo(candle, modo_replay=False):
+    """Publica o contrato semantico sem alterar score ou decisao operacional.
+
+    O candle canonico e o proprietario desta classificacao. O Replay pode
+    declarar fatos de origem/fallback, mas a normalizacao final ocorre aqui.
+    """
+    if not isinstance(candle, dict):
+        return candle
+
+    delta_presente = _valor_semantico_disponivel(candle, "delta")
+    saldo_presente = (
+        _valor_semantico_disponivel(candle, "saldo")
+        or _valor_semantico_disponivel(candle, "saldo_agressor")
+    )
+    volume_saldo_presente = _valor_semantico_disponivel(candle, "volume_saldo")
+
+    delta = _num(candle.get("delta"), 0)
+    saldo = _num(candle.get("saldo", candle.get("saldo_agressor")), 0)
+
+    candle["delta"] = delta
+    candle["saldo"] = saldo
+
+    fonte_dados = str(candle.get("fonte_dados", "")).upper()
+    modo_dados = str(candle.get("modo_dados", "")).upper()
+    replay = bool(modo_replay or modo_dados == "REPLAY" or fonte_dados.startswith("REPLAY"))
+    fonte_indisponivel = "INDISPONIVEL" in fonte_dados
+
+    if fonte_indisponivel or (not delta_presente and not saldo_presente):
+        candle["delta_fonte"] = candle.get("delta_fonte") or "SEM_DADOS"
+        candle["saldo_fonte"] = candle.get("saldo_fonte") or "SEM_DADOS"
+        candle["delta_saldo_relacao"] = "SEM_DADOS"
+        candle["delta_saldo_independentes"] = False
+        candle["saldo_fallback_delta"] = bool(candle.get("saldo_fallback_delta", False))
+        candle["fluxo_agressor_canonico"] = 0.0
+        candle["fluxo_agressor_fonte"] = "SEM_DADOS"
+        candle["fluxo_agressor_status"] = "SEM_DADOS"
+        return candle
+
+    relacao_declarada = str(candle.get("delta_saldo_relacao", "")).upper()
+    if relacao_declarada not in ESTADOS_RELACAO_DELTA_SALDO:
+        relacao_declarada = ""
+
+    if replay:
+        fallback_saldo = bool(candle.get("saldo_fallback_delta", False))
+        candle["delta_fonte"] = candle.get("delta_fonte") or (
+            "REPLAY_CSV_DELTA" if delta_presente else "REPLAY_CSV_SEM_DELTA"
+        )
+        candle["saldo_fonte"] = candle.get("saldo_fonte") or (
+            "REPLAY_FALLBACK_DELTA" if fallback_saldo
+            else "REPLAY_CSV_SALDO" if saldo_presente
+            else "REPLAY_CSV_SEM_SALDO"
+        )
+
+        if relacao_declarada:
+            relacao = relacao_declarada
+        elif fallback_saldo:
+            relacao = "SALDO_DERIVADO_DELTA"
+        elif delta_presente and saldo_presente:
+            relacao = (
+                "EQUIVALENTES_OBSERVADOS"
+                if _valores_equivalentes(delta, saldo)
+                else "INDEPENDENTES"
+            )
+        else:
+            relacao = "INDETERMINADO"
+
+        if "delta_saldo_independentes" in candle:
+            independentes = bool(candle.get("delta_saldo_independentes"))
+        else:
+            independentes = relacao == "INDEPENDENTES"
+
+        candle["saldo_fallback_delta"] = fallback_saldo
+
+    else:
+        candle["delta_fonte"] = candle.get("delta_fonte") or "RTD_EXCEL_I2_DERIVADO_L2"
+        candle["saldo_fonte"] = candle.get("saldo_fonte") or "RTD_EXCEL_J2_TOPICO_103"
+        candle["saldo_fallback_delta"] = False
+
+        if delta_presente and saldo_presente:
+            relacao = (
+                "EQUIVALENTES_OBSERVADOS"
+                if _valores_equivalentes(delta, saldo)
+                else "INDEPENDENTES"
+            )
+        else:
+            relacao = "INDETERMINADO"
+
+        independentes = relacao == "INDEPENDENTES"
+
+    candle["delta_saldo_relacao"] = relacao
+    candle["delta_saldo_independentes"] = independentes
+
+    if volume_saldo_presente:
+        fluxo = _num(candle.get("volume_saldo"), 0)
+        fonte_fluxo = candle.get("fluxo_agressor_fonte") or (
+            "REPLAY_CSV_VOLUME_SALDO" if replay
+            else "RTD_EXCEL_VOLUME_AGRESSAO_SALDO_L2"
+        )
+    elif saldo_presente and not candle.get("saldo_fallback_delta"):
+        fluxo = saldo
+        fonte_fluxo = candle.get("fluxo_agressor_fonte") or candle["saldo_fonte"]
+    elif delta_presente:
+        fluxo = delta
+        fonte_fluxo = candle.get("fluxo_agressor_fonte") or candle["delta_fonte"]
+    else:
+        fluxo = 0.0
+        fonte_fluxo = "SEM_DADOS"
+
+    candle["fluxo_agressor_canonico"] = fluxo
+    candle["fluxo_agressor_fonte"] = fonte_fluxo
+    candle["fluxo_agressor_status"] = (
+        "CANONICO_DISPONIVEL" if fonte_fluxo != "SEM_DADOS" else "SEM_DADOS"
+    )
+
+    return candle
+
+
+def contrato_delta_saldo_payload(candle):
+    candle = candle or {}
+    return {campo: candle.get(campo) for campo in CAMPOS_CONTRATO_DELTA_SALDO}
+
+
 
 def _ativo_base_from_ativo(ativo):
     texto = str(ativo or "WIN").upper().strip()
@@ -376,6 +540,7 @@ def gerar_candle():
         candle["delta"] = _num(candle.get("delta"), 0)
         candle["saldo"] = _num(candle.get("saldo", candle.get("saldo_agressor")), 0)
         candle["reversao_detectada"] = bool(candle.get("reversao_detectada", False))
+        normalizar_contrato_delta_saldo(candle, modo_replay=False)
 
         preco_atual = candle["close"]
         return candle
@@ -392,10 +557,12 @@ def gerar_candle():
             "volume": 0,
             "delta": 0,
             "saldo": 0,
+            "fonte_dados": "RTD_EXCEL_INDISPONIVEL",
+            "status_candle": "FALLBACK_LEITOR_INDISPONIVEL",
             "reversao_detectada": False,
         }
 
-        return candle
+        return normalizar_contrato_delta_saldo(candle, modo_replay=False)
 
 
 def normalizar_timeframe_painel(valor):
@@ -517,6 +684,14 @@ def agregar_historico_painel(historico_raw, timeframe):
             "volume_compra",
             "volume_venda",
             "volume_saldo",
+            "delta_fonte",
+            "saldo_fonte",
+            "delta_saldo_relacao",
+            "delta_saldo_independentes",
+            "saldo_fallback_delta",
+            "fluxo_agressor_canonico",
+            "fluxo_agressor_fonte",
+            "fluxo_agressor_status",
             "reversao_detectada",
             "explosao_detectada",
             "tipo_explosao",
@@ -635,6 +810,10 @@ def atualizar_historico():
         candle_replay = replay_reader.proximo_candle(painel_timeframe_atual)
 
         if candle_replay:
+            candle_replay = normalizar_contrato_delta_saldo(
+                candle_replay,
+                modo_replay=True,
+            )
             if historico and historico[-1].get("time") == candle_replay.get("time"):
                 historico[-1] = candle_replay
             else:
@@ -648,6 +827,7 @@ def atualizar_historico():
     candle = gerar_candle()
     referencia_volume = historico[-1] if historico else None
     candle = enriquecer_volume_estimado(candle, referencia_volume)
+    candle = normalizar_contrato_delta_saldo(candle, modo_replay=False)
 
     # Regra PATCH_CANDLEBUILDER_02:
     # nao cria candle novo quando o RTD/Excel esta parado.
@@ -705,6 +885,14 @@ def atualizar_historico():
             "volume_compra",
             "volume_venda",
             "volume_saldo",
+            "delta_fonte",
+            "saldo_fonte",
+            "delta_saldo_relacao",
+            "delta_saldo_independentes",
+            "saldo_fallback_delta",
+            "fluxo_agressor_canonico",
+            "fluxo_agressor_fonte",
+            "fluxo_agressor_status",
             "explosao_detectada",
             "tipo_explosao",
         ]:
@@ -720,6 +908,10 @@ def atualizar_historico():
 
         candle_canonico = historico[-1]
 
+    candle_canonico = normalizar_contrato_delta_saldo(
+        candle_canonico,
+        modo_replay=False,
+    )
     candle_engine.adicionar_ou_atualizar_candle(candle_canonico)
     candle_canonico["reversao_detectada"] = candle_engine.calcular_reversao()
     vwap_engine.adicionar_ou_atualizar_candle(candle_canonico)
@@ -750,6 +942,14 @@ def _montar_tick_confluencia(atual, vwap_atual, memoria, engine_data):
         "agressao_compra": compra,
         "agressao_venda": venda,
         "score_agressao": memoria.get("score_agressao", 0),
+        "delta_fonte": atual.get("delta_fonte"),
+        "saldo_fonte": atual.get("saldo_fonte"),
+        "delta_saldo_relacao": atual.get("delta_saldo_relacao"),
+        "delta_saldo_independentes": atual.get("delta_saldo_independentes"),
+        "saldo_fallback_delta": atual.get("saldo_fallback_delta"),
+        "fluxo_agressor_canonico": atual.get("fluxo_agressor_canonico"),
+        "fluxo_agressor_fonte": atual.get("fluxo_agressor_fonte"),
+        "fluxo_agressor_status": atual.get("fluxo_agressor_status"),
     }
 
 
@@ -920,6 +1120,10 @@ def gerar_payload():
             "fonte_dados": "RTD_EXCEL_INDISPONIVEL",
             "status_candle": "FALLBACK_SEM_HISTORICO_SUFICIENTE",
         }
+        candle_fallback = normalizar_contrato_delta_saldo(
+            candle_fallback,
+            modo_replay=False,
+        )
 
         return {
             "historico": historico,
@@ -932,6 +1136,7 @@ def gerar_payload():
             "volume": candle_fallback.get("volume", 0),
             "delta": candle_fallback.get("delta", 0),
             "saldo": candle_fallback.get("saldo", 0),
+            "contrato_delta_saldo": contrato_delta_saldo_payload(candle_fallback),
             "fonte_dados": "RTD_EXCEL_INDISPONIVEL",
             "modo_replay": False,
             "status_backend": "SEM_HISTORICO_SUFICIENTE",
@@ -1273,6 +1478,7 @@ def gerar_payload():
     payload = {
         "historico": historico_painel,
         "engine": engine_data,
+        "contrato_delta_saldo": contrato_delta_saldo_payload(atual),
         "processamento_operacional": {
             "status": "CACHE_REUTILIZADO" if cache_reutilizado else "NOVO_EVENTO_PROCESSADO",
             "cache_reutilizado": cache_reutilizado,
