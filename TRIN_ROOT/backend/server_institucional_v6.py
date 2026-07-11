@@ -27,6 +27,7 @@ from datetime import datetime
 from pathlib import Path
 from backend.replay_diagnostico import replay_reader
 import asyncio
+import csv
 import json
 
 # ------------------------------------------------------------
@@ -1654,6 +1655,250 @@ async def tt_raw_status():
             "uso_operacional": "DIAGNOSTICO_APENAS",
             "candle_oficial": False
         }
+
+
+
+# ============================================================
+# CANDLE 5S - DIAGNOSTICO SOMENTE LEITURA
+# Le o ultimo Candle 5S ja produzido pelo pipeline TT.
+# Nao gera candle.
+# Nao alimenta /data, motores, Replay 1MIN ou decisao operacional.
+# Nao certifica dados.
+# ============================================================
+
+def _numero_candle_5s(valor, inteiro=False):
+    if valor is None:
+        return None
+
+    texto = str(valor).strip()
+
+    if not texto:
+        return None
+
+    if "," in texto:
+        texto = texto.replace(".", "").replace(",", ".")
+
+    try:
+        numero = float(texto)
+    except (TypeError, ValueError):
+        return None
+
+    return int(numero) if inteiro else numero
+
+
+def _booleano_candle_5s(valor):
+    return str(valor).strip().lower() in {"true", "1", "sim", "yes"}
+
+
+def _ler_candle_5s_csv(caminho):
+    primeiro = None
+    ultimo = None
+    total = 0
+
+    with caminho.open("r", encoding="utf-8-sig", newline="") as arquivo:
+        leitor = csv.DictReader(arquivo, delimiter=";")
+
+        for linha in leitor:
+            if primeiro is None:
+                primeiro = linha
+
+            ultimo = linha
+            total += 1
+
+    return primeiro, ultimo, total
+
+
+def _ler_resumo_candle_5s(caminho):
+    if not caminho.exists():
+        return {}
+
+    with caminho.open("r", encoding="utf-8-sig", newline="") as arquivo:
+        leitor = csv.DictReader(arquivo, delimiter=";")
+        return next(leitor, {}) or {}
+
+
+@app.get("/tt/5s/status")
+async def tt_5s_status():
+    base = (
+        TRIN_ROOT_DIR
+        / "TRIN_HISTORICO"
+        / "00_PROCESSAMENTO_TT"
+        / "CANDLE_5S_DIAGNOSTICO"
+    )
+
+    if not base.exists():
+        return {
+            "ok": True,
+            "status": "CANDLE_5S_DIAGNOSTICO_NAO_ENCONTRADO",
+            "arquivo_existe": False,
+            "base": str(base),
+            "endpoint": "/tt/5s/status",
+            "uso_operacional": "DIAGNOSTICO_APENAS",
+            "candle_oficial": False,
+            "nao_operacional": True,
+            "observacao": "A pasta do Candle 5S diagnostico ainda nao existe.",
+        }
+
+    arquivos = [
+        caminho
+        for caminho in base.rglob("CANDLE_5S_DIAGNOSTICO_*.csv")
+        if caminho.is_file()
+    ]
+
+    if not arquivos:
+        return {
+            "ok": True,
+            "status": "CANDLE_5S_DIAGNOSTICO_NAO_ENCONTRADO",
+            "arquivo_existe": False,
+            "base": str(base),
+            "endpoint": "/tt/5s/status",
+            "uso_operacional": "DIAGNOSTICO_APENAS",
+            "candle_oficial": False,
+            "nao_operacional": True,
+            "observacao": "Nenhum arquivo de Candle 5S diagnostico foi encontrado.",
+        }
+
+    caminho_candles = max(
+        arquivos,
+        key=lambda caminho: caminho.stat().st_mtime,
+    )
+
+    nome_resumo = caminho_candles.name.replace(
+        "CANDLE_5S_DIAGNOSTICO_",
+        "RESUMO_CANDLE_5S_DIAGNOSTICO_",
+        1,
+    )
+    caminho_resumo = caminho_candles.with_name(nome_resumo)
+
+    try:
+        primeiro, ultimo, total_candles = _ler_candle_5s_csv(caminho_candles)
+        resumo = _ler_resumo_candle_5s(caminho_resumo)
+
+        if not ultimo:
+            return {
+                "ok": True,
+                "status": "CANDLE_5S_DIAGNOSTICO_VAZIO",
+                "arquivo_existe": True,
+                "arquivo_candles": str(caminho_candles),
+                "arquivo_resumo": str(caminho_resumo),
+                "endpoint": "/tt/5s/status",
+                "uso_operacional": "DIAGNOSTICO_APENAS",
+                "candle_oficial": False,
+                "nao_operacional": True,
+                "observacao": "O arquivo existe, mas nao possui candles.",
+            }
+
+        cobertura_segundos = None
+
+        try:
+            inicio = datetime.fromisoformat(str(primeiro.get("bucket_inicio")))
+            fim = datetime.fromisoformat(str(ultimo.get("bucket_fim")))
+            cobertura_segundos = max(0, int((fim - inicio).total_seconds()))
+        except (TypeError, ValueError):
+            cobertura_segundos = None
+
+        total_negocios_validos = _numero_candle_5s(
+            resumo.get("total_negocios_validos"),
+            inteiro=True,
+        )
+        total_resumo = _numero_candle_5s(
+            resumo.get("total_candles_5s"),
+            inteiro=True,
+        )
+
+        amostra_insuficiente = (
+            total_candles < 12
+            or cobertura_segundos is None
+            or cobertura_segundos < 60
+        )
+
+        return {
+            "ok": True,
+            "status": "CANDLE_5S_DIAGNOSTICO_DISPONIVEL",
+            "arquivo_existe": True,
+            "arquivo_candles": str(caminho_candles),
+            "arquivo_resumo": str(caminho_resumo),
+            "arquivo_resumo_existe": caminho_resumo.exists(),
+            "arquivo_atualizado_em": datetime.fromtimestamp(
+                caminho_candles.stat().st_mtime
+            ).isoformat(timespec="seconds"),
+            "endpoint": "/tt/5s/status",
+
+            "data_pregao": ultimo.get("data_pregao"),
+            "contrato": ultimo.get("contrato"),
+            "timeframe": ultimo.get("timeframe", "5S"),
+            "bucket_inicio": ultimo.get("bucket_inicio"),
+            "bucket_fim": ultimo.get("bucket_fim"),
+
+            "abertura": _numero_candle_5s(ultimo.get("abertura")),
+            "maximo": _numero_candle_5s(ultimo.get("maximo")),
+            "minimo": _numero_candle_5s(ultimo.get("minimo")),
+            "fechamento": _numero_candle_5s(ultimo.get("fechamento")),
+            "volume_quantidade": _numero_candle_5s(
+                ultimo.get("volume_quantidade")
+            ),
+            "qtd_negocios": _numero_candle_5s(
+                ultimo.get("qtd_negocios"),
+                inteiro=True,
+            ),
+            "eventos_pregao": _numero_candle_5s(
+                ultimo.get("eventos_pregao"),
+                inteiro=True,
+            ),
+            "eventos_leilao": _numero_candle_5s(
+                ultimo.get("eventos_leilao"),
+                inteiro=True,
+            ),
+
+            "total_candles_5s": total_candles,
+            "total_candles_resumo": total_resumo,
+            "total_negocios_validos": total_negocios_validos,
+            "cobertura_segundos": cobertura_segundos,
+
+            "fonte": ultimo.get(
+                "fonte",
+                "TT_PENEIRADO_NAO_CERTIFICADO",
+            ),
+            "status_candle": ultimo.get(
+                "status_candle",
+                "CANDLE_5S_DIAGNOSTICO_NAO_CERTIFICADO",
+            ),
+            "uso_operacional": ultimo.get(
+                "uso_operacional",
+                "DIAGNOSTICO_APENAS",
+            ),
+            "candle_oficial": _booleano_candle_5s(
+                ultimo.get("candle_oficial")
+            ),
+            "nao_operacional": True,
+
+            "amostra_insuficiente": amostra_insuficiente,
+            "amostra_status": (
+                "AMOSTRA_INSUFICIENTE"
+                if amostra_insuficiente
+                else "AMOSTRA_DIAGNOSTICA_DISPONIVEL"
+            ),
+            "criterio_amostra": "MINIMO_12_CANDLES_E_60_SEGUNDOS",
+            "observacao": (
+                "Leitura diagnostica do ultimo Candle 5S ja produzido. "
+                "Nao alimenta motores nem decisao operacional."
+            ),
+        }
+
+    except Exception as erro:
+        return {
+            "ok": False,
+            "status": "ERRO_LEITURA_CANDLE_5S_DIAGNOSTICO",
+            "arquivo_existe": True,
+            "arquivo_candles": str(caminho_candles),
+            "arquivo_resumo": str(caminho_resumo),
+            "endpoint": "/tt/5s/status",
+            "erro": str(erro),
+            "uso_operacional": "DIAGNOSTICO_APENAS",
+            "candle_oficial": False,
+            "nao_operacional": True,
+        }
+
 
 
 

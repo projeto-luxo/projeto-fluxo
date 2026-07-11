@@ -45,6 +45,8 @@ export default function App() {
   const [wsStatus, setWsStatus] = useState("DESCONECTADO");
   const [ttRawStatus, setTtRawStatus] = useState(null);
   const [ttRawErro, setTtRawErro] = useState("");
+  const [candle5sStatus, setCandle5sStatus] = useState(null);
+  const [candle5sErro, setCandle5sErro] = useState("");
 
   const [replayStatus, setReplayStatus] = useState({
     ativo: false,
@@ -1455,6 +1457,36 @@ if (temEntradaReal) {
     };
   }, []);
 
+  // 5S-01: leitura isolada do status diagnostico. Nao entra em /data.
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarCandle5sStatus() {
+      try {
+        const resposta = await fetch("http://127.0.0.1:8001/tt/5s/status");
+        const json = await resposta.json();
+
+        if (!ativo) return;
+
+        setCandle5sStatus(json);
+        setCandle5sErro("");
+      } catch (erro) {
+        if (!ativo) return;
+
+        setCandle5sErro("CANDLE_5S_STATUS_INDISPONIVEL");
+      }
+    }
+
+    carregarCandle5sStatus();
+
+    const timer = setInterval(carregarCandle5sStatus, 15000);
+
+    return () => {
+      ativo = false;
+      clearInterval(timer);
+    };
+  }, []);
+
   const ultimoPainel = dataInfo.ultimo ?? dataInfo.close ?? dataInfo.preco ?? "-";
   const maximaPainel = dataInfo.maximo ?? dataInfo.maxima ?? dataInfo.high ?? "-";
   const minimaPainel = dataInfo.minimo ?? dataInfo.minima ?? dataInfo.low ?? "-";
@@ -1464,6 +1496,30 @@ if (temEntradaReal) {
   const volumeTipoPainel = dataInfo.volumeTipo ?? "NAO_INFORMADO";
   const deltaPainel = dataInfo.delta ?? "-";
   const saldoPainel = dataInfo.saldo ?? "-";
+
+  // 5S-01: status diagnostico somente leitura.
+  const candle5sDisponivel =
+    candle5sStatus?.status === "CANDLE_5S_DIAGNOSTICO_DISPONIVEL" &&
+    candle5sStatus?.arquivo_existe === true;
+  const candle5sAmostraInsuficiente =
+    candle5sStatus?.amostra_insuficiente === true ||
+    candle5sStatus?.amostra_status === "AMOSTRA_INSUFICIENTE";
+  const candle5sCor = candle5sErro
+    ? "#ff5555"
+    : candle5sDisponivel
+      ? "#ffb000"
+      : "#7f8c8d";
+  const candle5sStatusTexto = candle5sErro
+    ? "STATUS INDISPONIVEL"
+    : candle5sDisponivel
+      ? "DIAGNOSTICO"
+      : "AGUARDANDO DADOS";
+  const candle5sBucketTexto =
+    candle5sStatus?.bucket_inicio && candle5sStatus?.bucket_fim
+      ? `${String(candle5sStatus.bucket_inicio).slice(11)} - ${String(
+          candle5sStatus.bucket_fim
+        ).slice(11)}`
+      : "-";
 
   // CR-03D4: leitura visual do contrato semantico sem alterar calculos.
   const deltaFontePainel = dataInfo.deltaFonte || "NAO_INFORMADA";
@@ -2143,6 +2199,126 @@ if (temEntradaReal) {
                 />
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* 5S-01: primeira casca da Microestrutura Diagnostica. */}
+        <div style={{ marginTop: 24 }}>
+          <div
+            style={{
+              color: "#cfd8dc",
+              fontSize: 12,
+              fontWeight: "900",
+              marginBottom: 10,
+              letterSpacing: 0.8,
+            }}
+          >
+            MICROESTRUTURA DIAGNOSTICA
+          </div>
+
+          <div
+            title={[
+              `Arquivo: ${candle5sStatus?.arquivo_candles || "NAO_INFORMADO"}`,
+              `Atualizado: ${candle5sStatus?.arquivo_atualizado_em || "NAO_INFORMADO"}`,
+              `Status: ${candle5sStatus?.status_candle || candle5sStatus?.status || "NAO_INFORMADO"}`,
+            ].join("\n")}
+            style={{
+              border: `1px solid ${candle5sCor}88`,
+              background: candle5sDisponivel
+                ? "rgba(54,34,0,0.62)"
+                : "rgba(32,38,42,0.58)",
+              borderRadius: 12,
+              padding: "11px 12px",
+              color: "#d7dde1",
+              fontSize: 11,
+              lineHeight: 1.5,
+              boxShadow: `inset 0 0 18px ${candle5sCor}0f, 0 0 16px ${candle5sCor}10`,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 8,
+                marginBottom: 8,
+              }}
+            >
+              <div
+                style={{
+                  color: candle5sCor,
+                  fontWeight: "900",
+                  fontSize: 11,
+                  letterSpacing: 1,
+                }}
+              >
+                CANDLE 5S
+              </div>
+
+              <div
+                style={{
+                  color: candle5sCor,
+                  border: `1px solid ${candle5sCor}88`,
+                  borderRadius: 999,
+                  padding: "2px 7px",
+                  fontSize: 9,
+                  fontWeight: "900",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {candle5sStatusTexto}
+              </div>
+            </div>
+
+            {candle5sDisponivel ? (
+              <>
+                <div>• Contrato: <b>{candle5sStatus?.contrato || "-"}</b></div>
+                <div>• Ultimo bucket: <b>{candle5sBucketTexto}</b></div>
+                <div>• Fechamento: <b>{formatar(candle5sStatus?.fechamento)}</b></div>
+                <div>• Volume: <b>{formatar(candle5sStatus?.volume_quantidade)}</b></div>
+                <div>• Negocios: <b>{candle5sStatus?.qtd_negocios ?? "-"}</b></div>
+                <div>• Candles: <b>{candle5sStatus?.total_candles_5s ?? "-"}</b></div>
+                <div>• Cobertura: <b>{candle5sStatus?.cobertura_segundos ?? "-"}s</b></div>
+                <div>• Fonte: <b>TT PENEIRADO</b></div>
+              </>
+            ) : (
+              <div style={{ color: "#aab4ba" }}>
+                {candle5sErro ||
+                  candle5sStatus?.observacao ||
+                  "Nenhum Candle 5S diagnostico encontrado."}
+              </div>
+            )}
+
+            <div
+              style={{
+                marginTop: 8,
+                padding: "6px 8px",
+                borderRadius: 7,
+                color: candle5sCor,
+                background: `${candle5sCor}12`,
+                border: `1px solid ${candle5sCor}55`,
+                fontSize: 9,
+                fontWeight: "900",
+                letterSpacing: 0.45,
+                textAlign: "center",
+              }}
+            >
+              NAO CERTIFICADO · DIAGNOSTICO APENAS · NAO OPERACIONAL
+            </div>
+
+            {candle5sDisponivel && candle5sAmostraInsuficiente ? (
+              <div
+                style={{
+                  marginTop: 6,
+                  color: "#ffcc66",
+                  fontSize: 9,
+                  fontWeight: "900",
+                  textAlign: "center",
+                }}
+              >
+                AMOSTRA INSUFICIENTE PARA VALIDACAO DE CONTINUIDADE
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
