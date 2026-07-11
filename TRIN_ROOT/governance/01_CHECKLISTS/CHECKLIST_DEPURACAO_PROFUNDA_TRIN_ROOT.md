@@ -1021,7 +1021,7 @@ A coleta do Livro de Ofertas nao pode:
 
 Status atual:
 
-IMPLEMENTADO COMO PROVA INICIAL / PRECISA ORGANIZACAO FINAL PARA COCKPIT
+5S-01 HOMOLOGADO NO COCKPIT / AMOSTRA AINDA INSUFICIENTE PARA VALIDACAO DE CONTINUIDADE
 
 Objetivo:
 
@@ -1056,23 +1056,23 @@ Checklist:
 
 Cada Candle 5S Diagnostico deve possuir:
 
-[ ] data_pregao.
-[ ] contrato.
-[ ] timeframe=5S.
-[ ] bucket_inicio.
-[ ] bucket_fim.
-[ ] abertura.
-[ ] maximo.
-[ ] minimo.
-[ ] fechamento.
-[ ] volume_quantidade.
-[ ] qtd_negocios.
-[ ] eventos_pregao.
-[ ] eventos_leilao.
-[ ] fonte=TT_PENEIRADO_NAO_CERTIFICADO.
-[ ] status_candle=CANDLE_5S_DIAGNOSTICO_NAO_CERTIFICADO.
-[ ] uso_operacional=DIAGNOSTICO_APENAS.
-[ ] candle_oficial=false.
+[v] data_pregao.
+[v] contrato.
+[v] timeframe=5S.
+[v] bucket_inicio.
+[v] bucket_fim.
+[v] abertura.
+[v] maximo.
+[v] minimo.
+[v] fechamento.
+[v] volume_quantidade.
+[v] qtd_negocios.
+[v] eventos_pregao.
+[v] eventos_leilao.
+[v] fonte=TT_PENEIRADO_NAO_CERTIFICADO.
+[v] status_candle=CANDLE_5S_DIAGNOSTICO_NAO_CERTIFICADO.
+[v] uso_operacional=DIAGNOSTICO_APENAS.
+[v] candle_oficial=false.
 
 ### 22.3 Organização para cockpit
 
@@ -1080,22 +1080,22 @@ O cockpit deve tratar Candle 5S como:
 
 [ ] regua curta diagnostica.
 [ ] laboratorio visual.
-[ ] fonte nao operacional.
+[v] fonte nao operacional.
 [ ] complemento de leitura.
-[ ] nunca como autorizacao de entrada.
-[ ] nunca como candle oficial.
-[ ] nunca como substituto do Fiscal.
+[v] nunca como autorizacao de entrada.
+[v] nunca como candle oficial.
+[v] nunca como substituto do Fiscal.
 
 Campos visuais futuros:
 
-[ ] status do Candle 5S.
-[ ] quantidade de candles 5S gerados.
-[ ] origem TT_PENEIRADO.
-[ ] horario inicial/final.
-[ ] volume por 5S.
-[ ] qtd negocios por 5S.
-[ ] aviso DIAGNOSTICO_APENAS.
-[ ] aviso NAO_CERTIFICADO.
+[v] status do Candle 5S.
+[v] quantidade de candles 5S gerados.
+[v] origem TT_PENEIRADO.
+[v] horario inicial/final.
+[v] volume por 5S.
+[v] qtd negocios por 5S.
+[v] aviso DIAGNOSTICO_APENAS.
+[v] aviso NAO_CERTIFICADO.
 
 ### 22.4 Replay 5S Diagnostico
 
@@ -1138,27 +1138,55 @@ O Candle 5S depende de:
 [ ] verificar se volume esta coerente.
 [ ] verificar se nao ha duplicidade de snapshot.
 [ ] criar Replay 5S separado, se aprovado.
-[ ] exibir no cockpit como diagnostico.
-[ ] manter bloqueio operacional.
+[v] exibir no cockpit como diagnostico.
+[v] manter bloqueio operacional.
 
 ### 22.7 Proibicoes
 
 O 5S nao pode:
 
-[ ] virar candle oficial agora.
-[ ] alimentar Bernardo como memoria certificada.
-[ ] alimentar Historiador como base validada.
-[ ] alimentar Motor de Confluencia operacional.
-[ ] liberar entrada.
-[ ] liberar stop.
-[ ] liberar parcial.
-[ ] liberar alvo.
-[ ] substituir Replay 1MIN.
-[ ] substituir CandleBuilder oficial.
-[ ] ignorar Fiscal.
+[v] virar candle oficial agora.
+[v] alimentar Bernardo como memoria certificada.
+[v] alimentar Historiador como base validada.
+[v] alimentar Motor de Confluencia operacional.
+[v] liberar entrada.
+[v] liberar stop.
+[v] liberar parcial.
+[v] liberar alvo.
+[v] substituir Replay 1MIN.
+[v] substituir CandleBuilder oficial.
+[v] ignorar Fiscal.
+
+
+### 22.8 Marco homologado — 5S-01
+
+[v] Endpoint GET /tt/5s/status criado.
+[v] Endpoint isolado do payload operacional.
+[v] Ultimo Candle 5S apresentado no cockpit.
+[v] Resumo e cobertura apresentados no cockpit.
+[v] Status NAO CERTIFICADO apresentado.
+[v] Status DIAGNOSTICO APENAS apresentado.
+[v] Status NAO OPERACIONAL apresentado.
+[v] Amostra insuficiente declarada explicitamente.
+[v] Validacao tecnica: 19 testes aprovados.
+[v] Validacao visual concluida.
+[v] Commit oficial: fce102d.
+
+Escopo atual:
+
+- WIN apenas.
+- WDO adiado ate a conclusao do eixo atual e realizacao de coleta propria.
+
+Pendencias mantidas:
+
+[ ] coletar amostra maior durante mercado aberto.
+[ ] validar continuidade temporal.
+[ ] validar volume por bucket.
+[ ] comparar visualmente com o Profit.
+[ ] validar varios periodos do pregao.
 
 ## Status da secao 5S
 
-CRIADA PARA ORGANIZACAO FINAL ANTES DA DEPURACAO.
+5S-01 HOMOLOGADO PARA STATUS DIAGNOSTICO NO COCKPIT. CONTINUIDADE E FIDELIDADE AINDA PENDENTES.
 
 So marcar [v] depois de evidencia real no TRIN_ROOT atual.
