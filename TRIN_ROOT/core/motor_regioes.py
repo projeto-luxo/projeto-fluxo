@@ -334,6 +334,73 @@ class ProvedorPTAX(_ProvedorNivelExterno):
     campo_aplicabilidade = "ptax_aplicavel_ao_ativo"
 
 
+class _ProvedorNivelSessao:
+    nome = ""
+    origem_tipo = ""
+    campo_valor = ""
+    campo_fonte = ""
+    campo_confirmacao = ""
+
+    def localizar(
+        self,
+        payload: dict[str, Any],
+        contexto: ContextoReferencia,
+    ) -> Iterable[ReferenciaMercado]:
+        valor = _decimal_positivo(payload.get(self.campo_valor))
+        fonte = str(payload.get(self.campo_fonte) or "").strip().upper()
+        confirmada = bool(payload.get(self.campo_confirmacao))
+
+        status = "ATIVA"
+        motivo = ""
+
+        if valor is None:
+            status = "BLOQUEADA"
+            motivo = f"{self.origem_tipo}_VALOR_INVALIDO"
+        elif not fonte:
+            status = "BLOQUEADA"
+            motivo = f"{self.origem_tipo}_FONTE_NAO_INFORMADA"
+        elif not confirmada:
+            status = "BLOQUEADA"
+            motivo = f"{self.origem_tipo}_ORIGEM_NAO_CONFIRMADA"
+
+        return (
+            FabricaReferencia.criar(
+                contexto=contexto,
+                origem_tipo=self.origem_tipo,
+                fornecedor=fonte or "FONTE_NAO_INFORMADA",
+                campo_origem=self.campo_valor.upper(),
+                timeframe_origem="SESSAO",
+                valor=valor,
+                status=status,
+                motivo_status=motivo,
+            ),
+        )
+
+
+class ProvedorAberturaSessao(_ProvedorNivelSessao):
+    nome = "ABERTURA_SESSAO"
+    origem_tipo = "ABERTURA_SESSAO"
+    campo_valor = "abertura_sessao"
+    campo_fonte = "abertura_fonte"
+    campo_confirmacao = "abertura_origem_confirmada"
+
+
+class ProvedorMaximaSessao(_ProvedorNivelSessao):
+    nome = "MAXIMA_SESSAO"
+    origem_tipo = "MAXIMA_SESSAO"
+    campo_valor = "maxima_sessao"
+    campo_fonte = "maxima_fonte"
+    campo_confirmacao = "maxima_origem_confirmada"
+
+
+class ProvedorMinimaSessao(_ProvedorNivelSessao):
+    nome = "MINIMA_SESSAO"
+    origem_tipo = "MINIMA_SESSAO"
+    campo_valor = "minima_sessao"
+    campo_fonte = "minima_fonte"
+    campo_confirmacao = "minima_origem_confirmada"
+
+
 class MotorRegioes:
     """
     Nucleo generico de referencias da RG-02A.
@@ -354,6 +421,9 @@ class MotorRegioes:
                 ProvedorVWAPOficial(),
                 ProvedorAjusteDiario(),
                 ProvedorPTAX(),
+                ProvedorAberturaSessao(),
+                ProvedorMaximaSessao(),
+                ProvedorMinimaSessao(),
             )
         )
 

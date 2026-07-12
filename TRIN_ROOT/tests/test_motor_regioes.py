@@ -32,10 +32,19 @@ class MotorRegioesTest(unittest.TestCase):
             "ptax_fonte": "FONTE_EXPLICITA_PTAX",
             "ptax_origem_confirmada": True,
             "ptax_aplicavel_ao_ativo": False,
+            "abertura_sessao": 180100,
+            "abertura_fonte": "RTD_EXCEL_ABERTURA",
+            "abertura_origem_confirmada": True,
+            "maxima_sessao": 181250,
+            "maxima_fonte": "RTD_EXCEL_MAXIMA",
+            "maxima_origem_confirmada": True,
+            "minima_sessao": 179500,
+            "minima_fonte": "RTD_EXCEL_MINIMA",
+            "minima_origem_confirmada": True,
             "volume": 123456,
         }
 
-    def test_quatro_provedores_estao_presentes(self) -> None:
+    def test_sete_provedores_estao_presentes(self) -> None:
         referencias = self.motor.localizar(
             self.payload_base(),
             self.contexto,
@@ -46,6 +55,9 @@ class MotorRegioesTest(unittest.TestCase):
         self.assertIn("VWAP_OFICIAL", tipos)
         self.assertIn("AJUSTE_DIARIO", tipos)
         self.assertIn("PTAX", tipos)
+        self.assertIn("ABERTURA_SESSAO", tipos)
+        self.assertIn("MAXIMA_SESSAO", tipos)
+        self.assertIn("MINIMA_SESSAO", tipos)
 
     def test_vwap_engine_calculada_fica_bloqueada(self) -> None:
         payload = self.payload_base()
@@ -168,6 +180,56 @@ class MotorRegioesTest(unittest.TestCase):
             self.assertTrue(proibidos.isdisjoint(item))
             self.assertEqual("BLOQUEADO", item["uso_operacional"])
 
+
+    def test_referencias_de_sessao_confirmadas_ficam_ativas(self) -> None:
+        referencias = self.motor.localizar(
+            self.payload_base(),
+            self.contexto,
+        )
+
+        por_tipo = {
+            item["origem_tipo"]: item
+            for item in referencias
+        }
+
+        self.assertEqual("ATIVA", por_tipo["ABERTURA_SESSAO"]["status"])
+        self.assertEqual("ATIVA", por_tipo["MAXIMA_SESSAO"]["status"])
+        self.assertEqual("ATIVA", por_tipo["MINIMA_SESSAO"]["status"])
+        self.assertEqual(
+            180100.0,
+            por_tipo["ABERTURA_SESSAO"]["limite_inferior"],
+        )
+
+    def test_abertura_sem_confirmacao_fica_bloqueada(self) -> None:
+        payload = self.payload_base()
+        payload["abertura_origem_confirmada"] = False
+
+        referencias = self.motor.localizar(payload, self.contexto)
+        abertura = next(
+            item
+            for item in referencias
+            if item["origem_tipo"] == "ABERTURA_SESSAO"
+        )
+
+        self.assertEqual("BLOQUEADA", abertura["status"])
+        self.assertEqual(
+            "ABERTURA_SESSAO_ORIGEM_NAO_CONFIRMADA",
+            abertura["motivo_status"],
+        )
+
+    def test_maxima_ou_minima_invalidas_ficam_bloqueadas(self) -> None:
+        payload = self.payload_base()
+        payload["maxima_sessao"] = None
+        payload["minima_sessao"] = 0
+
+        referencias = self.motor.localizar(payload, self.contexto)
+        por_tipo = {
+            item["origem_tipo"]: item
+            for item in referencias
+        }
+
+        self.assertEqual("BLOQUEADA", por_tipo["MAXIMA_SESSAO"]["status"])
+        self.assertEqual("BLOQUEADA", por_tipo["MINIMA_SESSAO"]["status"])
 
 if __name__ == "__main__":
     unittest.main()

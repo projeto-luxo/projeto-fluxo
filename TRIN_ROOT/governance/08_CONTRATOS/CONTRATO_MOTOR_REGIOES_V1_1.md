@@ -187,3 +187,20 @@ existirem dados e critérios homologados para calibrar proximidade.
 
 O RG-02B não gera força, confiança, direção, entrada, stop, parcial,
 alvo ou autorização operacional.
+
+## 9. Referencias deterministicas da sessao
+
+O nucleo generico tambem suporta:
+
+- ABERTURA_SESSAO;
+- MAXIMA_SESSAO;
+- MINIMA_SESSAO.
+
+Cada referencia exige valor positivo, fonte explicita e confirmacao da
+origem. Se qualquer requisito falhar, a referencia permanece BLOQUEADA.
+
+Esses provedores apenas registram niveis recebidos. Nao recalculam
+candles, nao classificam comportamento e nao liberam uso operacional.
+
+A ligacao com o leitor e o payload sera validada em mercado aberto para
+impedir que valores de fallback sejam tratados como referencias reais.
