@@ -166,3 +166,24 @@ provedor futuro ligado a preco.
 
 Novos provedores nao alteram o nucleo. Eles implementam o mesmo contrato
 canonico e mantem uso operacional BLOQUEADO.
+
+## 8. RG-02B — Agregador/Classificador de Regiões
+
+O RG-02B recebe referências individuais da RG-02A e forma regiões
+compostas sem apagar identidade ou proveniência.
+
+Primeira regra determinística:
+
+- agrupar somente referências ATIVAS;
+- agrupar apenas limites exatamente iguais;
+- não usar tolerância de proximidade;
+- preservar cada origem de forma estruturada;
+- manter classificação como NAO_CLASSIFICADA;
+- manter status_classificacao como NAO_AVALIADA;
+- manter uso_operacional como BLOQUEADO.
+
+Referências próximas, mas não idênticas, permanecem separadas até
+existirem dados e critérios homologados para calibrar proximidade.
+
+O RG-02B não gera força, confiança, direção, entrada, stop, parcial,
+alvo ou autorização operacional.
