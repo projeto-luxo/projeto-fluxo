@@ -139,3 +139,30 @@ O Motor de Regiões nunca deve:
 - classificar automaticamente MILHAR como REVERSÃO;
 - classificar automaticamente VWAP como PARADA;
 - produzir direção, força ou confiança na RG-02A.
+## 7. Arquitetura generica de provedores
+
+O nucleo do Motor de Regioes e generico. Cada referencia entra por um
+provedor isolado, preservando identidade, origem, bloqueios e saida
+canonica.
+
+Primeiro conjunto tecnico:
+
+- MILHAR;
+- VWAP_OFICIAL;
+- AJUSTE_DIARIO;
+- PTAX.
+
+MILHAR usa preco canonico qualificado.
+
+VWAP_OFICIAL apenas consome o valor e a fonte ja definidos pelo fluxo
+oficial. O Motor de Regioes nao recalcula nem recalibra a VWAP.
+
+AJUSTE_DIARIO e PTAX exigem valor, fonte e confirmacao explicitos. Sem
+esses dados, a referencia permanece BLOQUEADA.
+
+Volume bruto nao e regiao de preco. Ele continua como evidencia para
+Confluencia. Perfil de volume, POC ou nos de volume somente entram por
+provedor futuro ligado a preco.
+
+Novos provedores nao alteram o nucleo. Eles implementam o mesmo contrato
+canonico e mantem uso operacional BLOQUEADO.
