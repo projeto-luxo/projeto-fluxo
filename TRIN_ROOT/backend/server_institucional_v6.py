@@ -71,6 +71,7 @@ from core.vwap_engine import VWAPEngine
 from core.candle_engine import CandleEngine
 from core.aggression_engine import AggressionEngine
 from core.confluence_engine import ConfluenceEngineV2
+from core.agregador_regioes import AgregadorRegioesRG02B
 from core.motor_regioes import (
     ContextoReferencia,
     FONTES_VWAP_OFICIAL,
@@ -103,6 +104,7 @@ candle_engine = CandleEngine()
 aggression_engine = AggressionEngine()
 motor_confluencia = ConfluenceEngineV2()
 motor_regioes = MotorRegioes()
+agregador_regioes = AgregadorRegioesRG02B()
 
 TRIN_ROOT_DIR = Path(__file__).resolve().parents[1]
 CALENDARIO_CONTRATOS_B3 = TRIN_ROOT_DIR / "config" / "calendarios" / "calendario_contratos_b3.csv"
@@ -1605,6 +1607,15 @@ def gerar_payload():
         referencias_mercado = []
         referencias_mercado_erro = str(erro)
 
+    try:
+        regioes_compostas = agregador_regioes.agregar(
+            referencias_mercado
+        )
+        regioes_compostas_erro = None
+    except Exception as erro:
+        regioes_compostas = []
+        regioes_compostas_erro = str(erro)
+
     payload = {
         "historico": historico_painel,
         "engine": engine_data,
@@ -1630,6 +1641,9 @@ def gerar_payload():
         "referencias_mercado": referencias_mercado,
         "referencias_mercado_status": "DIAGNOSTICO_SOMENTE_LEITURA",
         "referencias_mercado_erro": referencias_mercado_erro,
+        "regioes_compostas": regioes_compostas,
+        "regioes_compostas_status": "DIAGNOSTICO_SOMENTE_LEITURA",
+        "regioes_compostas_erro": regioes_compostas_erro,
 
         "agressao": {
             "frequencia_mercado": freq,
