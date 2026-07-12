@@ -76,6 +76,7 @@ from core.motor_regioes import (
     FONTES_VWAP_OFICIAL,
     MotorRegioes,
 )
+from data.referencias_mercado_config import ReferenciasMercadoConfig
 
 try:
     from orchestration.contrato_ativo_resolver import ContratoAtivoResolver
@@ -105,6 +106,10 @@ motor_regioes = MotorRegioes()
 
 TRIN_ROOT_DIR = Path(__file__).resolve().parents[1]
 CALENDARIO_CONTRATOS_B3 = TRIN_ROOT_DIR / "config" / "calendarios" / "calendario_contratos_b3.csv"
+REFERENCIAS_MERCADO_DIARIAS = TRIN_ROOT_DIR / "config" / "referencias_mercado_diarias.csv"
+referencias_mercado_config = ReferenciasMercadoConfig(
+    REFERENCIAS_MERCADO_DIARIAS
+)
 
 try:
     contrato_resolver = (
@@ -1504,20 +1509,40 @@ def gerar_payload():
 
     agora_referencias = datetime.now()
 
-    contrato_referencia = atual.get("contrato")
-    if not contrato_referencia and isinstance(contrato_ativo, dict):
-        contrato_referencia = (
-            contrato_ativo.get("contrato")
-            or contrato_ativo.get("simbolo")
-            or contrato_ativo.get("ativo")
+    dados_contrato = atual.get("contrato")
+
+    if not isinstance(dados_contrato, dict):
+        dados_contrato = (
+            contrato_ativo
+            if isinstance(contrato_ativo, dict)
+            else {}
         )
-    if not contrato_referencia and contrato_ativo:
-        contrato_referencia = str(contrato_ativo)
-    if not contrato_referencia:
-        contrato_referencia = atual.get("ativo") or "CONTRATO_NAO_INFORMADO"
+
+    ativo_referencia = (
+        dados_contrato.get("ATIVO_BASE")
+        or dados_contrato.get("ativo_base")
+        or atual.get("ativo_base")
+        or atual.get("ativo")
+        or "ATIVO_NAO_INFORMADO"
+    )
+
+    contrato_referencia = (
+        dados_contrato.get("CONTRATO_ESPERADO_VISUAL")
+        or dados_contrato.get("CONTRATO_EXCEL_VISUAL")
+        or dados_contrato.get("CONTRATO_BACKEND_RTD")
+        or dados_contrato.get("CONTRATO_EXCEL_RTD")
+        or dados_contrato.get("contrato")
+        or (
+            atual.get("contrato")
+            if not isinstance(atual.get("contrato"), dict)
+            else None
+        )
+        or atual.get("ativo")
+        or "CONTRATO_NAO_INFORMADO"
+    )
 
     contexto_referencias = ContextoReferencia(
-        ativo=str(atual.get("ativo") or "ATIVO_NAO_INFORMADO"),
+        ativo=str(ativo_referencia),
         contrato=str(contrato_referencia),
         data_referencia=str(
             atual.get("data") or agora_referencias.date().isoformat()
@@ -1557,6 +1582,12 @@ def gerar_payload():
         )
     )
 
+    dados_referencias_diarias = referencias_mercado_config.carregar(
+        ativo=contexto_referencias.ativo,
+        contrato=contexto_referencias.contrato,
+        data_referencia=contexto_referencias.data_referencia,
+    )
+
     try:
         referencias_mercado = motor_regioes.localizar(
             payload={
@@ -1565,19 +1596,7 @@ def gerar_payload():
                 "vwap_oficial": vwap_atual,
                 "vwap_fonte": vwap_fonte,
                 "vwap_origem_confirmada": vwap_origem_confirmada,
-                "ajuste_diario": atual.get("ajuste_diario"),
-                "ajuste_fonte": atual.get("ajuste_fonte"),
-                "ajuste_origem_confirmada": bool(
-                    atual.get("ajuste_origem_confirmada")
-                ),
-                "ptax": atual.get("ptax"),
-                "ptax_fonte": atual.get("ptax_fonte"),
-                "ptax_origem_confirmada": bool(
-                    atual.get("ptax_origem_confirmada")
-                ),
-                "ptax_aplicavel_ao_ativo": bool(
-                    atual.get("ptax_aplicavel_ao_ativo")
-                ),
+                **dados_referencias_diarias,
             },
             contexto=contexto_referencias,
         )
