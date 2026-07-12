@@ -21,8 +21,10 @@
 
 ## B. Escopo inicial
 
-[ ] MILHAR homologado como primeira referência determinística.
-[ ] VWAP_OFICIAL homologada como segunda referência determinística.
+[x] MILHAR selecionado como primeira referência da implementação futura.
+[x] VWAP_OFICIAL selecionada como segunda referência da implementação futura.
+[ ] MILHAR homologado após testes sintéticos.
+[ ] VWAP_OFICIAL homologada após testes sintéticos.
 [ ] ABERTURA_SESSAO bloqueada até preservação canônica.
 [ ] MAXIMA_SESSAO bloqueada até preservação canônica.
 [ ] MINIMA_SESSAO bloqueada até preservação canônica.

@@ -35,6 +35,8 @@ Cada fornecedor deve declarar:
   "id_evento": "RGE-YYYYMMDD-000001",
   "ativo": "WIN",
   "contrato": "WINQ26",
+  "data_referencia": "2026-07-12",
+  "sessao_referencia": "REGULAR",
   "natureza": "NIVEL_REFERENCIA|FAIXA_REFERENCIA",
   "origem_tipo": "MILHAR|VWAP_OFICIAL|ABERTURA_SESSAO|MAXIMA_SESSAO|MINIMA_SESSAO|FRACTAL|OUTRA_FONTE_HOMOLOGADA",
   "funcao_provavel": "INDETERMINADA|EQUILIBRIO|PARADA|REVERSAO|CONTINUACAO|DEFESA",
