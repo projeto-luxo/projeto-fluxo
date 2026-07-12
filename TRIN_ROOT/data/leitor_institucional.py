@@ -193,7 +193,9 @@ def ler_dados_institucionais():
     abertura = para_numero(dados["abertura"], preco)
     maximo = para_numero(dados["maximo"], preco)
     minimo = para_numero(dados["minimo"], preco)
-    vwap = para_numero(dados["vwap"], preco)
+    vwap_bruta = para_numero(dados["vwap"], 0)
+    vwap_origem_confirmada = vwap_bruta > 0
+    vwap = vwap_bruta if vwap_origem_confirmada else preco
 
     if preco <= 0:
         raise RuntimeError(f"RTD_EXCEL_PLAN1_INVALIDO: preço inválido: {preco}")
@@ -233,6 +235,7 @@ def ler_dados_institucionais():
 
         "vwap": round(vwap, 2),
         "vwap_real": round(vwap, 2),
+        "vwap_origem_confirmada": vwap_origem_confirmada,
 
         "volume_compra": volume_compra_real,
         "volume_venda": volume_venda_real,

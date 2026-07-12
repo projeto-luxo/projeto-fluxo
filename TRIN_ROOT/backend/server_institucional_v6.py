@@ -71,6 +71,11 @@ from core.vwap_engine import VWAPEngine
 from core.candle_engine import CandleEngine
 from core.aggression_engine import AggressionEngine
 from core.confluence_engine import ConfluenceEngineV2
+from core.motor_regioes import (
+    ContextoReferencia,
+    FONTES_VWAP_OFICIAL,
+    MotorRegioes,
+)
 
 try:
     from orchestration.contrato_ativo_resolver import ContratoAtivoResolver
@@ -96,6 +101,7 @@ vwap_engine = VWAPEngine()
 candle_engine = CandleEngine()
 aggression_engine = AggressionEngine()
 motor_confluencia = ConfluenceEngineV2()
+motor_regioes = MotorRegioes()
 
 TRIN_ROOT_DIR = Path(__file__).resolve().parents[1]
 CALENDARIO_CONTRATOS_B3 = TRIN_ROOT_DIR / "config" / "calendarios" / "calendario_contratos_b3.csv"
@@ -1496,6 +1502,90 @@ def gerar_payload():
         modo_replay=replay_reader.ativo,
     )
 
+    agora_referencias = datetime.now()
+
+    contrato_referencia = atual.get("contrato")
+    if not contrato_referencia and isinstance(contrato_ativo, dict):
+        contrato_referencia = (
+            contrato_ativo.get("contrato")
+            or contrato_ativo.get("simbolo")
+            or contrato_ativo.get("ativo")
+        )
+    if not contrato_referencia and contrato_ativo:
+        contrato_referencia = str(contrato_ativo)
+    if not contrato_referencia:
+        contrato_referencia = atual.get("ativo") or "CONTRATO_NAO_INFORMADO"
+
+    contexto_referencias = ContextoReferencia(
+        ativo=str(atual.get("ativo") or "ATIVO_NAO_INFORMADO"),
+        contrato=str(contrato_referencia),
+        data_referencia=str(
+            atual.get("data") or agora_referencias.date().isoformat()
+        ),
+        sessao_referencia=str(atual.get("sessao") or "REGULAR"),
+        modo_dados="REPLAY" if replay_reader.ativo else "AO_VIVO",
+        timestamp_fonte=str(
+            atual.get("timestamp")
+            or atual.get("time")
+            or agora_referencias.isoformat()
+        ),
+        timestamp_processamento=agora_referencias.isoformat(),
+        qualidade_dados=str(
+            atual.get("status_fonte")
+            or atual.get("status_candle")
+            or "QUALIDADE_NAO_CLASSIFICADA"
+        ),
+        status_certificacao=str(
+            atual.get("status_painel") or "NAO_CERTIFICADO"
+        ),
+    )
+
+    fonte_dados_referencias = str(atual.get("fonte_dados") or "").upper()
+    status_candle_referencias = str(atual.get("status_candle") or "").upper()
+    preco_atual_referencia = atual.get("ultimo", atual.get("close"))
+    preco_qualificado_referencias = (
+        _numero_vwap(preco_atual_referencia) is not None
+        and "INDISPONIVEL" not in fonte_dados_referencias
+        and "FALLBACK" not in status_candle_referencias
+    )
+
+    vwap_origem_confirmada = (
+        vwap_fonte in FONTES_VWAP_OFICIAL
+        and (
+            replay_reader.ativo
+            or bool(atual.get("vwap_origem_confirmada"))
+        )
+    )
+
+    try:
+        referencias_mercado = motor_regioes.localizar(
+            payload={
+                "preco_atual": preco_atual_referencia,
+                "preco_qualificado": preco_qualificado_referencias,
+                "vwap_oficial": vwap_atual,
+                "vwap_fonte": vwap_fonte,
+                "vwap_origem_confirmada": vwap_origem_confirmada,
+                "ajuste_diario": atual.get("ajuste_diario"),
+                "ajuste_fonte": atual.get("ajuste_fonte"),
+                "ajuste_origem_confirmada": bool(
+                    atual.get("ajuste_origem_confirmada")
+                ),
+                "ptax": atual.get("ptax"),
+                "ptax_fonte": atual.get("ptax_fonte"),
+                "ptax_origem_confirmada": bool(
+                    atual.get("ptax_origem_confirmada")
+                ),
+                "ptax_aplicavel_ao_ativo": bool(
+                    atual.get("ptax_aplicavel_ao_ativo")
+                ),
+            },
+            contexto=contexto_referencias,
+        )
+        referencias_mercado_erro = None
+    except Exception as erro:
+        referencias_mercado = []
+        referencias_mercado_erro = str(erro)
+
     payload = {
         "historico": historico_painel,
         "engine": engine_data,
@@ -1517,6 +1607,10 @@ def gerar_payload():
         "vwap_superior": banda_sup,
         "vwap_inferior": banda_inf,
         "distancia_vwap": distancia_vwap,
+
+        "referencias_mercado": referencias_mercado,
+        "referencias_mercado_status": "DIAGNOSTICO_SOMENTE_LEITURA",
+        "referencias_mercado_erro": referencias_mercado_erro,
 
         "agressao": {
             "frequencia_mercado": freq,
