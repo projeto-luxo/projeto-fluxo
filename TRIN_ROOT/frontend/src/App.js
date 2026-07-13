@@ -792,9 +792,16 @@ if (absorcao) {
         confluencia.qualidade === "BLOQUEADO_POR_CERTIFICACAO",
 
       fiscalStatus:
-        data.status_certificacao ??
+        data.fiscal_status ??
         evidenciaFiscal?.valor?.status ??
         "DESCONHECIDO",
+
+      fiscalBloqueio:
+        data.fiscal_bloqueio === true,
+
+      fiscalMotivo:
+        data.fiscal_motivo ??
+        "SEM_MOTIVO_FISCAL",
 
       bernardoStatus:
         evidenciaBernardo?.valor?.status ??
@@ -898,6 +905,7 @@ alvo: temEntradaPainel ? data.alvo : null,
     const contexto = calcularContextoInstitucional(baseInfo);
 
     const fiscalBloqueandoConfluencia =
+      data.fiscal_bloqueio === true ||
       data.qualidade_confluencia === "BLOQUEADO_POR_CERTIFICACAO" ||
       String(data.alerta_confluencia || "").includes("FISCAL");
 
@@ -921,14 +929,9 @@ alvo: temEntradaPainel ? data.alvo : null,
         : contexto.cor;
 
     const fiscalStatusFinal =
-      fiscalBloqueandoConfluencia
-        ? "BLOQUEANDO CONFLUENCIA"
-        : (
-            data.fiscal_status ||
-            data.status_certificacao ||
-            baseInfo.fiscalStatus ||
-            "DESCONHECIDO"
-          );
+      data.fiscal_status ||
+      baseInfo.fiscalStatus ||
+      "DESCONHECIDO";
 
     setDataInfo({
       ...baseInfo,
@@ -1662,12 +1665,13 @@ if (temEntradaReal) {
     "#00d9ff";
 
   const bloqueioPorFiscalPainel =
+    Boolean(dataInfo.fiscalBloqueio) ||
     dataInfo.qualidadeConfluencia === "BLOQUEADO_POR_CERTIFICACAO" ||
     String(dataInfo.alertaConfluencia || "").includes("FISCAL");
 
   const motivoBloqueioPainel =
     bloqueioPorFiscalPainel
-      ? "FISCAL BLOQUEANDO CONFLUENCIA"
+      ? (dataInfo.fiscalMotivo || "FISCAL BLOQUEANDO CONFLUENCIA")
       : dataInfo.contratoAtivoBloqueio
         ? "CONTRATO BLOQUEADO"
         : bloqueadoPainel

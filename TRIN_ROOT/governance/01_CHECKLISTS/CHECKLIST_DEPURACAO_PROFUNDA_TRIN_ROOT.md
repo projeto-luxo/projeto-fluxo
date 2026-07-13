@@ -243,6 +243,34 @@ Checklist TRIN_ROOT:
 
 ## 8. Fiscal Temporal
 
+<!-- TRIN:FISCAL_TEMPORAL:STATUS_INICIO -->
+**Status da frente:** EM FECHAMENTO — NÃO HOMOLOGADO.
+
+**Itens auditados e comprovados:**
+- Fiscal Temporal v4.2.2 localizado e confirmado.
+- Calendário externo confirmado.
+- Tratamento de lacunas dentro e fora do pregão confirmado.
+- Tratamento de fim de semana e feriados confirmado.
+- Tratamento de leilão confirmado.
+- Emissão de laudo confirmada.
+- Resumo por arquivo e por motivo confirmados.
+- Ordens para Bernardo e Zé confirmadas.
+- Criticidade confirmada.
+- IDs únicos no padrão `FT-...` confirmados.
+- Status das ordens confirmado.
+- Ponte oficial Fiscal → Confluência → Planejador → Backend validada.
+- Regra de segurança `fail-closed` validada.
+- 41 testes automatizados aprovados.
+
+**Pendente para homologação final:**
+- validar no cockpit o status fiscal real;
+- validar o motivo real do bloqueio;
+- confirmar ausência de entrada, stop, parcial e alvo quando bloqueado;
+- encerrar somente as demais dependências indispensáveis ao Fiscal Temporal;
+- registrar `HOMOLOGADO` apenas após essas provas.
+<!-- TRIN:FISCAL_TEMPORAL:STATUS_FIM -->
+
+
 Status historico:
 
 PROXIMO MODULO ESTRUTURAL / CARTORIO TEMPORAL / CERTIFICACAO
@@ -255,7 +283,7 @@ Checklist TRIN_ROOT:
 [x] confirmar se trata lacunas dentro do pregao.
 [x] confirmar se trata lacunas fora do pregao.
 [x] confirmar se trata feriado/fim de semana.
-[ ] confirmar se trata leilao.
+[x] confirmar se trata leilao.
 [x] confirmar se emite laudo.
 [x] confirmar se emite resumo por arquivo.
 [x] confirmar se emite resumo por motivo.

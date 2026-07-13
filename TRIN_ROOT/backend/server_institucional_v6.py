@@ -108,6 +108,43 @@ planejador_operacional = PlanejadorOperacional()
 motor_regioes = MotorRegioes()
 agregador_regioes = AgregadorRegioesRG02B()
 
+
+def consultar_fiscal_oficial():
+    fiscal_adapter = getattr(motor_confluencia, "fiscal", None)
+
+    if fiscal_adapter is None:
+        return {
+            "status": "DESCONHECIDO",
+            "aprovado_operacional": False,
+            "bloqueio_operacional": True,
+            "motivo": "FISCAL_ADAPTER_INDISPONIVEL",
+            "fonte": "FISCAL_TEMPORAL_LAUDO_OFICIAL",
+        }
+
+    try:
+        resultado = fiscal_adapter.consultar()
+    except Exception as erro:
+        return {
+            "status": "ERRO_FISCAL",
+            "aprovado_operacional": False,
+            "bloqueio_operacional": True,
+            "motivo": "ERRO_CONSULTA_FISCAL_ADAPTER",
+            "fonte": "FISCAL_TEMPORAL_LAUDO_OFICIAL",
+            "erro": str(erro),
+        }
+
+    if not isinstance(resultado, dict):
+        return {
+            "status": "ERRO_FISCAL",
+            "aprovado_operacional": False,
+            "bloqueio_operacional": True,
+            "motivo": "RESPOSTA_FISCAL_INVALIDA",
+            "fonte": "FISCAL_TEMPORAL_LAUDO_OFICIAL",
+        }
+
+    return resultado
+
+
 TRIN_ROOT_DIR = Path(__file__).resolve().parents[1]
 CALENDARIO_CONTRATOS_B3 = TRIN_ROOT_DIR / "config" / "calendarios" / "calendario_contratos_b3.csv"
 REFERENCIAS_MERCADO_DIARIAS = TRIN_ROOT_DIR / "config" / "referencias_mercado_diarias.csv"
@@ -1644,14 +1681,28 @@ def gerar_payload():
         )
     )
 
-    try:
-        fiscal_aprovado_planejamento = not (
-            resultado_confluencia.get("qualidade")
-            == "BLOQUEADO_POR_CERTIFICACAO"
-            or resultado_confluencia.get("alerta")
-            == "CONFLUENCIA_BLOQUEADA_PELO_FISCAL"
+    certificacao_fiscal = consultar_fiscal_oficial()
+    fiscal_status = str(
+        certificacao_fiscal.get("status", "DESCONHECIDO")
+    ).upper()
+    fiscal_aprovado_planejamento = bool(
+        certificacao_fiscal.get("aprovado_operacional", False)
+    )
+    fiscal_bloqueio = bool(
+        certificacao_fiscal.get(
+            "bloqueio_operacional",
+            not fiscal_aprovado_planejamento,
         )
+    )
 
+    resultado_confluencia = dict(resultado_confluencia or {})
+    resultado_confluencia["certificacao_fiscal"] = dict(certificacao_fiscal)
+
+    if fiscal_bloqueio:
+        resultado_confluencia["qualidade"] = "BLOQUEADO_POR_CERTIFICACAO"
+        resultado_confluencia["alerta"] = "CONFLUENCIA_BLOQUEADA_PELO_FISCAL"
+
+    try:
         planejamento_operacional = planejador_operacional.planejar(
             confluencia=resultado_confluencia,
             regioes=regioes_compostas,
@@ -1710,6 +1761,14 @@ def gerar_payload():
         "regioes_compostas": regioes_compostas,
         "regioes_compostas_status": "DIAGNOSTICO_SOMENTE_LEITURA",
         "regioes_compostas_erro": regioes_compostas_erro,
+
+        "fiscal": certificacao_fiscal,
+        "fiscal_status": fiscal_status,
+        "status_certificacao": fiscal_status,
+        "fiscal_aprovado": fiscal_aprovado_planejamento,
+        "fiscal_bloqueio": fiscal_bloqueio,
+        "fiscal_motivo": certificacao_fiscal.get("motivo"),
+
         "planejamento_operacional": planejamento_operacional,
         "planejamento_operacional_status": planejamento_operacional_status,
         "planejamento_operacional_erro": planejamento_operacional_erro,

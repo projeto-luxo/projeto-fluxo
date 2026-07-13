@@ -1,13 +1,26 @@
+from __future__ import annotations
+
+import re
 from pathlib import Path
-import pandas as pd
+from typing import Any
 
 
 class FiscalAdapter:
+    STATUS_LIBERADOS = {
+        "CERTIFICADO",
+        "APROVADO",
+        "OK",
+        "APROVADO_COM_RESSALVAS",
+        "RESSALVA",
+    }
 
-    def __init__(self):
+    STATUS_OFICIAIS = STATUS_LIBERADOS | {
+        "REPROVADO",
+        "REPROVADO_COM_PENDENCIAS",
+    }
 
+    def __init__(self) -> None:
         self.root = Path(__file__).resolve().parents[1]
-
         self.arquivo = (
             self.root
             / "TRIN_HISTORICO"
@@ -15,40 +28,75 @@ class FiscalAdapter:
             / "laudo_temporal.txt"
         )
 
-    def consultar(self):
+    def _resposta(
+        self,
+        status: str,
+        motivo: str,
+        erro: str | None = None,
+    ) -> dict[str, Any]:
+        status_normalizado = str(status or "DESCONHECIDO").strip().upper()
+        aprovado = status_normalizado in self.STATUS_LIBERADOS
 
+        resposta: dict[str, Any] = {
+            "status": status_normalizado,
+            "aprovado_operacional": aprovado,
+            "bloqueio_operacional": not aprovado,
+            "motivo": motivo,
+            "fonte": "FISCAL_TEMPORAL_LAUDO_OFICIAL",
+            "arquivo": str(self.arquivo),
+        }
+
+        if erro:
+            resposta["erro"] = erro
+
+        return resposta
+
+    def consultar(self) -> dict[str, Any]:
         if not self.arquivo.exists():
+            return self._resposta(
+                "DESCONHECIDO",
+                "LAUDO_FISCAL_INDISPONIVEL",
+            )
 
-            return {
-                "status": "DESCONHECIDO"
-            }
+        try:
+            texto = self.arquivo.read_text(
+                encoding="utf-8",
+                errors="strict",
+            ).upper()
+        except Exception as erro:
+            return self._resposta(
+                "ERRO_FISCAL",
+                "ERRO_LEITURA_LAUDO_FISCAL",
+                str(erro),
+            )
 
-        texto = self.arquivo.read_text(
-            encoding="utf-8",
-            errors="ignore"
-        ).upper()
+        correspondencia = re.search(
+            r"(?im)^STATUS FINAL:[ \t]*\r?\n[ \t]*([A-Z_]+)[ \t]*$",
+            texto,
+        )
 
-        if "REPROVADO_COM_PENDENCIAS" in texto:
-            return {"status": "REPROVADO_COM_PENDENCIAS"}
+        if correspondencia is None:
+            return self._resposta(
+                "DESCONHECIDO",
+                "STATUS_FINAL_NAO_ENCONTRADO_NO_LAUDO",
+            )
 
-        if "REPROVADO" in texto:
-            return {"status": "REPROVADO"}
+        status = correspondencia.group(1).strip().upper()
 
-        if "APROVADO_COM_RESSALVAS" in texto:
-            return {"status": "APROVADO_COM_RESSALVAS"}
+        if status not in self.STATUS_OFICIAIS:
+            return self._resposta(
+                "DESCONHECIDO",
+                f"STATUS_FINAL_NAO_RECONHECIDO:{status}",
+            )
 
-        if "CERTIFICADO" in texto:
-            return {"status": "CERTIFICADO"}
-
-        return {"status": "DESCONHECIDO"}
+        return self._resposta(
+            status,
+            f"STATUS_FINAL_FISCAL:{status}",
+        )
 
 
 if __name__ == "__main__":
-
-    fiscal = FiscalAdapter()
-
     print("=" * 60)
     print("FISCAL ADAPTER")
     print("=" * 60)
-
-    print(fiscal.consultar())
+    print(FiscalAdapter().consultar())

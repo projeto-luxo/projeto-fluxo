@@ -527,9 +527,12 @@ class ConfluenceEngineV2:
             direcao = "BLOQUEIO_ANALITICO"
             justificativa = "Base reprovada; nao usar como conhecimento confirmado."
         else:
-            impacto = 0.0
-            direcao = "NEUTRO"
-            justificativa = "Status de certificacao desconhecido."
+            impacto = -3.0
+            direcao = "BLOQUEIO_ANALITICO"
+            justificativa = (
+                "Status fiscal ausente, desconhecido ou invalido; "
+                "confluencia bloqueada por seguranca."
+            )
 
         return Evidencia(
             "FISCAL_TEMPORAL",
@@ -567,7 +570,15 @@ class ConfluenceEngineV2:
     def _qualidade(self, score: float, certificacao: Dict[str, Any]) -> str:
         status = str((certificacao or {}).get("status", "")).upper()
 
-        if status in {"REPROVADO", "REPROVADO_COM_PENDENCIAS"}:
+        status_liberados = {
+            "CERTIFICADO",
+            "APROVADO",
+            "OK",
+            "APROVADO_COM_RESSALVAS",
+            "RESSALVA",
+        }
+
+        if status not in status_liberados:
             return "BLOQUEADO_POR_CERTIFICACAO"
 
         abs_score = abs(score)
