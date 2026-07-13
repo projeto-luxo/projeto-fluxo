@@ -1598,6 +1598,25 @@ def gerar_payload():
                 "vwap_oficial": vwap_atual,
                 "vwap_fonte": vwap_fonte,
                 "vwap_origem_confirmada": vwap_origem_confirmada,
+
+                "abertura_sessao": atual.get("abertura_sessao"),
+                "abertura_fonte": atual.get("abertura_fonte"),
+                "abertura_origem_confirmada": bool(
+                    atual.get("abertura_origem_confirmada")
+                ),
+
+                "maxima_sessao": atual.get("maxima_sessao"),
+                "maxima_fonte": atual.get("maxima_fonte"),
+                "maxima_origem_confirmada": bool(
+                    atual.get("maxima_origem_confirmada")
+                ),
+
+                "minima_sessao": atual.get("minima_sessao"),
+                "minima_fonte": atual.get("minima_fonte"),
+                "minima_origem_confirmada": bool(
+                    atual.get("minima_origem_confirmada")
+                ),
+
                 **dados_referencias_diarias,
             },
             contexto=contexto_referencias,

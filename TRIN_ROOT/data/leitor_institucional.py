@@ -190,9 +190,17 @@ def ler_dados_institucionais():
     validar_dados_rtd(dados)
 
     preco = para_numero(dados["ultimo"])
-    abertura = para_numero(dados["abertura"], preco)
-    maximo = para_numero(dados["maximo"], preco)
-    minimo = para_numero(dados["minimo"], preco)
+    abertura_bruta = para_numero(dados["abertura"], 0)
+    maximo_bruto = para_numero(dados["maximo"], 0)
+    minimo_bruto = para_numero(dados["minimo"], 0)
+
+    abertura_origem_confirmada = abertura_bruta > 0
+    maxima_origem_confirmada = maximo_bruto > 0
+    minima_origem_confirmada = minimo_bruto > 0
+
+    abertura = abertura_bruta if abertura_origem_confirmada else preco
+    maximo = maximo_bruto if maxima_origem_confirmada else preco
+    minimo = minimo_bruto if minima_origem_confirmada else preco
     vwap_bruta = para_numero(dados["vwap"], 0)
     vwap_origem_confirmada = vwap_bruta > 0
     vwap = vwap_bruta if vwap_origem_confirmada else preco
@@ -223,6 +231,24 @@ def ler_dados_institucionais():
         "high": round(maximo, 2),
         "low": round(minimo, 2),
         "close": round(preco, 2),
+
+        "abertura_sessao": round(abertura, 2),
+        "abertura_fonte": (
+            "RTD_EXCEL_PLAN1_E2" if abertura_origem_confirmada else ""
+        ),
+        "abertura_origem_confirmada": abertura_origem_confirmada,
+
+        "maxima_sessao": round(maximo, 2),
+        "maxima_fonte": (
+            "RTD_EXCEL_PLAN1_F2" if maxima_origem_confirmada else ""
+        ),
+        "maxima_origem_confirmada": maxima_origem_confirmada,
+
+        "minima_sessao": round(minimo, 2),
+        "minima_fonte": (
+            "RTD_EXCEL_PLAN1_G2" if minima_origem_confirmada else ""
+        ),
+        "minima_origem_confirmada": minima_origem_confirmada,
         "ultimo": round(preco, 2),
 
         "volume": volume_trin,
