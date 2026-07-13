@@ -62,13 +62,13 @@ PARCIALMENTE VALIDADO / PRECISA CONFERIR
 
 Checklist de conferencia:
 
-[ ] backend atual sobe sem erro.
+[x] backend atual sobe sem erro.
 [ ] frontend atual sobe sem erro.
-[ ] websocket ou endpoint principal responde.
+[x] websocket ou endpoint principal responde.
 [ ] painel recebe dados.
-[ ] Git esta em branch TRIN_CLEAN.
-[ ] Git esta sincronizado com origin/TRIN_CLEAN.
-[ ] nao existe arquivo modificado sem controle.
+[x] Git esta em branch TRIN_CLEAN.
+[x] Git esta sincronizado com origin/TRIN_CLEAN.
+[x] nao existe arquivo modificado sem controle.
 
 ---
 
@@ -95,15 +95,15 @@ EXISTE / PRECISA TESTE VISUAL COMPLETO
 
 Checklist:
 
-[ ] grafico candlestick renderiza.
-[ ] VWAP renderiza.
-[ ] painel lateral renderiza.
-[ ] score aparece.
-[ ] tendencia aparece.
-[ ] contexto aparece.
-[ ] linhas de stop/parcial/alvo so aparecem quando ha entrada valida.
-[ ] bloqueio fiscal impede uso operacional indevido.
-[ ] cockpit nao induz decisao quando status esta bloqueado.
+[x] grafico candlestick renderiza.
+[x] VWAP renderiza.
+[x] painel lateral renderiza.
+[x] score aparece.
+[x] tendencia aparece.
+[x] contexto aparece.
+[x] linhas de stop/parcial/alvo so aparecem quando ha entrada valida.
+[x] bloqueio fiscal impede uso operacional indevido.
+[x] cockpit nao induz decisao quando status esta bloqueado.
 
 ---
 
@@ -166,20 +166,20 @@ ARQUITETURA DEFINIDA / IMPLEMENTACAO PARCIAL
 
 Checklist:
 
-[ ] Profit esta fora do codigo e funciona como fonte.
-[ ] RTD/Excel existe como ponte.
-[ ] Python le Excel.
-[ ] Gravador existe.
-[ ] Biblioteca Historica existe localmente.
-[ ] Bernardo existe.
-[ ] API do Bernardo existe ou precisa recuperar.
-[ ] Ze do Eucrazio existe.
-[ ] Fiscal Temporal existe.
-[ ] Historiador existe.
-[ ] Motor de Confluencia existe.
+[x] Profit esta fora do codigo e funciona como fonte.
+[x] RTD/Excel existe como ponte.
+[x] Python le Excel.
+[x] Gravador existe.
+[x] Biblioteca Historica existe localmente.
+[x] Bernardo existe.
+[x] API do Bernardo existe ou precisa recuperar.
+[x] Ze do Eucrazio existe.
+[x] Fiscal Temporal existe.
+[x] Historiador existe.
+[x] Motor de Confluencia existe.
 [ ] Motor Geral de Pontuacao existe ou falta.
 [ ] Aprendizagem existe ou falta.
-[ ] Operador permanece como decisor final.
+[x] Operador permanece como decisor final.
 
 ---
 
@@ -191,11 +191,11 @@ CONGELADO ARQUITETURALMENTE COMO PERSISTENCIA COGNITIVA
 
 Checklist TRIN_ROOT:
 
-[ ] localizar arquivos atuais do Bernardo.
+[x] localizar arquivos atuais do Bernardo.
 [ ] confirmar se nao foi quebrado por mudancas posteriores.
 [ ] confirmar se consumidores nao leem CSV diretamente ignorando Bernardo.
-[ ] confirmar se existe contrato oficial.
-[ ] confirmar se existe auditoria/homologacao.
+[x] confirmar se existe contrato oficial.
+[x] confirmar se existe auditoria/homologacao.
 [ ] listar pendencias atuais do Bernardo.
 [ ] listar se precisa implementar API, ajustar API ou apenas preservar.
 
@@ -228,16 +228,16 @@ Checklist historico do Ze previa:
 
 Checklist TRIN_ROOT:
 
-[ ] localizar script atual do Ze.
-[ ] confirmar versao atual.
-[ ] confirmar se modo teste controlado existe.
-[ ] confirmar se saidas padronizadas existem.
-[ ] confirmar se logs existem.
-[ ] confirmar se manifesto existe.
-[ ] confirmar se nao altera originais.
-[ ] confirmar se ainda depende do Fiscal para certificacao.
-[ ] listar o que falta implementar no Ze.
-[ ] listar o que foi implementado mas precisa retestar.
+[x] localizar script atual do Ze.
+[x] confirmar versao atual.
+[x] confirmar se modo teste controlado existe.
+[x] confirmar se saidas padronizadas existem.
+[x] confirmar se logs existem.
+[x] confirmar se manifesto existe.
+[x] confirmar se nao altera originais.
+[x] confirmar se ainda depende do Fiscal para certificacao.
+[x] listar o que falta implementar no Ze.
+[x] listar o que foi implementado mas precisa retestar.
 
 ---
 
@@ -249,21 +249,21 @@ PROXIMO MODULO ESTRUTURAL / CARTORIO TEMPORAL / CERTIFICACAO
 
 Checklist TRIN_ROOT:
 
-[ ] localizar Fiscal Temporal atual.
-[ ] confirmar versao atual.
-[ ] confirmar se usa calendario externo.
-[ ] confirmar se trata lacunas dentro do pregao.
-[ ] confirmar se trata lacunas fora do pregao.
-[ ] confirmar se trata feriado/fim de semana.
+[x] localizar Fiscal Temporal atual.
+[x] confirmar versao atual.
+[x] confirmar se usa calendario externo.
+[x] confirmar se trata lacunas dentro do pregao.
+[x] confirmar se trata lacunas fora do pregao.
+[x] confirmar se trata feriado/fim de semana.
 [ ] confirmar se trata leilao.
-[ ] confirmar se emite laudo.
-[ ] confirmar se emite resumo por arquivo.
-[ ] confirmar se emite resumo por motivo.
-[ ] confirmar se emite ordens para Bernardo/Ze.
-[ ] confirmar se possui criticidade.
-[ ] confirmar se possui ID unico de ocorrencia.
-[ ] confirmar se possui status de ordem.
-[ ] listar pendencias atuais do Fiscal.
+[x] confirmar se emite laudo.
+[x] confirmar se emite resumo por arquivo.
+[x] confirmar se emite resumo por motivo.
+[x] confirmar se emite ordens para Bernardo/Ze.
+[x] confirmar se possui criticidade.
+[x] confirmar se possui ID unico de ocorrencia.
+[x] confirmar se possui status de ordem.
+[x] listar pendencias atuais do Fiscal.
 
 ---
 
@@ -285,17 +285,17 @@ IMPLEMENTACAO PARCIAL / PRECISA CONFERIR
 
 Checklist:
 
-[ ] localizar calendario de contratos B3.
-[ ] localizar calendario de feriados/sessoes.
-[ ] confirmar fonte oficial registrada.
-[ ] confirmar cobertura do ano atual.
-[ ] localizar ContratoAtivoResolver.
-[ ] confirmar validacao do contrato esperado.
-[ ] confirmar comparacao contra Excel.
-[ ] confirmar comparacao contra backend.
-[ ] confirmar status APROVADO/RESSALVA/REPROVADO/BLOQUEADO.
-[ ] listar pendencias do calendario.
-[ ] listar pendencias do contrato ativo.
+[x] localizar calendario de contratos B3.
+[x] localizar calendario de feriados/sessoes.
+[x] confirmar fonte oficial registrada.
+[x] confirmar cobertura do ano atual.
+[x] localizar ContratoAtivoResolver.
+[x] confirmar validacao do contrato esperado.
+[x] confirmar comparacao contra Excel.
+[x] confirmar comparacao contra backend.
+[x] confirmar status APROVADO/RESSALVA/REPROVADO/BLOQUEADO.
+[x] listar pendencias do calendario.
+[x] listar pendencias do contrato ativo.
 
 ---
 
@@ -329,14 +329,14 @@ IMPLEMENTADO / CALIBRACAO POSTERIOR / NAO DEVE IGNORAR BERNARDO/FISCAL
 
 Checklist TRIN_ROOT:
 
-[ ] localizar motor de confluencia atual.
-[ ] confirmar entradas usadas.
-[ ] confirmar se respeita bloqueio fiscal.
-[ ] confirmar se nao gera ordem sozinho.
-[ ] confirmar se nao substitui operador.
-[ ] confirmar se nao consome fonte diagnostica como oficial.
-[ ] confirmar se esta calibrado ou apenas funcional.
-[ ] listar pendencias de calibragem.
+[x] localizar motor de confluencia atual.
+[x] confirmar entradas usadas.
+[x] confirmar se respeita bloqueio fiscal.
+[x] confirmar se nao gera ordem sozinho.
+[x] confirmar se nao substitui operador.
+[x] confirmar se nao consome fonte diagnostica como oficial.
+[x] confirmar se esta calibrado ou apenas funcional.
+[x] listar pendencias de calibragem.
 
 ---
 
@@ -358,15 +358,15 @@ RODAVEL / OPERACIONAL_NAO_CERTIFICADO
 
 Checklist:
 
-[ ] confirmar timeframes 15s, 30s, 1_MIN, 2_MIN, 5_MIN, 10_MIN, 15_MIN, 30_MIN, 60_MIN.
-[ ] confirmar DIARIO bloqueado.
-[ ] confirmar SEMANAL bloqueado.
-[ ] confirmar virada correta de candle.
-[ ] confirmar ausencia de timestamp duplicado.
-[ ] confirmar preco OHLC coerente.
+[x] confirmar timeframes 15s, 30s, 1_MIN, 2_MIN, 5_MIN, 10_MIN, 15_MIN, 30_MIN, 60_MIN.
+[x] confirmar DIARIO bloqueado.
+[x] confirmar SEMANAL bloqueado.
+[x] confirmar virada correta de candle.
+[x] confirmar ausencia de timestamp duplicado.
+[x] confirmar preco OHLC coerente.
 [ ] confirmar volume nao fixo.
-[ ] confirmar status OPERACIONAL_NAO_CERTIFICADO.
-[ ] confirmar que nao vira historico oficial.
+[x] confirmar status OPERACIONAL_NAO_CERTIFICADO.
+[x] confirmar que nao vira historico oficial.
 [ ] listar pendencias de volume.
 [ ] listar pendencias de rastreabilidade.
 
@@ -380,14 +380,14 @@ RODAVEL / REPLAY_CSV / REPLAY_AGREGADO / NAO CERTIFICADO
 
 Checklist TRIN_ROOT:
 
-[ ] localizar backend/replay_diagnostico.py.
-[ ] confirmar rotas start/status/stop/reset.
-[ ] confirmar leitura de CSV 1MIN.
-[ ] confirmar painel mostra REPLAY_CSV.
-[ ] confirmar status REPLAY_OPERACIONAL_NAO_CERTIFICADO.
-[ ] confirmar que nao usa mercado aberto.
-[ ] confirmar que nao libera decisao operacional.
-[ ] listar pendencias do replay 1MIN.
+[x] localizar backend/replay_diagnostico.py.
+[x] confirmar rotas start/status/stop/reset.
+[x] confirmar leitura de CSV 1MIN.
+[x] confirmar painel mostra REPLAY_CSV.
+[x] confirmar status REPLAY_OPERACIONAL_NAO_CERTIFICADO.
+[x] confirmar que nao usa mercado aberto.
+[x] confirmar que nao libera decisao operacional.
+[x] listar pendencias do replay 1MIN.
 
 ---
 
@@ -405,17 +405,17 @@ Componentes:
 
 Checklist TRIN_ROOT:
 
-[ ] localizar GRAVADOR_TT_BRUTO_01.ps1.
-[ ] confirmar tratamento contra RPC_E_CALL_REJECTED.
-[ ] confirmar pasta TT_RAW.
-[ ] confirmar BASTIAO_TT_PENEIRADOR_01.ps1.
-[ ] confirmar saidas peneiradas.
-[ ] confirmar rejeitados.
-[ ] confirmar incertezas.
-[ ] confirmar CANDLE_5S_DIAGNOSTICO_01.ps1.
-[ ] confirmar saida CANDLE_5S_DIAGNOSTICO.
-[ ] confirmar status NAO_CERTIFICADO.
-[ ] confirmar candle_oficial=false.
+[x] localizar GRAVADOR_TT_BRUTO_01.ps1.
+[x] confirmar tratamento contra RPC_E_CALL_REJECTED.
+[x] confirmar pasta TT_RAW.
+[x] confirmar BASTIAO_TT_PENEIRADOR_01.ps1.
+[x] confirmar saidas peneiradas.
+[x] confirmar rejeitados.
+[x] confirmar incertezas.
+[x] confirmar CANDLE_5S_DIAGNOSTICO_01.ps1.
+[x] confirmar saida CANDLE_5S_DIAGNOSTICO.
+[x] confirmar status NAO_CERTIFICADO.
+[x] confirmar candle_oficial=false.
 [ ] listar o que falta validar em mercado aberto.
 
 ---
@@ -445,14 +445,14 @@ Checklist:
 
 A preencher apos varredura real dos arquivos:
 
-[ ] backend existente.
-[ ] frontend existente.
-[ ] core existente.
-[ ] intelligence existente.
-[ ] tools_rtd existente.
-[ ] governance existente.
-[ ] TRIN_HISTORICO local existente.
-[ ] scripts de inicializacao existentes.
+[x] backend existente.
+[x] frontend existente.
+[x] core existente.
+[x] intelligence existente.
+[x] tools_rtd existente.
+[x] governance existente.
+[x] TRIN_HISTORICO local existente.
+[x] scripts de inicializacao existentes.
 [ ] arquivos obsoletos identificados.
 [ ] arquivos duplicados identificados.
 [ ] arquivos planejados mas ausentes identificados.
@@ -516,22 +516,22 @@ Transformar dados de mercado, contexto, confluencia, bloqueios e replay em leitu
 
 ### 20.1 Estrutura visual principal
 
-[ ] Layout institucional do painel existe.
-[ ] Cockpit visual existe.
-[ ] Grafico candlestick renderiza.
-[ ] Painel lateral institucional renderiza.
-[ ] Topbar operacional existe.
-[ ] Rodape/alerta operacional existe.
-[ ] Area central de contexto existe.
-[ ] Cards de leitura operacional existem.
-[ ] Tema escuro/institucional permanece funcional.
+[x] Layout institucional do painel existe.
+[x] Cockpit visual existe.
+[x] Grafico candlestick renderiza.
+[x] Painel lateral institucional renderiza.
+[x] Topbar operacional existe.
+[x] Rodape/alerta operacional existe.
+[x] Area central de contexto existe.
+[x] Cards de leitura operacional existem.
+[x] Tema escuro/institucional permanece funcional.
 
 ### 20.2 Grafico e candles
 
-[ ] Historico de candles aparece no grafico.
-[ ] Candle atual atualiza em tempo real.
-[ ] Candles respeitam OHLC.
-[ ] Grafico nao duplica timestamps.
+[x] Historico de candles aparece no grafico.
+[x] Candle atual atualiza em tempo real.
+[x] Candles respeitam OHLC.
+[x] Grafico nao duplica timestamps.
 [ ] Grafico reconstrói corretamente quando historico muda.
 [ ] Marcadores institucionais aparecem quando aplicavel.
 [ ] Candles amarelos/reversao ainda existem ou foram substituidos.
@@ -540,7 +540,7 @@ Transformar dados de mercado, contexto, confluencia, bloqueios e replay em leitu
 
 ### 20.3 VWAP e referencias
 
-[ ] VWAP aparece no grafico.
+[x] VWAP aparece no grafico.
 [ ] VWAP superior aparece quando disponivel.
 [ ] VWAP inferior aparece quando disponivel.
 [ ] Distancia da VWAP aparece no painel.
@@ -549,28 +549,28 @@ Transformar dados de mercado, contexto, confluencia, bloqueios e replay em leitu
 
 ### 20.4 Linhas operacionais
 
-[ ] Linha de STOP existe.
-[ ] Linha de PARCIAL existe.
-[ ] Linha de ALVO existe.
-[ ] PriceLine de STOP existe.
-[ ] PriceLine de PARCIAL existe.
-[ ] PriceLine de ALVO existe.
-[ ] Linhas so aparecem quando existe entrada valida.
-[ ] Linhas somem quando entrada deixa de ser valida.
-[ ] Painel nao mostra stop/parcial/alvo em modo bloqueado.
+[x] Linha de STOP existe.
+[x] Linha de PARCIAL existe.
+[x] Linha de ALVO existe.
+[x] PriceLine de STOP existe.
+[x] PriceLine de PARCIAL existe.
+[x] PriceLine de ALVO existe.
+[x] Linhas so aparecem quando existe entrada valida.
+[x] Linhas somem quando entrada deixa de ser valida.
+[x] Painel nao mostra stop/parcial/alvo em modo bloqueado.
 
 ### 20.5 Score, tendencia e contexto
 
-[ ] Score institucional aparece.
-[ ] Tendencia aparece.
-[ ] Direcao aparece.
-[ ] Contexto macro aparece.
-[ ] Contexto micro aparece.
-[ ] Estado central aparece.
-[ ] Chamada principal aparece.
-[ ] Qualidade da confluencia aparece.
-[ ] Justificativa da confluencia aparece.
-[ ] Alerta principal aparece.
+[x] Score institucional aparece.
+[x] Tendencia aparece.
+[x] Direcao aparece.
+[x] Contexto macro aparece.
+[x] Contexto micro aparece.
+[x] Estado central aparece.
+[x] Chamada principal aparece.
+[x] Qualidade da confluencia aparece.
+[x] Justificativa da confluencia aparece.
+[x] Alerta principal aparece.
 
 ### 20.6 Agressao / fluxo / pressao
 
@@ -604,26 +604,26 @@ Transformar dados de mercado, contexto, confluencia, bloqueios e replay em leitu
 
 ### 20.8 Fiscal / bloqueio operacional
 
-[ ] Status fiscal aparece.
-[ ] Bloqueio por certificacao aparece.
-[ ] Motivo do bloqueio aparece.
-[ ] Autorizacao operacional aparece.
-[ ] Painel mostra AGUARDAR CERTIFICACAO quando bloqueado.
-[ ] Painel nao libera entrada quando Fiscal bloqueia.
-[ ] Painel separa confluencia tecnica de autorizacao operacional.
+[x] Status fiscal aparece.
+[x] Bloqueio por certificacao aparece.
+[x] Motivo do bloqueio aparece.
+[x] Autorizacao operacional aparece.
+[x] Painel mostra AGUARDAR CERTIFICACAO quando bloqueado.
+[x] Painel nao libera entrada quando Fiscal bloqueia.
+[x] Painel separa confluencia tecnica de autorizacao operacional.
 
 ### 20.9 Contrato ativo
 
-[ ] Contrato Excel RTD aparece.
-[ ] Contrato esperado aparece.
-[ ] Status do contrato ativo aparece.
-[ ] Motivo do contrato ativo aparece.
-[ ] Bloqueio por contrato ativo aparece quando aplicavel.
-[ ] Resolver de contrato aparece ou esta integrado.
+[x] Contrato Excel RTD aparece.
+[x] Contrato esperado aparece.
+[x] Status do contrato ativo aparece.
+[x] Motivo do contrato ativo aparece.
+[x] Bloqueio por contrato ativo aparece quando aplicavel.
+[x] Resolver de contrato aparece ou esta integrado.
 
 ### 20.10 Timeframes do painel
 
-[ ] Seletor de timeframe existe.
+[x] Seletor de timeframe existe.
 [ ] 15s funciona.
 [ ] 30s funciona.
 [ ] 1_MIN funciona.
@@ -633,33 +633,33 @@ Transformar dados de mercado, contexto, confluencia, bloqueios e replay em leitu
 [ ] 15_MIN funciona.
 [ ] 30_MIN funciona.
 [ ] 60_MIN funciona.
-[ ] DIARIO permanece bloqueado.
-[ ] SEMANAL permanece bloqueado.
+[x] DIARIO permanece bloqueado.
+[x] SEMANAL permanece bloqueado.
 [ ] Troca de timeframe limpa series corretamente.
 [ ] Troca de timeframe nao quebra VWAP/bandas.
 
 ### 20.11 Status temporal do painel
 
-[ ] Origem temporal aparece.
-[ ] Regua do painel aparece.
-[ ] Timeframe do painel aparece.
-[ ] Status do painel aparece.
-[ ] Status da fonte aparece.
+[x] Origem temporal aparece.
+[x] Regua do painel aparece.
+[x] Timeframe do painel aparece.
+[x] Status do painel aparece.
+[x] Status da fonte aparece.
 [ ] Fonte estagnada aparece quando RTD para.
-[ ] Painel diferencia AO_VIVO de REPLAY.
-[ ] Painel mostra OPERACIONAL_NAO_CERTIFICADO quando aplicavel.
+[x] Painel diferencia AO_VIVO de REPLAY.
+[x] Painel mostra OPERACIONAL_NAO_CERTIFICADO quando aplicavel.
 
 ### 20.12 Replay no painel
 
-[ ] Botao REPLAY ON/AO VIVO existe.
-[ ] Campo de data do replay existe.
-[ ] Botao CARREGAR DATA existe.
-[ ] Status do replay aparece.
-[ ] Indice/total do replay aparece.
-[ ] Replay limpa grafico ao alternar modo.
-[ ] Replay mostra REPLAY_CSV.
-[ ] Replay mostra REPLAY_OPERACIONAL_NAO_CERTIFICADO.
-[ ] Replay nao libera decisao real.
+[x] Botao REPLAY ON/AO VIVO existe.
+[x] Campo de data do replay existe.
+[x] Botao CARREGAR DATA existe.
+[x] Status do replay aparece.
+[x] Indice/total do replay aparece.
+[x] Replay limpa grafico ao alternar modo.
+[x] Replay mostra REPLAY_CSV.
+[x] Replay mostra REPLAY_OPERACIONAL_NAO_CERTIFICADO.
+[x] Replay nao libera decisao real.
 
 ### 20.13 Times & Trades no painel
 
@@ -700,22 +700,22 @@ Transformar dados de mercado, contexto, confluencia, bloqueios e replay em leitu
 
 ### 20.1 Estrutura visual principal
 
-[ ] Layout institucional do painel existe.
-[ ] Cockpit visual existe.
-[ ] Grafico candlestick renderiza.
-[ ] Painel lateral institucional renderiza.
-[ ] Topbar operacional existe.
-[ ] Rodape/alerta operacional existe.
-[ ] Area central de contexto existe.
-[ ] Cards de leitura operacional existem.
-[ ] Tema escuro/institucional permanece funcional.
+[x] Layout institucional do painel existe.
+[x] Cockpit visual existe.
+[x] Grafico candlestick renderiza.
+[x] Painel lateral institucional renderiza.
+[x] Topbar operacional existe.
+[x] Rodape/alerta operacional existe.
+[x] Area central de contexto existe.
+[x] Cards de leitura operacional existem.
+[x] Tema escuro/institucional permanece funcional.
 
 ### 20.2 Grafico e candles
 
-[ ] Historico de candles aparece no grafico.
-[ ] Candle atual atualiza em tempo real.
-[ ] Candles respeitam OHLC.
-[ ] Grafico nao duplica timestamps.
+[x] Historico de candles aparece no grafico.
+[x] Candle atual atualiza em tempo real.
+[x] Candles respeitam OHLC.
+[x] Grafico nao duplica timestamps.
 [ ] Grafico reconstrói corretamente quando historico muda.
 [ ] Marcadores institucionais aparecem quando aplicavel.
 [ ] Candles amarelos/reversao ainda existem ou foram substituidos.
@@ -724,7 +724,7 @@ Transformar dados de mercado, contexto, confluencia, bloqueios e replay em leitu
 
 ### 20.3 VWAP e referencias
 
-[ ] VWAP aparece no grafico.
+[x] VWAP aparece no grafico.
 [ ] VWAP superior aparece quando disponivel.
 [ ] VWAP inferior aparece quando disponivel.
 [ ] Distancia da VWAP aparece no painel.
@@ -733,28 +733,28 @@ Transformar dados de mercado, contexto, confluencia, bloqueios e replay em leitu
 
 ### 20.4 Linhas operacionais
 
-[ ] Linha de STOP existe.
-[ ] Linha de PARCIAL existe.
-[ ] Linha de ALVO existe.
-[ ] PriceLine de STOP existe.
-[ ] PriceLine de PARCIAL existe.
-[ ] PriceLine de ALVO existe.
-[ ] Linhas so aparecem quando existe entrada valida.
-[ ] Linhas somem quando entrada deixa de ser valida.
-[ ] Painel nao mostra stop/parcial/alvo em modo bloqueado.
+[x] Linha de STOP existe.
+[x] Linha de PARCIAL existe.
+[x] Linha de ALVO existe.
+[x] PriceLine de STOP existe.
+[x] PriceLine de PARCIAL existe.
+[x] PriceLine de ALVO existe.
+[x] Linhas so aparecem quando existe entrada valida.
+[x] Linhas somem quando entrada deixa de ser valida.
+[x] Painel nao mostra stop/parcial/alvo em modo bloqueado.
 
 ### 20.5 Score, tendencia e contexto
 
-[ ] Score institucional aparece.
-[ ] Tendencia aparece.
-[ ] Direcao aparece.
-[ ] Contexto macro aparece.
-[ ] Contexto micro aparece.
-[ ] Estado central aparece.
-[ ] Chamada principal aparece.
-[ ] Qualidade da confluencia aparece.
-[ ] Justificativa da confluencia aparece.
-[ ] Alerta principal aparece.
+[x] Score institucional aparece.
+[x] Tendencia aparece.
+[x] Direcao aparece.
+[x] Contexto macro aparece.
+[x] Contexto micro aparece.
+[x] Estado central aparece.
+[x] Chamada principal aparece.
+[x] Qualidade da confluencia aparece.
+[x] Justificativa da confluencia aparece.
+[x] Alerta principal aparece.
 
 ### 20.6 Agressao / fluxo / pressao
 
@@ -788,26 +788,26 @@ Transformar dados de mercado, contexto, confluencia, bloqueios e replay em leitu
 
 ### 20.8 Fiscal / bloqueio operacional
 
-[ ] Status fiscal aparece.
-[ ] Bloqueio por certificacao aparece.
-[ ] Motivo do bloqueio aparece.
-[ ] Autorizacao operacional aparece.
-[ ] Painel mostra AGUARDAR CERTIFICACAO quando bloqueado.
-[ ] Painel nao libera entrada quando Fiscal bloqueia.
-[ ] Painel separa confluencia tecnica de autorizacao operacional.
+[x] Status fiscal aparece.
+[x] Bloqueio por certificacao aparece.
+[x] Motivo do bloqueio aparece.
+[x] Autorizacao operacional aparece.
+[x] Painel mostra AGUARDAR CERTIFICACAO quando bloqueado.
+[x] Painel nao libera entrada quando Fiscal bloqueia.
+[x] Painel separa confluencia tecnica de autorizacao operacional.
 
 ### 20.9 Contrato ativo
 
-[ ] Contrato Excel RTD aparece.
-[ ] Contrato esperado aparece.
-[ ] Status do contrato ativo aparece.
-[ ] Motivo do contrato ativo aparece.
-[ ] Bloqueio por contrato ativo aparece quando aplicavel.
-[ ] Resolver de contrato aparece ou esta integrado.
+[x] Contrato Excel RTD aparece.
+[x] Contrato esperado aparece.
+[x] Status do contrato ativo aparece.
+[x] Motivo do contrato ativo aparece.
+[x] Bloqueio por contrato ativo aparece quando aplicavel.
+[x] Resolver de contrato aparece ou esta integrado.
 
 ### 20.10 Timeframes do painel
 
-[ ] Seletor de timeframe existe.
+[x] Seletor de timeframe existe.
 [ ] 15s funciona.
 [ ] 30s funciona.
 [ ] 1_MIN funciona.
@@ -817,33 +817,33 @@ Transformar dados de mercado, contexto, confluencia, bloqueios e replay em leitu
 [ ] 15_MIN funciona.
 [ ] 30_MIN funciona.
 [ ] 60_MIN funciona.
-[ ] DIARIO permanece bloqueado.
-[ ] SEMANAL permanece bloqueado.
+[x] DIARIO permanece bloqueado.
+[x] SEMANAL permanece bloqueado.
 [ ] Troca de timeframe limpa series corretamente.
 [ ] Troca de timeframe nao quebra VWAP/bandas.
 
 ### 20.11 Status temporal do painel
 
-[ ] Origem temporal aparece.
-[ ] Regua do painel aparece.
-[ ] Timeframe do painel aparece.
-[ ] Status do painel aparece.
-[ ] Status da fonte aparece.
+[x] Origem temporal aparece.
+[x] Regua do painel aparece.
+[x] Timeframe do painel aparece.
+[x] Status do painel aparece.
+[x] Status da fonte aparece.
 [ ] Fonte estagnada aparece quando RTD para.
-[ ] Painel diferencia AO_VIVO de REPLAY.
-[ ] Painel mostra OPERACIONAL_NAO_CERTIFICADO quando aplicavel.
+[x] Painel diferencia AO_VIVO de REPLAY.
+[x] Painel mostra OPERACIONAL_NAO_CERTIFICADO quando aplicavel.
 
 ### 20.12 Replay no painel
 
-[ ] Botao REPLAY ON/AO VIVO existe.
-[ ] Campo de data do replay existe.
-[ ] Botao CARREGAR DATA existe.
-[ ] Status do replay aparece.
-[ ] Indice/total do replay aparece.
-[ ] Replay limpa grafico ao alternar modo.
-[ ] Replay mostra REPLAY_CSV.
-[ ] Replay mostra REPLAY_OPERACIONAL_NAO_CERTIFICADO.
-[ ] Replay nao libera decisao real.
+[x] Botao REPLAY ON/AO VIVO existe.
+[x] Campo de data do replay existe.
+[x] Botao CARREGAR DATA existe.
+[x] Status do replay aparece.
+[x] Indice/total do replay aparece.
+[x] Replay limpa grafico ao alternar modo.
+[x] Replay mostra REPLAY_CSV.
+[x] Replay mostra REPLAY_OPERACIONAL_NAO_CERTIFICADO.
+[x] Replay nao libera decisao real.
 
 ### 20.13 Times & Trades no painel
 
