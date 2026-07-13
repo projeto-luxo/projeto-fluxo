@@ -1635,6 +1635,13 @@ def gerar_payload():
         regioes_compostas = []
         regioes_compostas_erro = str(erro)
 
+    resultado_confluencia = (
+        motor_confluencia.anexar_regioes_diagnosticas(
+            resultado_confluencia,
+            regioes_compostas,
+        )
+    )
+
     payload = {
         "historico": historico_painel,
         "engine": engine_data,

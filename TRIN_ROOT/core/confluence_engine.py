@@ -581,6 +581,61 @@ class ConfluenceEngineV2:
 
         return "NEUTRA"
 
+    def anexar_regioes_diagnosticas(
+        self,
+        resultado: Dict[str, Any],
+        regioes: Optional[List[Dict[str, Any]]],
+    ) -> Dict[str, Any]:
+        # Evidencia neutra: nao recalcula score, direcao, qualidade ou alerta.
+        saida = dict(resultado or {})
+        evidencias = [
+            dict(item)
+            for item in (saida.get("evidencias") or [])
+            if isinstance(item, dict)
+            and item.get("nome") != "REGIOES_COMPOSTAS"
+        ]
+
+        regioes_resumidas = []
+        for item in regioes or []:
+            if not isinstance(item, dict):
+                continue
+
+            regioes_resumidas.append(
+                {
+                    "chave_regiao": item.get("chave_regiao"),
+                    "limite_inferior": item.get("limite_inferior"),
+                    "limite_superior": item.get("limite_superior"),
+                    "quantidade_origens": item.get("quantidade_origens"),
+                    "status": item.get("status"),
+                    "classificacao": item.get("classificacao"),
+                    "uso_operacional": item.get("uso_operacional"),
+                }
+            )
+
+        evidencias.append(
+            asdict(
+                Evidencia(
+                    "REGIOES_COMPOSTAS",
+                    {
+                        "quantidade": len(regioes_resumidas),
+                        "regioes": regioes_resumidas,
+                        "status": "DIAGNOSTICO_SEM_IMPACTO",
+                    },
+                    0.0,
+                    0.0,
+                    "NEUTRO",
+                    (
+                        "Regioes compostas anexadas como evidencia diagnostica; "
+                        "sem impacto no score, direcao, qualidade ou alerta."
+                    ),
+                )
+            )
+        )
+
+        saida["evidencias"] = evidencias
+        saida["regioes_compostas_status"] = "DIAGNOSTICO_SEM_IMPACTO"
+        return saida
+
     def process(
         self,
         tick: Dict[str, Any],
