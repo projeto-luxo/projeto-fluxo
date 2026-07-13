@@ -74,3 +74,16 @@
 [ ] Código determinístico aprovado em testes sintéticos.
 [ ] Integração somente leitura aprovada.
 [ ] Uso operacional continua bloqueado.
+
+## Fechamento controlado — Regiões e Planejador
+
+- [x] Núcleo determinístico de referências implementado.
+- [x] Regiões compostas publicadas em modo somente leitura.
+- [x] Regiões anexadas à Confluência com peso e impacto zero.
+- [x] Planejador Operacional implementado em modo bloqueado.
+- [x] Planejador integrado ao backend para diagnóstico.
+- [ ] Validar o Planejador em execução.
+- [ ] Retornar ao próximo item aberto do eixo oficial.
+
+Garantias mantidas: `SEM_OPERACAO`, autorização `BLOQUEADA` e entrada,
+invalidação, stop, parcial e alvo nulos.

@@ -71,6 +71,7 @@ from core.vwap_engine import VWAPEngine
 from core.candle_engine import CandleEngine
 from core.aggression_engine import AggressionEngine
 from core.confluence_engine import ConfluenceEngineV2
+from core.planejador_operacional import PlanejadorOperacional
 from core.agregador_regioes import AgregadorRegioesRG02B
 from core.motor_regioes import (
     ContextoReferencia,
@@ -103,6 +104,7 @@ vwap_engine = VWAPEngine()
 candle_engine = CandleEngine()
 aggression_engine = AggressionEngine()
 motor_confluencia = ConfluenceEngineV2()
+planejador_operacional = PlanejadorOperacional()
 motor_regioes = MotorRegioes()
 agregador_regioes = AgregadorRegioesRG02B()
 
@@ -1642,6 +1644,44 @@ def gerar_payload():
         )
     )
 
+    try:
+        fiscal_aprovado_planejamento = not (
+            resultado_confluencia.get("qualidade")
+            == "BLOQUEADO_POR_CERTIFICACAO"
+            or resultado_confluencia.get("alerta")
+            == "CONFLUENCIA_BLOQUEADA_PELO_FISCAL"
+        )
+
+        planejamento_operacional = planejador_operacional.planejar(
+            confluencia=resultado_confluencia,
+            regioes=regioes_compostas,
+            fiscal_aprovado=fiscal_aprovado_planejamento,
+            contrato_ativo=contexto_referencias.contrato,
+            fontes_saudaveis=(
+                referencias_mercado_erro is None
+                and regioes_compostas_erro is None
+            ),
+        )
+        planejamento_operacional_status = "DIAGNOSTICO_SOMENTE_LEITURA"
+        planejamento_operacional_erro = None
+    except Exception as erro:
+        planejamento_operacional = {
+            "id_plano": "PO-ERRO-BLOQUEADO",
+            "estado": "SEM_OPERACAO",
+            "direcao": "NEUTRA",
+            "entrada_inferior": None,
+            "entrada_superior": None,
+            "invalidacao": None,
+            "stop": None,
+            "parcial": None,
+            "alvo": None,
+            "autorizacao": "BLOQUEADA",
+            "motivo_bloqueio": "ERRO_INTERNO_PLANEJADOR",
+            "uso_operacional": "BLOQUEADO",
+        }
+        planejamento_operacional_status = "ERRO_BLOQUEADO"
+        planejamento_operacional_erro = str(erro)
+
     payload = {
         "historico": historico_painel,
         "engine": engine_data,
@@ -1670,6 +1710,9 @@ def gerar_payload():
         "regioes_compostas": regioes_compostas,
         "regioes_compostas_status": "DIAGNOSTICO_SOMENTE_LEITURA",
         "regioes_compostas_erro": regioes_compostas_erro,
+        "planejamento_operacional": planejamento_operacional,
+        "planejamento_operacional_status": planejamento_operacional_status,
+        "planejamento_operacional_erro": planejamento_operacional_erro,
 
         "agressao": {
             "frequencia_mercado": freq,
