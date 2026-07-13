@@ -244,30 +244,31 @@ Checklist TRIN_ROOT:
 ## 8. Fiscal Temporal
 
 <!-- TRIN:FISCAL_TEMPORAL:STATUS_INICIO -->
-**Status da frente:** EM FECHAMENTO — NÃO HOMOLOGADO.
+**Status da frente:** HOMOLOGADO.
 
-**Itens auditados e comprovados:**
-- Fiscal Temporal v4.2.2 localizado e confirmado.
+**Fiscal Temporal homologado:**
+- Fiscal Temporal v4.2.2 confirmado como módulo oficial.
 - Calendário externo confirmado.
 - Tratamento de lacunas dentro e fora do pregão confirmado.
-- Tratamento de fim de semana e feriados confirmado.
-- Tratamento de leilão confirmado.
-- Emissão de laudo confirmada.
-- Resumo por arquivo e por motivo confirmados.
+- Fim de semana, feriados e leilão confirmados.
+- Laudo, resumos, criticidade, IDs `FT-...` e status das ordens confirmados.
 - Ordens para Bernardo e Zé confirmadas.
-- Criticidade confirmada.
-- IDs únicos no padrão `FT-...` confirmados.
-- Status das ordens confirmado.
-- Ponte oficial Fiscal → Confluência → Planejador → Backend validada.
-- Regra de segurança `fail-closed` validada.
+- FiscalAdapter lê exatamente o bloco `STATUS FINAL`.
+- Ausência, erro ou status desconhecido aplicam bloqueio por segurança (`fail-closed`).
+- Ponte Fiscal → Confluência → Planejador → Backend validada.
 - 41 testes automatizados aprovados.
+- Validação em execução aprovada com `REPROVADO_COM_PENDENCIAS`.
+- Validação no cockpit aprovada:
+  - confluência bloqueada pelo Fiscal;
+  - entrada em `AGUARDAR`;
+  - autorização `BLOQUEADA`;
+  - ação `AGUARDAR CERTIFICACAO`;
+  - stop, parcial e alvo não exibidos;
+  - direção técnica preservada sem liberação operacional.
 
-**Pendente para homologação final:**
-- validar no cockpit o status fiscal real;
-- validar o motivo real do bloqueio;
-- confirmar ausência de entrada, stop, parcial e alvo quando bloqueado;
-- encerrar somente as demais dependências indispensáveis ao Fiscal Temporal;
-- registrar `HOMOLOGADO` apenas após essas provas.
+**Escopo dos módulos dependentes:**
+- Confluência, Planejador e Cockpit foram validados somente nos itens necessários ao Fiscal Temporal.
+- Esses módulos não foram homologados por completo nesta frente.
 <!-- TRIN:FISCAL_TEMPORAL:STATUS_FIM -->
 
 
