@@ -178,3 +178,114 @@
 2026-06-18 11:42:23;NOVO_ARQUIVO;estatistica_biblioteca.csv;Arquivo novo detectado
 2026-06-18 11:42:23;NOVO_ARQUIVO;estatistica_delta.csv;Arquivo novo detectado
 2026-06-18 11:42:23;NOVO_ARQUIVO;estatistica_volume.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;TT_RAW_WINQ26_20260709.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;TT_RAW_WINQ26_20260709_REPETICAO_SNAPSHOT.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;WINFUT_F_0_1min.csv;Arquivo novo detectado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;alertas_temporais.csv;Hash alterado
+2026-07-13 09:54:36;NOVO_ARQUIVO;candles_inexistentes_por_leilao.csv;Arquivo novo detectado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;certificado_sha256.csv;Hash alterado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;certificado_temporal.csv;Hash alterado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;ordens_para_bernardo.csv;Hash alterado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;ordens_para_ze.csv;Hash alterado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;registro_protocolos_fiscal.csv;Hash alterado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;resumo_por_arquivo.csv;Hash alterado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;resumo_por_motivo.csv;Hash alterado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;trilha_auditoria_temporal.csv;Hash alterado
+2026-07-13 09:54:36;NOVO_ARQUIVO;calendario_b3_2026.csv;Arquivo novo detectado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;cobertura_temporal.csv;Hash alterado
+2026-07-13 09:54:36;ARQUIVO_ALTERADO;distribuicao_fractais.csv;Hash alterado
+2026-07-13 09:54:36;NOVO_ARQUIVO;tt_rtd_raw_20260630_170253.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;tt_rtd_raw_20260630_171259.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;tt_rtd_raw_contextual_20260630_173509.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;tt_rtd_captura_20260630_104049.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;tt_rtd_captura_ancora_20260630_140534.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;tt_rtd_captura_oficial_20260630_120512.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;tt_rtd_captura_oficial_rapida_20260630_125301.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;tt_rtd_captura_retry_20260630_112214.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;tt_rtd_captura_retry_20260630_113549.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;tt_rtd_eventos_ancora_20260630_140534.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;amostra_tt_normalizada.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;resumo_tt_raw.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;RESUMO_BASTIAO_TT_PENEIRADOR_WINQ26_20260709.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;TT_INCERTEZAS_WINQ26_20260709.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;TT_PENEIRADO_NAO_CERTIFICADO_WINQ26_20260709.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;TT_REJEITADOS_WINQ26_20260709.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;CANDLE_5S_DIAGNOSTICO_WINQ26_20260709.csv;Arquivo novo detectado
+2026-07-13 09:54:36;NOVO_ARQUIVO;RESUMO_CANDLE_5S_DIAGNOSTICO_WINQ26_20260709.csv;Arquivo novo detectado
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;TT_RAW_WINQ26_20260709.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;TT_RAW_WINQ26_20260709_REPETICAO_SNAPSHOT.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;auditoria_pastas_temporais_20260612_215249.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;auditoria_pastas_temporais_20260612_215919.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;auditoria_pastas_temporais_20260613_211018.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_200451.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_200734.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_203011.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_204049.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_204345.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_210109.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_210609.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_120min_2026_2026_AUDITOR_SESSOES.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_180min_2026_2026_AUDITOR_SESSOES.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_240min_2026_2026_AUDITOR_SESSOES.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_7min_2026_2026_AUDITOR_SESSOES.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;alertas_temporais.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;candles_inexistentes_por_leilao.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;certificado_sha256.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;certificado_temporal.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;ordens_operador.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;ordens_para_bernardo.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;ordens_para_ze.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;registro_protocolos_fiscal.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;resumo_por_arquivo.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;resumo_por_motivo.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;trilha_auditoria_temporal.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;calendario_b3_2026.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;catalogo_padroes_historiador.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;cobertura_temporal.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;contexto_historiador.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;distribuicao_fractais.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;estatistica_biblioteca.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;estatistica_delta.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;estatistica_volume.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WDO_15min_2020_2022.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WDO_15min_2022_2024.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WDO_15min_2024_2026.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WDO_15min_2026_2026.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_15min_2020_2022.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_15min_2022_2024.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_15min_2024_2026.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;tt_rtd_raw_20260630_170253.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;tt_rtd_raw_20260630_171259.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;tt_rtd_raw_contextual_20260630_173509.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;tt_rtd_captura_20260630_104049.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;tt_rtd_captura_ancora_20260630_140534.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;tt_rtd_captura_oficial_20260630_120512.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;tt_rtd_captura_oficial_rapida_20260630_125301.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;tt_rtd_captura_retry_20260630_112214.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;tt_rtd_captura_retry_20260630_113549.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;tt_rtd_eventos_ancora_20260630_140534.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;amostra_tt_normalizada.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;resumo_tt_raw.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;RESUMO_BASTIAO_TT_PENEIRADOR_WINQ26_20260709.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;TT_INCERTEZAS_WINQ26_20260709.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;TT_PENEIRADO_NAO_CERTIFICADO_WINQ26_20260709.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;TT_REJEITADOS_WINQ26_20260709.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;CANDLE_5S_DIAGNOSTICO_WINQ26_20260709.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;RESUMO_CANDLE_5S_DIAGNOSTICO_WINQ26_20260709.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_10min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_120min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_12min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_15min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_180min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_20min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_240min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_30min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_45min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_4min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_5min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_60min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_6min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_7min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_8min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_90min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao
+2026-07-13 11:03:16;ARQUIVO_REMOVIDO;WIN_9min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo nao encontrado nesta execucao

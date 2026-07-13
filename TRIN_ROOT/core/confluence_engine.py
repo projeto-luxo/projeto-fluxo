@@ -484,31 +484,60 @@ class ConfluenceEngineV2:
             episodio or "Contexto historico fornecido pelo HistoriadorAdapter.",
         )
 
-    def _evidencia_bernardo(self, memoria_bernardo: Dict[str, Any]) -> Evidencia:
-        similaridade = self._num(memoria_bernardo.get("similaridade"))
-        confianca = self._num(memoria_bernardo.get("confianca"))
-        ocorrencias = int(self._num(memoria_bernardo.get("ocorrencias"), 0))
-        direcao = str(memoria_bernardo.get("direcao", "NEUTRO")).upper()
-        status = str(memoria_bernardo.get("status", "DESCONHECIDO"))
-        resultado_medio = str(memoria_bernardo.get("resultado_medio", "DESCONHECIDO"))
+    def _evidencia_bernardo(
+        self,
+        memoria_bernardo: Dict[str, Any],
+    ) -> Evidencia:
+        status = str(
+            memoria_bernardo.get("status", "DESCONHECIDO")
+        ).upper()
+        fonte = str(
+            memoria_bernardo.get(
+                "fonte",
+                "BERNARDO_PACOTE_MOTOR_CONFLUENCIA",
+            )
+        )
+        ocorrencias = int(
+            self._num(memoria_bernardo.get("ocorrencias"), 0)
+        )
 
-        impacto = self._clamp((similaridade + confianca) / 2, -2.0, 2.0)
+        item_canonico = memoria_bernardo.get("item_canonico")
+        if not isinstance(item_canonico, dict):
+            item_canonico = {}
+
+        pacote_disponivel = status in {
+            "PACOTE_COGNITIVO_COMPATIVEL",
+            "PACOTE_COGNITIVO_DISPONIVEL",
+        }
+
+        justificativa = (
+            "Conhecimento catalogado pelo Bernardo disponível "
+            "como contexto diagnóstico sem impacto direcional."
+            if pacote_disponivel
+            else "Pacote cognitivo do Bernardo indisponível ou inválido."
+        )
 
         return Evidencia(
             "BERNARDO",
             {
-                "episodio_semelhante": bool(memoria_bernardo.get("episodio_semelhante")),
-                "similaridade": similaridade,
-                "confianca": confianca,
-                "ocorrencias": ocorrencias,
-                "resultado_medio": resultado_medio,
                 "status": status,
-                "direcao": direcao,
+                "fonte": fonte,
+                "ocorrencias": ocorrencias,
+                "item_canonico": item_canonico,
+                "tipo": item_canonico.get("tipo"),
+                "nome": item_canonico.get("nome"),
+                "categoria": item_canonico.get("categoria"),
+                "maturidade": item_canonico.get("maturidade"),
+                "peso_inicial_sugerido": item_canonico.get(
+                    "peso_inicial_sugerido"
+                ),
+                "uso": item_canonico.get("uso"),
+                "uso_operacional": "DIAGNOSTICO_SEM_IMPACTO",
             },
-            1.6,
-            impacto,
-            direcao if direcao in {"COMPRA", "VENDA"} else "NEUTRO",
-            "Memoria cognitiva fornecida pelo BernardoAdapter.",
+            0.0,
+            0.0,
+            "NEUTRO",
+            justificativa,
         )
 
     def _evidencia_certificacao(self, certificacao: Dict[str, Any]) -> Evidencia:

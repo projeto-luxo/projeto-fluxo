@@ -1,176 +1,199 @@
 ﻿data_hora;evento;arquivo;detalhe;acao_recomendada
-2026-06-18 11:42:21;INALTERADO;WDO_1min_2025_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_1min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_1min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_2min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_3min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_4min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_5min_2023_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_5min_2024_2025.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_5min_2025_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_5min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_5min_2023_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_5min_2024_2025.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_5min_2025_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_5min_2026_2026 (2).csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_5min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_6min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_7min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_8min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_9min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;auditoria_pastas_temporais_20260612_215249.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;auditoria_pastas_temporais_20260612_215919.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;auditoria_pastas_temporais_20260613_211018.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;duplicidades_fractais_20260612_200451.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;duplicidades_fractais_20260612_200734.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;duplicidades_fractais_20260612_203011.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;duplicidades_fractais_20260612_204049.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;duplicidades_fractais_20260612_204345.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;duplicidades_fractais_20260612_210109.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;duplicidades_fractais_20260612_210609.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_120min_2026_2026_AUDITOR_SESSOES.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_180min_2026_2026_AUDITOR_SESSOES.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_240min_2026_2026_AUDITOR_SESSOES.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_7min_2026_2026_AUDITOR_SESSOES.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;NOVO_ARQUIVO;alertas_temporais.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;certificado_sha256.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;certificado_temporal.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;ordens_operador.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;ordens_para_bernardo.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;ordens_para_ze.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;registro_protocolos_fiscal.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;resumo_por_arquivo.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;resumo_por_motivo.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;trilha_auditoria_temporal.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;catalogo_padroes_historiador.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;cobertura_temporal.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;contexto_historiador.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;distribuicao_fractais.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;estatistica_biblioteca.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;estatistica_delta.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;NOVO_ARQUIVO;estatistica_volume.csv;Arquivo novo encontrado na biblioteca;Indexar e incluir na memoria estatistica
-2026-06-18 11:42:21;INALTERADO;WDO_15min_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_15min_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_15min_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_15min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_15min_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_15min_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_15min_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_15min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_120min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_180min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_240min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_10min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_120min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_12min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_15min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_180min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_20min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_240min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_30min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_45min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_4min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_5min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_60min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_6min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_7min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_8min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_90min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_9min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_10min2022_2023.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_10min_2023_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_10min_2024_2025.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_10min_2025_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_10min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_10min_2022_2023.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_10min_2023_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_10min_2024_2025.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_10min_2025_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_10min_2026_2026 (2).csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_10min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_12min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_20min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_30min_2014_2016.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_30min_2016_2018.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_30min_2018_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_30min_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_30min_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_30min_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_30min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_30min_2012_2014.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_30min_2014_2016.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_30min_2016_2018.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_30min_2018_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_30min_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_30min_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_30min_2026_2026 (2).csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_30min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_45min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_60MIN_2012_2014.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_60min_2014_2016.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_60min_2016_2018.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_60min_2018_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_60min_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_60min_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_60min_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_60min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_60min_2012_2014.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_60min_2014_2016.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_60min_2016_2018.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_60min_2018_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_60min_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_60min_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_60min_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_60min_2026_2026 (2).csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_60min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_90min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2005_2006.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2007_2008.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2008_2009.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2009_2010.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2010_2011.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2013_2014.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2015_2017.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2019_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_DIARIO_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_Diário_2011_2013.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2017_2019.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2005_2006.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2007_2008.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2008_2009.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2009_2010.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2010_2011.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2011_2013.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2013_2015.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2015_2017.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2019_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_DIARIO_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDOFUT_F_0_Semanal.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WINFUT_F_0_Semanal.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_SEMANAL_2009_2011.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_SEMANAL_2011_2013.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_SEMANAL_2013_2015.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_SEMANAL_2015_2017.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_SEMANAL_2017_2019.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_SEMANAL_2019_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_SEMANAL_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_SEMANAL_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WDO_SEMANAL_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_Semanal_2005_2007.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2007_2009.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2009_2011.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2011_2013.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2013_2015.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2015_2017.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2017_2019.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2018_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
-2026-06-18 11:42:21;INALTERADO;WIN_SEMANAL_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_1min_2025_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_1min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WINFUT_F_0_1min.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_1min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_2min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_3min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_4min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_5min_2023_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_5min_2024_2025.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_5min_2025_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_5min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_5min_2023_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_5min_2024_2025.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_5min_2025_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_5min_2026_2026 (2).csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_5min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_6min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_7min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_8min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_9min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_10min2022_2023.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_10min_2023_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_10min_2024_2025.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_10min_2025_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_10min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_10min_2022_2023.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_10min_2023_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_10min_2024_2025.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_10min_2025_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_10min_2026_2026 (2).csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_10min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_12min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_15min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_20min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_30min_2014_2016.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_30min_2016_2018.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_30min_2018_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_30min_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_30min_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_30min_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_30min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_30min_2012_2014.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_30min_2014_2016.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_30min_2016_2018.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_30min_2018_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_30min_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_30min_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_30min_2026_2026 (2).csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_30min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_45min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_60MIN_2012_2014.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_60min_2014_2016.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_60min_2016_2018.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_60min_2018_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_60min_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_60min_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_60min_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_60min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_60min_2012_2014.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_60min_2014_2016.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_60min_2016_2018.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_60min_2018_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_60min_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_60min_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_60min_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_60min_2026_2026 (2).csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_60min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_90min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2005_2006.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2007_2008.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2008_2009.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2009_2010.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2010_2011.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2013_2014.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2015_2017.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2019_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_DIARIO_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_Diário_2011_2013.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2017_2019.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2005_2006.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2007_2008.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2008_2009.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2009_2010.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2010_2011.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2011_2013.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2013_2015.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2015_2017.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2019_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_DIARIO_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_120min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_180min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_240min_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDOFUT_F_0_Semanal.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WINFUT_F_0_Semanal.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_SEMANAL_2009_2011.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_SEMANAL_2011_2013.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_SEMANAL_2013_2015.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_SEMANAL_2015_2017.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_SEMANAL_2017_2019.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_SEMANAL_2019_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_SEMANAL_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_SEMANAL_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WDO_SEMANAL_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_Semanal_2005_2007.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2007_2009.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2009_2011.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2011_2013.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2013_2015.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2015_2017.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2017_2019.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2018_2020.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2020_2022.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2022_2024.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2024_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;INALTERADO;WIN_SEMANAL_2026_2026.csv;Arquivo sem alteracao detectada;Nenhuma acao necessaria
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;TT_RAW_WINQ26_20260709.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;TT_RAW_WINQ26_20260709_REPETICAO_SNAPSHOT.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;auditoria_pastas_temporais_20260612_215249.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;auditoria_pastas_temporais_20260612_215919.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;auditoria_pastas_temporais_20260613_211018.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_200451.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_200734.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_203011.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_204049.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_204345.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_210109.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;duplicidades_fractais_20260612_210609.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_120min_2026_2026_AUDITOR_SESSOES.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_180min_2026_2026_AUDITOR_SESSOES.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_240min_2026_2026_AUDITOR_SESSOES.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_7min_2026_2026_AUDITOR_SESSOES.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;alertas_temporais.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;candles_inexistentes_por_leilao.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;certificado_sha256.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;certificado_temporal.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;ordens_operador.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;ordens_para_bernardo.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;ordens_para_ze.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;registro_protocolos_fiscal.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;resumo_por_arquivo.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;resumo_por_motivo.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;trilha_auditoria_temporal.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;calendario_b3_2026.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;catalogo_padroes_historiador.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;cobertura_temporal.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;contexto_historiador.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;distribuicao_fractais.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;estatistica_biblioteca.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;estatistica_delta.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;estatistica_volume.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WDO_15min_2020_2022.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WDO_15min_2022_2024.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WDO_15min_2024_2026.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WDO_15min_2026_2026.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_15min_2020_2022.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_15min_2022_2024.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_15min_2024_2026.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;tt_rtd_raw_20260630_170253.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;tt_rtd_raw_20260630_171259.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;tt_rtd_raw_contextual_20260630_173509.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;tt_rtd_captura_20260630_104049.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;tt_rtd_captura_ancora_20260630_140534.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;tt_rtd_captura_oficial_20260630_120512.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;tt_rtd_captura_oficial_rapida_20260630_125301.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;tt_rtd_captura_retry_20260630_112214.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;tt_rtd_captura_retry_20260630_113549.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;tt_rtd_eventos_ancora_20260630_140534.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;amostra_tt_normalizada.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;resumo_tt_raw.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;RESUMO_BASTIAO_TT_PENEIRADOR_WINQ26_20260709.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;TT_INCERTEZAS_WINQ26_20260709.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;TT_PENEIRADO_NAO_CERTIFICADO_WINQ26_20260709.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;TT_REJEITADOS_WINQ26_20260709.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;CANDLE_5S_DIAGNOSTICO_WINQ26_20260709.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;RESUMO_CANDLE_5S_DIAGNOSTICO_WINQ26_20260709.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_10min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_120min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_12min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_15min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_180min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_20min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_240min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_30min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_45min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_4min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_5min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_60min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_6min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_7min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_8min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_90min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado
+2026-07-13 11:03:15;ARQUIVO_REMOVIDO;WIN_9min_2026_2026_CANDLES_PARCIAIS.csv;Arquivo existia no indice anterior e nao foi encontrado agora;Conferir se foi movido, renomeado ou apagado

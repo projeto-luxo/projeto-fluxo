@@ -807,9 +807,24 @@ if (absorcao) {
         evidenciaBernardo?.valor?.status ??
         "SEM BERNARDO",
 
-      bernardoSimilaridade:
-        evidenciaBernardo?.valor?.similaridade ??
-        "-",
+      bernardoItem:
+        evidenciaBernardo?.valor?.item_canonico?.nome ??
+        evidenciaBernardo?.valor?.nome ??
+        "SEM ITEM",
+
+      bernardoCategoria:
+        evidenciaBernardo?.valor?.item_canonico?.categoria ??
+        evidenciaBernardo?.valor?.categoria ??
+        "SEM CATEGORIA",
+
+      bernardoMaturidade:
+        evidenciaBernardo?.valor?.item_canonico?.maturidade ??
+        evidenciaBernardo?.valor?.maturidade ??
+        "N/D",
+
+      bernardoUsoOperacional:
+        evidenciaBernardo?.valor?.uso_operacional ??
+        "DIAGNOSTICO_SEM_IMPACTO",
 
       historiadorPadrao:
         evidenciaHistoriador?.valor?.padrao ??
@@ -1883,7 +1898,10 @@ if (temEntradaReal) {
           • Entrada: {temEntradaValida ? dataInfo.entrada : "AGUARDAR"}<br />
           • Autorizacao: {autorizacaoOperacionalPainel}<br />
           • Estado: {estadoQualidadePainel}<br />
-          • Fiscal: {dataInfo.fiscalStatus || "DESCONHECIDO"}
+          • Fiscal: {dataInfo.fiscalStatus || "DESCONHECIDO"}<br />
+          • Bernardo: {dataInfo.bernardoStatus || "SEM BERNARDO"} |{" "}
+          {dataInfo.bernardoItem || "SEM ITEM"} |{" "}
+          {dataInfo.bernardoMaturidade || "N/D"}
         </div>
 
         <div

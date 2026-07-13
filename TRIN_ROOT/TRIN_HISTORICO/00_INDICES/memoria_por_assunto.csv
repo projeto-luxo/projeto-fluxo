@@ -1,6 +1,6 @@
 ﻿assunto;categoria;descricao;termos_chave;arquivos_relacionados;padroes_relacionados;relacoes_grafo;densidade_conhecimento;maturidade_assunto
-VWAP;PRECO_VALOR;Memoria relacionada a preco medio institucional, bandas e retorno a valor;VWAP,MEDIA,VALOR,PRECO;0;3;153;156;ALTA
-DELTA;FLUXO;Memoria relacionada a diferenca entre agressao compradora e vendedora;DELTA,AGRESSAO,FLUXO;1;5;2;8;BAIXA
+VWAP;PRECO_VALOR;Memoria relacionada a preco medio institucional, bandas e retorno a valor;VWAP,MEDIA,VALOR,PRECO;0;3;151;154;ALTA
+DELTA;FLUXO;Memoria relacionada a diferenca entre agressao compradora e vendedora;DELTA,AGRESSAO,FLUXO;0;5;1;6;BAIXA
 SALDO;FLUXO;Memoria relacionada ao saldo acumulado de agressao;SALDO,ACUMULADO,AGRESSAO;0;4;0;4;BAIXA
 REVERSAO;PADRAO;Memoria relacionada a mudanca de direcao e rejeicao de preco;REVERSAO,REJEICAO,EXTREMO,VWAP;0;11;11;22;MEDIA
 ROMPIMENTO;PADRAO;Memoria relacionada a rompimentos com ou sem confirmacao de fluxo;ROMPIMENTO,EXPLOSAO,FLUXO;0;5;4;9;BAIXA

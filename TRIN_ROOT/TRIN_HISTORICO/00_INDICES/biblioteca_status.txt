@@ -2,17 +2,17 @@
 ============================================================
 BIBLIOTECA HISTORICA TRIN - BERNARDO v4.0
 ============================================================
-Arquivos ............... 179
-Registros .............. 814293
-WIN .................... 99
-WDO .................... 53
-Fractais ............... 10_MIN, 120_MIN, 12_MIN, 15_MIN, 180_MIN, 1_MIN, 20_MIN, 240_MIN, 2_MIN, 30_MIN, 3_MIN, 45_MIN, 4_MIN, 5_MIN, 60_MIN, 6_MIN, 7_MIN, 8_MIN, 90_MIN, 9_MIN, DESCONHECIDO, DIARIO, SEMANAL
+Arquivos ............... 121
+Registros .............. 703195
+WIN .................... 72
+WDO .................... 49
+Fractais ............... 10_MIN, 120_MIN, 12_MIN, 15_MIN, 180_MIN, 1_MIN, 20_MIN, 240_MIN, 2_MIN, 30_MIN, 3_MIN, 45_MIN, 4_MIN, 5_MIN, 60_MIN, 6_MIN, 7_MIN, 8_MIN, 90_MIN, 9_MIN, DIARIO, SEMANAL
 Data inicial ........... 17/05/2005
-Data final ............. 18/06/2026
+Data final ............. 05/06/2026
 Maior arquivo .......... WDO_1min_2026_2026.csv
-Menor arquivo .......... resumo_por_motivo.csv
-Alertas ................ 31
+Menor arquivo .......... WDO_SEMANAL_2026_2026.csv
+Alertas ................ 0
 Erros .................. 0
-Integridade ............ 82.68%
-Ultima atualizacao ..... 18/06/2026 11:42:23
+Integridade ............ 100.0%
+Ultima atualizacao ..... 13/07/2026 11:03:16
 ============================================================

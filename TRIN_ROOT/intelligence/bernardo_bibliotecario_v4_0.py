@@ -1,5 +1,6 @@
 import os
 import hashlib
+import json
 import shutil
 import re
 import pandas as pd
@@ -17,7 +18,30 @@ os.makedirs(INDICES, exist_ok=True)
 os.makedirs(VERSOES, exist_ok=True)
 os.makedirs(RECUPERACAO, exist_ok=True)
 
-IGNORAR = {"00_INDICES", "00_MEMORIA_PROCESSADA"}
+PASTAS_BIBLIOTECA_OFICIAL = {
+    "001_1_MIN",
+    "002_2_MIN",
+    "003_3_MIN",
+    "004_4_MIN",
+    "005_5_MIN",
+    "006_6_MIN",
+    "007_7_MIN",
+    "008_8_MIN",
+    "009_9_MIN",
+    "010_10_MIN",
+    "012_12_MIN",
+    "015_15_MIN",
+    "020_20_MIN",
+    "030_30_MIN",
+    "045_45_MIN",
+    "060_60_MIN",
+    "090_90_MIN",
+    "120_120_MIN",
+    "180_180_MIN",
+    "240_240_MIN",
+    "M01_MENSAL",
+    "S01_SEMANAL",
+}
 
 ARQ_INDICE = os.path.join(INDICES, "indice_geral.csv")
 ARQ_WIN = os.path.join(INDICES, "indice_win.csv")
@@ -56,6 +80,10 @@ ARQ_BIBLIOTECA_CONCEITUAL = os.path.join(INDICES, "biblioteca_conceitual.csv")
 ARQ_AUTOINSPECAO = os.path.join(INDICES, "autoinspecao_bernardo.csv")
 ARQ_PACOTE_HISTORIADOR = os.path.join(INDICES, "pacote_historiador.csv")
 ARQ_PACOTE_ZE_EUCRAZIO = os.path.join(INDICES, "pacote_ze_eucrazio.csv")
+ARQ_MANIFESTO_PACOTE_ZE = os.path.join(
+    INDICES,
+    "manifesto_pacote_ze_bernardo.json",
+)
 ARQ_PACOTE_MOTOR_CONFLUENCIA = os.path.join(INDICES, "pacote_motor_confluencia.csv")
 
 def md5_arquivo(caminho):
@@ -64,6 +92,44 @@ def md5_arquivo(caminho):
         for bloco in iter(lambda: f.read(1024 * 1024), b""):
             h.update(bloco)
     return h.hexdigest()
+
+
+def sha256_arquivo(caminho):
+    h = hashlib.sha256()
+    with open(caminho, "rb") as f:
+        for bloco in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(bloco)
+    return h.hexdigest()
+
+
+def status_autoinspecao_pacote_ze():
+    if not os.path.exists(ARQ_AUTOINSPECAO):
+        return "NAO_AVALIADA"
+
+    try:
+        autoinspecao = pd.read_csv(
+            ARQ_AUTOINSPECAO,
+            sep=";",
+            encoding="utf-8-sig",
+            dtype=str,
+            keep_default_na=False,
+        )
+    except Exception:
+        return "ERRO_LEITURA_AUTOINSPECAO"
+
+    if len(autoinspecao) == 0:
+        return "NAO_AVALIADA"
+
+    status = autoinspecao.get("status", pd.Series(dtype=str)).astype(str).str.upper()
+    gravidade = autoinspecao.get("gravidade", pd.Series(dtype=str)).astype(str).str.upper()
+
+    if status.isin({"ERRO", "REPROVADO", "BLOQUEADO"}).any():
+        return "COM_PENDENCIAS"
+
+    if gravidade.isin({"CRITICA", "ALTA"}).any():
+        return "COM_PENDENCIAS"
+
+    return "APROVADA"
 
 
 def identificar_ativo(valor, arquivo):
@@ -194,22 +260,64 @@ def limpar_numero(valor):
 
 
 def ler_datas(df):
+    # ISO YYYY-MM-DD usa ano-mês-dia.
+    # Formatos brasileiros permanecem day-first.
+    # Datas anteriores a 2000 ou posteriores ao dia atual são rejeitadas.
     if df.shape[1] < 2:
         return "N/D", "N/D", "DATA_INVALIDA"
 
-    datas = pd.to_datetime(
-        df.iloc[:, 1],
+    valores = df.iloc[:, 1].astype(str).str.strip()
+    mascara_iso = valores.str.match(
+        r"^\d{4}-\d{2}-\d{2}(?:[ T]|$)",
+        na=False,
+    )
+
+    datas_iso = pd.to_datetime(
+        valores.where(mascara_iso),
+        errors="coerce",
+        yearfirst=True,
+        format="mixed",
+    )
+
+    datas_br = pd.to_datetime(
+        valores.where(~mascara_iso),
+        errors="coerce",
         dayfirst=True,
-        errors="coerce"
-    ).dropna()
+        format="mixed",
+    )
+
+    datas = datas_iso.combine_first(datas_br).dropna()
 
     if len(datas) == 0:
         return "N/D", "N/D", "DATA_INVALIDA"
 
+    limite_inferior = pd.Timestamp("2000-01-01")
+    limite_superior = (
+        pd.Timestamp(datetime.now().date())
+        + pd.Timedelta(days=1)
+        - pd.Timedelta(microseconds=1)
+    )
+
+    fora_da_janela = (
+        (datas < limite_inferior)
+        | (datas > limite_superior)
+    )
+
+    datas_validas = datas[~fora_da_janela]
+
+    if len(datas_validas) == 0:
+        return "N/D", "N/D", "DATA_INVALIDA"
+
+    status = (
+        "DATA_FORA_JANELA"
+        if bool(fora_da_janela.any())
+        else "OK"
+    )
+
     return (
-        datas.min().strftime("%d/%m/%Y"),
-        datas.max().strftime("%d/%m/%Y"),
-        "OK"
+        datas_validas.min().strftime("%d/%m/%Y"),
+        datas_validas.max().strftime("%d/%m/%Y"),
+        status,
     )
 
 
@@ -2137,6 +2245,14 @@ def gerar_autoinspecao_bernardo(indice, relatorio_curadoria, memoria_por_assunto
 
 
 def gerar_pacotes_modulos_futuros(indice, relatorio_memoria_estatistica, ranking_historico, banco_reversoes, memoria_por_assunto, rede_semantica, biblioteca_conceitual):
+    id_execucao_bernardo = datetime.now().strftime("BERNARDO-%Y%m%d-%H%M%S")
+    status_autoinspecao = status_autoinspecao_pacote_ze()
+    hash_indice = (
+        sha256_arquivo(ARQ_INDICE)
+        if os.path.exists(ARQ_INDICE)
+        else "INDICE_INDISPONIVEL"
+    )
+
     pacote_historiador = []
 
     for _, linha in banco_reversoes.iterrows():
@@ -2166,11 +2282,51 @@ def gerar_pacotes_modulos_futuros(indice, relatorio_memoria_estatistica, ranking
             "fractal": fractal,
             "existe_na_biblioteca": "SIM" if fractal in fractais_atuais else "NAO",
             "acao_recomendada": "MANTER_INDEXADO" if fractal in fractais_atuais else "GERAR_COM_ZE_DO_EUCRAZIO",
-            "base_recomendada": "1_MIN"
+            "base_recomendada": "1_MIN",
+            "versao_bernardo": "4.0",
+            "id_execucao_bernardo": id_execucao_bernardo,
+            "hash_indice_bernardo": hash_indice,
+            "status_autoinspecao_bernardo": status_autoinspecao,
+            "manifesto_rastreabilidade": os.path.basename(
+                ARQ_MANIFESTO_PACOTE_ZE
+            ),
         })
 
     df_ze = pd.DataFrame(pacote_ze)
-    df_ze.to_csv(ARQ_PACOTE_ZE_EUCRAZIO, sep=";", index=False, encoding="utf-8-sig")
+    df_ze.to_csv(
+        ARQ_PACOTE_ZE_EUCRAZIO,
+        sep=";",
+        index=False,
+        encoding="utf-8-sig",
+    )
+
+    manifesto_ze = {
+        "tipo_manifesto": "PACOTE_BERNARDO_PARA_ZE",
+        "versao_bernardo": "4.0",
+        "id_execucao_bernardo": id_execucao_bernardo,
+        "data_geracao": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "arquivo_indice": os.path.basename(ARQ_INDICE),
+        "hash_sha256_indice_bernardo": hash_indice,
+        "arquivo_pacote_ze": os.path.basename(ARQ_PACOTE_ZE_EUCRAZIO),
+        "hash_sha256_pacote_ze_bernardo": sha256_arquivo(
+            ARQ_PACOTE_ZE_EUCRAZIO
+        ),
+        "quantidade_itens": int(len(df_ze)),
+        "status_autoinspecao_bernardo": status_autoinspecao,
+        "observacao_hash": (
+            "O hash do pacote fica no manifesto externo para evitar "
+            "autorreferencia circular dentro do proprio CSV."
+        ),
+    }
+
+    with open(ARQ_MANIFESTO_PACOTE_ZE, "w", encoding="utf-8") as f:
+        json.dump(
+            manifesto_ze,
+            f,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
 
     pacote_motor = []
 
@@ -2215,7 +2371,7 @@ def main():
     registros = []
 
     for pasta in sorted(os.listdir(BASE)):
-        if pasta in IGNORAR:
+        if pasta not in PASTAS_BIBLIOTECA_OFICIAL:
             continue
 
         caminho_pasta = os.path.join(BASE, pasta)
@@ -2358,6 +2514,17 @@ def main():
         memoria_por_assunto,
         rede_semantica,
         biblioteca_conceitual
+    )
+
+    try:
+        from intelligence.bernardo_ordens_fiscal import (
+            BernardoOrdensFiscal,
+        )
+    except ModuleNotFoundError:
+        from bernardo_ordens_fiscal import BernardoOrdensFiscal
+
+    resultado_ordens_fiscal = BernardoOrdensFiscal().processar(
+        gravar=True
     )
 
     eventos = detectar_eventos(indice_anterior, indice)
@@ -2542,6 +2709,13 @@ def main():
 
     print("Autoinspecao Bernardo:")
     print(autoinspecao_bernardo.to_string(index=False))
+    print("=" * 60)
+
+    print("Ordens do Fiscal para Bernardo:")
+    print(
+        f"Status: {resultado_ordens_fiscal.get('status')} | "
+        f"Quantidade: {resultado_ordens_fiscal.get('quantidade')}"
+    )
     print("=" * 60)
 
     print("Pacotes para modulos futuros:")

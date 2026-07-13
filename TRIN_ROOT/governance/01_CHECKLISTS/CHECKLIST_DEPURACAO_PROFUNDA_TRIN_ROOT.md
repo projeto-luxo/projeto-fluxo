@@ -185,6 +185,35 @@ Checklist:
 
 ## 6. Bernardo
 
+<!-- TRIN:BERNARDO:STATUS_INICIO -->
+**Status da frente:** HOMOLOGADO.
+
+**Bernardo Bibliotecário homologado:**
+- núcleo oficial v4.0 confirmado;
+- 121 arquivos e 703,195 registros históricos oficiais;
+- integridade de 100.0%;
+- zero registros desconhecidos;
+- zero datas inválidas ou futuras;
+- zero alertas e zero erros;
+- autoinspeção `PRONTO_PARA_ZE`;
+- pacote Historiador com 66 itens;
+- pacote Zé do Eucrázio com 23 itens e manifesto SHA-256;
+- pacote Motor de Confluência com 30 itens;
+- ponte Fiscal → Bernardo validada;
+- Confluência, Backend e Cockpit validados;
+- 54 testes automatizados aprovados.
+
+**Backlog não bloqueante:**
+- 4 pendências médias de higienização;
+- 6 assuntos com baixa maturidade;
+- 4 eventos a catalogar.
+
+**Escopo dos módulos dependentes:**
+- as interfaces necessárias ao Bernardo foram validadas;
+- Confluência, Backend, Cockpit e Zé não foram homologados integralmente nesta frente.
+<!-- TRIN:BERNARDO:STATUS_FIM -->
+
+
 Status historico:
 
 CONGELADO ARQUITETURALMENTE COMO PERSISTENCIA COGNITIVA
@@ -193,12 +222,11 @@ Checklist TRIN_ROOT:
 
 [x] localizar arquivos atuais do Bernardo.
 [ ] confirmar se nao foi quebrado por mudancas posteriores.
-[ ] confirmar se consumidores nao leem CSV diretamente ignorando Bernardo.
+[x] confirmar se consumidores nao leem CSV diretamente ignorando Bernardo.
 [x] confirmar se existe contrato oficial.
 [x] confirmar se existe auditoria/homologacao.
-[ ] listar pendencias atuais do Bernardo.
-[ ] listar se precisa implementar API, ajustar API ou apenas preservar.
-
+[x] listar pendencias atuais do Bernardo.
+[x] listar se precisa implementar API, ajustar API ou apenas preservar.
 ---
 
 ## 7. Ze do Eucrazio
@@ -1219,3 +1247,4 @@ Pendencias mantidas:
 5S-01 HOMOLOGADO PARA STATUS DIAGNOSTICO NO COCKPIT. CONTINUIDADE E FIDELIDADE AINDA PENDENTES.
 
 So marcar [v] depois de evidencia real no TRIN_ROOT atual.
+- interface Bernardo → Zé validada com rastreabilidade e manifesto SHA-256;

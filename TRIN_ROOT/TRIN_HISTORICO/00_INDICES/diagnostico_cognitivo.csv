@@ -1,7 +1,7 @@
 ﻿item;valor;parecer
-ARQUIVOS_CATALOGADOS;179;Base documental disponivel para memoria cognitiva
-RELACOES_NO_GRAFO;1015;Arestas criadas entre arquivos, ativos, fractais, origens e padroes
+ARQUIVOS_CATALOGADOS;121;Base documental disponivel para memoria cognitiva
+RELACOES_NO_GRAFO;881;Arestas criadas entre arquivos, ativos, fractais, origens e padroes
 ITENS_HIERARQUICOS;40;Estrutura inicial de memoria hierarquica criada
-CONFIANCA_MEDIA;90.17;Confianca media da memoria calculada automaticamente
-IMPORTANCIA_MEDIA;60.85;Importancia media dos arquivos calculada automaticamente
+CONFIANCA_MEDIA;99.77;Confianca media da memoria calculada automaticamente
+IMPORTANCIA_MEDIA;70.69;Importancia media dos arquivos calculada automaticamente
 STATUS_COGNITIVO;PRONTA_PARA_ZE_DO_EUCRAZIO;Bernardo preparado para receber fractais universais e novos indicadores

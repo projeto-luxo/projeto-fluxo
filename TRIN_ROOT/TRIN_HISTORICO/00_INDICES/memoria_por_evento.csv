@@ -1,11 +1,11 @@
 ﻿evento;descricao;ja_catalogado;prioridade;data_minima_biblioteca;data_maxima_biblioteca;uso_futuro
-COPOM;Politica monetaria Brasil;SIM;ALTA;17/05/2005;18/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
-PAYROLL;Emprego Estados Unidos;SIM;ALTA;17/05/2005;18/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
-FOMC;Politica monetaria Estados Unidos;NAO;ALTA;17/05/2005;18/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
-VENCIMENTO;Vencimento de contratos;SIM;ALTA;17/05/2005;18/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
-ROLAGEM;Rolagem de contratos futuros;SIM;ALTA;17/05/2005;18/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
-FERIADO;Reducao ou distorcao de liquidez;SIM;MEDIA;17/05/2005;18/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
-ABERTURA;Inicio do pregao;SIM;MEDIA;17/05/2005;18/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
-FECHAMENTO;Encerramento do pregao;NAO;MEDIA;17/05/2005;18/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
-ALTA_VOLATILIDADE;Ambiente de grande amplitude;NAO;MEDIA;17/05/2005;18/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
-BAIXA_VOLATILIDADE;Ambiente de compressao;NAO;MEDIA;17/05/2005;18/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
+COPOM;Politica monetaria Brasil;SIM;ALTA;17/05/2005;05/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
+PAYROLL;Emprego Estados Unidos;SIM;ALTA;17/05/2005;05/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
+FOMC;Politica monetaria Estados Unidos;NAO;ALTA;17/05/2005;05/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
+VENCIMENTO;Vencimento de contratos;SIM;ALTA;17/05/2005;05/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
+ROLAGEM;Rolagem de contratos futuros;SIM;ALTA;17/05/2005;05/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
+FERIADO;Reducao ou distorcao de liquidez;SIM;MEDIA;17/05/2005;05/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
+ABERTURA;Inicio do pregao;SIM;MEDIA;17/05/2005;05/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
+FECHAMENTO;Encerramento do pregao;NAO;MEDIA;17/05/2005;05/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
+ALTA_VOLATILIDADE;Ambiente de grande amplitude;NAO;MEDIA;17/05/2005;05/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
+BAIXA_VOLATILIDADE;Ambiente de compressao;NAO;MEDIA;17/05/2005;05/06/2026;Historiador, Motor de Confluencia, Memoria de Contexto
