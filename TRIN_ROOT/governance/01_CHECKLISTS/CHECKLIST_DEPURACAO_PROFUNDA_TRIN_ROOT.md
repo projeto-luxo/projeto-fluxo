@@ -1248,3 +1248,40 @@ Pendencias mantidas:
 
 So marcar [v] depois de evidencia real no TRIN_ROOT atual.
 - interface Bernardo → Zé validada com rastreabilidade e manifesto SHA-256;
+
+<!-- TRIN_CARTORIO_PACOTE_02_FISCAL_MENSAL_20260716 -->
+
+---
+
+## ENCERRAMENTO CARTORIAL — PACOTE 02 / FISCAL MENSAL
+
+**Data:** 16/07/2026  
+**Estado:** HOMOLOGADO  
+**Regra de precedência:** este bloco posterior substitui os estados anteriores deste checklist referentes ao teste mensal controlado e à certificação do WIN Mensal 2026.
+
+[x] Pacote 02 — Fiscal Mensal V3 Final homologado pela Guia 2.
+[x] Pré-validação local final concluída com conteúdo aprovado.
+[x] Evidência final validada por SHA-256 e `testzip()`.
+[x] Git, `TRIN_ROOT` e Biblioteca Histórica comprovadamente preservados.
+[x] Origem `WIN_1min_2026_2026.csv` reconhecida no schema Profit sem cabeçalho e com nove colunas posicionais.
+[x] `WIN_MENSAL_2026_2026.csv` homologado como representação fiel da origem disponível.
+[x] Janeiro de 2026 classificado como `PARCIAL_BORDA_INICIO`; uso como mês completo proibido.
+[x] Fevereiro, março, abril e maio de 2026 classificados como `INTEGRAL`.
+[x] Junho de 2026 classificado como `PARCIAL_BORDA_FIM`; uso como mês completo proibido.
+[x] Quatro eventos de leilão qualificados como informativos.
+[x] Contrato temporal WIN 1_MIN 2026 homologado no escopo da pré-validação.
+[x] Fiscal temporário e auditor independente chegaram à mesma decisão: `APROVADO`.
+[x] Nenhum certificado foi publicado na Biblioteca real.
+[x] O código permanente `intelligence/fiscal_temporal.py` v4.2.3 não foi homologado por esta frente e permanece fora do escopo.
+[x] Este registro, o termo, o parecer final, os hashes e o recibo externo formam o encerramento cartorial do Pacote 02.
+[x] O commit que incorporar este bloco deverá ser único e restrito aos arquivos governamentais listados no pacote cartorial.
+[x] Após o push desse commit, fica liberada a abertura auditória do Pacote 03 — Historiador Replay.
+
+**Evidência principal:**
+
+```text
+SHA-256 = 875f2273db2bab0261f1dec9daba307dc97c946171b085f15f6dfca64d427d79
+resultado = PREVALIDACAO_LOCAL_APROVADA
+```
+
+<!-- FIM_TRIN_CARTORIO_PACOTE_02_FISCAL_MENSAL_20260716 -->
