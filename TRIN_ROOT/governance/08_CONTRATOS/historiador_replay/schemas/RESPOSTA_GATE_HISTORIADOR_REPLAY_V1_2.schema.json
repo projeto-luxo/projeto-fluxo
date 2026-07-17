@@ -1,0 +1,444 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trin://schemas/RespostaGateHistoriadorReplayV1_2",
+  "title": "RespostaGateHistoriadorReplayV1_2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contrato_resposta",
+    "versao",
+    "gate_id",
+    "solicitacao_id",
+    "origem_id_avaliada",
+    "origem_hash_avaliada",
+    "periodo_solicitado",
+    "resultado_gate",
+    "nucleo_aberto",
+    "pacote_id",
+    "politica_cobertura",
+    "cobertura_origem",
+    "cobertura_periodo_solicitado",
+    "resultado_gate_cobertura",
+    "motivo_gate_cobertura",
+    "uso_como_periodo_completo",
+    "consumo_operacional",
+    "motivo_bloqueio",
+    "divergencias"
+  ],
+  "properties": {
+    "contrato_resposta": {
+      "const": "RespostaGateHistoriadorReplayV1_2"
+    },
+    "versao": {
+      "const": "1.2.0"
+    },
+    "gate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "solicitacao_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origem_id_avaliada": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origem_hash_avaliada": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "periodo_solicitado": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inicio",
+        "fim"
+      ],
+      "properties": {
+        "inicio": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fim": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "resultado_gate": {
+      "enum": [
+        "APROVADO",
+        "REPROVADO"
+      ]
+    },
+    "nucleo_aberto": {
+      "type": "boolean"
+    },
+    "pacote_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "politica_cobertura": {
+      "enum": [
+        "EXIGIR_INTEGRAL",
+        "PERMITIR_BORDA_PARCIAL_DIAGNOSTICA"
+      ]
+    },
+    "cobertura_origem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inicio_disponivel",
+        "fim_disponivel"
+      ],
+      "properties": {
+        "inicio_disponivel": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fim_disponivel": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "cobertura_periodo_solicitado": {
+      "enum": [
+        "INTEGRAL",
+        "PARCIAL_BORDA_INICIO",
+        "PARCIAL_BORDA_FIM",
+        "FORA_DA_COBERTURA",
+        "PARCIAL_INTERNO"
+      ]
+    },
+    "resultado_gate_cobertura": {
+      "enum": [
+        "APROVADO",
+        "REPROVADO"
+      ]
+    },
+    "motivo_gate_cobertura": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        null,
+        "FORA_DA_COBERTURA",
+        "PARCIAL_INTERNO",
+        "BORDA_PARCIAL_NAO_PERMITIDA"
+      ]
+    },
+    "uso_como_periodo_completo": {
+      "enum": [
+        "PERMITIDO",
+        "PROIBIDO"
+      ]
+    },
+    "consumo_operacional": {
+      "enum": [
+        "PERMITIDO",
+        "BLOQUEADO"
+      ]
+    },
+    "motivo_bloqueio": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "divergencias": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "resultado_gate": {
+            "const": "APROVADO"
+          }
+        },
+        "required": [
+          "resultado_gate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "nucleo_aberto": {
+            "const": true
+          },
+          "pacote_id": {
+            "type": "string"
+          },
+          "motivo_bloqueio": {
+            "const": null
+          },
+          "divergencias": {
+            "maxItems": 0
+          },
+          "resultado_gate_cobertura": {
+            "const": "APROVADO"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "nucleo_aberto": {
+            "const": false
+          },
+          "pacote_id": {
+            "const": null
+          },
+          "consumo_operacional": {
+            "const": "BLOQUEADO"
+          },
+          "motivo_bloqueio": {
+            "type": "string",
+            "minLength": 1
+          },
+          "divergencias": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "resultado_gate_cobertura": {
+            "const": "APROVADO"
+          }
+        },
+        "required": [
+          "resultado_gate_cobertura"
+        ]
+      },
+      "then": {
+        "properties": {
+          "motivo_gate_cobertura": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "resultado_gate_cobertura": {
+            "const": "REPROVADO"
+          }
+        },
+        "required": [
+          "resultado_gate_cobertura"
+        ]
+      },
+      "then": {
+        "properties": {
+          "resultado_gate": {
+            "const": "REPROVADO"
+          },
+          "nucleo_aberto": {
+            "const": false
+          },
+          "pacote_id": {
+            "const": null
+          },
+          "consumo_operacional": {
+            "const": "BLOQUEADO"
+          },
+          "motivo_bloqueio": {
+            "type": "string",
+            "minLength": 1
+          },
+          "motivo_gate_cobertura": {
+            "type": "string"
+          },
+          "divergencias": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "const": "INTEGRAL"
+          }
+        },
+        "required": [
+          "cobertura_periodo_solicitado"
+        ]
+      },
+      "then": {
+        "properties": {
+          "resultado_gate_cobertura": {
+            "const": "APROVADO"
+          },
+          "motivo_gate_cobertura": {
+            "const": null
+          },
+          "uso_como_periodo_completo": {
+            "const": "PERMITIDO"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "enum": [
+              "PARCIAL_BORDA_INICIO",
+              "PARCIAL_BORDA_FIM"
+            ]
+          },
+          "politica_cobertura": {
+            "const": "PERMITIR_BORDA_PARCIAL_DIAGNOSTICA"
+          }
+        },
+        "required": [
+          "cobertura_periodo_solicitado",
+          "politica_cobertura"
+        ]
+      },
+      "then": {
+        "properties": {
+          "resultado_gate_cobertura": {
+            "const": "APROVADO"
+          },
+          "motivo_gate_cobertura": {
+            "const": null
+          },
+          "uso_como_periodo_completo": {
+            "const": "PROIBIDO"
+          },
+          "consumo_operacional": {
+            "const": "BLOQUEADO"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "enum": [
+              "PARCIAL_BORDA_INICIO",
+              "PARCIAL_BORDA_FIM"
+            ]
+          },
+          "politica_cobertura": {
+            "const": "EXIGIR_INTEGRAL"
+          }
+        },
+        "required": [
+          "cobertura_periodo_solicitado",
+          "politica_cobertura"
+        ]
+      },
+      "then": {
+        "properties": {
+          "resultado_gate_cobertura": {
+            "const": "REPROVADO"
+          },
+          "motivo_gate_cobertura": {
+            "const": "BORDA_PARCIAL_NAO_PERMITIDA"
+          },
+          "uso_como_periodo_completo": {
+            "const": "PROIBIDO"
+          },
+          "consumo_operacional": {
+            "const": "BLOQUEADO"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "const": "FORA_DA_COBERTURA"
+          }
+        },
+        "required": [
+          "cobertura_periodo_solicitado"
+        ]
+      },
+      "then": {
+        "properties": {
+          "resultado_gate_cobertura": {
+            "const": "REPROVADO"
+          },
+          "motivo_gate_cobertura": {
+            "const": "FORA_DA_COBERTURA"
+          },
+          "uso_como_periodo_completo": {
+            "const": "PROIBIDO"
+          },
+          "consumo_operacional": {
+            "const": "BLOQUEADO"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "const": "PARCIAL_INTERNO"
+          }
+        },
+        "required": [
+          "cobertura_periodo_solicitado"
+        ]
+      },
+      "then": {
+        "properties": {
+          "resultado_gate_cobertura": {
+            "const": "REPROVADO"
+          },
+          "motivo_gate_cobertura": {
+            "const": "PARCIAL_INTERNO"
+          },
+          "uso_como_periodo_completo": {
+            "const": "PROIBIDO"
+          },
+          "consumo_operacional": {
+            "const": "BLOQUEADO"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "resultado_gate": {
+            "const": "APROVADO"
+          },
+          "cobertura_periodo_solicitado": {
+            "const": "INTEGRAL"
+          }
+        },
+        "required": [
+          "resultado_gate",
+          "cobertura_periodo_solicitado"
+        ]
+      },
+      "then": {
+        "properties": {
+          "consumo_operacional": {
+            "const": "PERMITIDO"
+          }
+        }
+      }
+    }
+  ]
+}

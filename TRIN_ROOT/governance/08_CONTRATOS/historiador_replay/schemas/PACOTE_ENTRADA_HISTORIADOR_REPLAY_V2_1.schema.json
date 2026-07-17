@@ -1,0 +1,328 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trin://schemas/PacoteEntradaHistoriadorReplayV2_1",
+  "title": "PacoteEntradaHistoriadorReplayV2_1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contrato",
+    "versao",
+    "pacote_id",
+    "montado_por",
+    "origem",
+    "solicitacao",
+    "fiscal",
+    "preflight"
+  ],
+  "properties": {
+    "contrato": {
+      "const": "PacoteEntradaHistoriadorReplayV2_1"
+    },
+    "versao": {
+      "const": "2.1.0"
+    },
+    "pacote_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "montado_por": {
+      "const": "OrquestradorEntradaReplayV1"
+    },
+    "origem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origem_id",
+        "arquivo",
+        "caminho_relativo_biblioteca",
+        "sha256",
+        "bytes",
+        "linhas",
+        "ativo_fisico",
+        "familia_ativo",
+        "fractal",
+        "schema_origem",
+        "periodo_disponivel",
+        "cobertura_origem",
+        "contrato_temporal",
+        "contrato_temporal_versao",
+        "timezone_origem",
+        "convencao_timestamp",
+        "ordem_fisica"
+      ],
+      "properties": {
+        "origem_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "arquivo": {
+          "type": "string",
+          "pattern": "^WIN_1min_2026_2026\\.csv$"
+        },
+        "caminho_relativo_biblioteca": {
+          "type": "string",
+          "pattern": "^001_1_MIN/win/WIN_1min_2026_2026\\.csv$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "linhas": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ativo_fisico": {
+          "const": "WINFUT"
+        },
+        "familia_ativo": {
+          "const": "WIN"
+        },
+        "fractal": {
+          "const": "1_MIN"
+        },
+        "schema_origem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "versao"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "versao": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "periodo_disponivel": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inicio",
+            "fim"
+          ],
+          "properties": {
+            "inicio": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "fim": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "cobertura_origem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inicio_disponivel",
+            "fim_disponivel"
+          ],
+          "properties": {
+            "inicio_disponivel": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "fim_disponivel": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "contrato_temporal": {
+          "const": "TRIN_WIN_1MIN_2026"
+        },
+        "contrato_temporal_versao": {
+          "const": "1.0.0"
+        },
+        "timezone_origem": {
+          "const": "America/Sao_Paulo"
+        },
+        "convencao_timestamp": {
+          "const": "ABERTURA_CANDLE"
+        },
+        "ordem_fisica": {
+          "enum": [
+            "CRESCENTE",
+            "DECRESCENTE"
+          ]
+        }
+      }
+    },
+    "solicitacao": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "periodo_solicitado",
+        "politica_cobertura",
+        "tamanho_janela"
+      ],
+      "properties": {
+        "periodo_solicitado": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inicio",
+            "fim"
+          ],
+          "properties": {
+            "inicio": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "fim": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "politica_cobertura": {
+          "enum": [
+            "EXIGIR_INTEGRAL",
+            "PERMITIR_BORDA_PARCIAL_DIAGNOSTICA"
+          ]
+        },
+        "tamanho_janela": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        }
+      }
+    },
+    "fiscal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "certificado"
+      ],
+      "properties": {
+        "certificado": {
+          "$ref": "trin://schemas/CertificacaoFiscalReplayV2_1"
+        }
+      }
+    },
+    "preflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preflight_id",
+        "resultado",
+        "comparacoes",
+        "cobertura_periodo_solicitado",
+        "resultado_gate_cobertura",
+        "motivo_gate_cobertura"
+      ],
+      "properties": {
+        "preflight_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resultado": {
+          "const": "APROVADO"
+        },
+        "comparacoes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "origem_id",
+            "arquivo",
+            "caminho_relativo_biblioteca",
+            "sha256",
+            "ativo_fisico",
+            "familia_ativo",
+            "fractal",
+            "schema_origem",
+            "periodo_certificado",
+            "cobertura_origem",
+            "contrato_temporal",
+            "contrato_temporal_versao",
+            "timezone_origem",
+            "convencao_timestamp",
+            "tipo_certificacao",
+            "escopo_certificacao",
+            "nao_equivale_a",
+            "evidencia_sha256"
+          ],
+          "properties": {
+            "origem_id": {
+              "const": true
+            },
+            "arquivo": {
+              "const": true
+            },
+            "caminho_relativo_biblioteca": {
+              "const": true
+            },
+            "sha256": {
+              "const": true
+            },
+            "ativo_fisico": {
+              "const": true
+            },
+            "familia_ativo": {
+              "const": true
+            },
+            "fractal": {
+              "const": true
+            },
+            "schema_origem": {
+              "const": true
+            },
+            "periodo_certificado": {
+              "const": true
+            },
+            "cobertura_origem": {
+              "const": true
+            },
+            "contrato_temporal": {
+              "const": true
+            },
+            "contrato_temporal_versao": {
+              "const": true
+            },
+            "timezone_origem": {
+              "const": true
+            },
+            "convencao_timestamp": {
+              "const": true
+            },
+            "tipo_certificacao": {
+              "const": true
+            },
+            "escopo_certificacao": {
+              "const": true
+            },
+            "nao_equivale_a": {
+              "const": true
+            },
+            "evidencia_sha256": {
+              "const": true
+            }
+          }
+        },
+        "cobertura_periodo_solicitado": {
+          "enum": [
+            "INTEGRAL",
+            "PARCIAL_BORDA_INICIO",
+            "PARCIAL_BORDA_FIM"
+          ]
+        },
+        "resultado_gate_cobertura": {
+          "const": "APROVADO"
+        },
+        "motivo_gate_cobertura": {
+          "const": null
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trin://schemas/CertificacaoFiscalReplayV2_1",
+  "title": "CertificacaoFiscalReplayV2_1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "certificado_id",
+    "tipo_certificacao",
+    "escopo_certificacao",
+    "origem_do_parecer",
+    "nao_equivale_a",
+    "emitido_em_utc",
+    "evidencia_sha256",
+    "origem_certificada",
+    "decisao"
+  ],
+  "properties": {
+    "certificado_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tipo_certificacao": {
+      "const": "CERTIFICACAO_CONTROLADA_DA_ORIGEM_NO_ESCOPO_PACOTE_02"
+    },
+    "escopo_certificacao": {
+      "const": "HISTORIADOR_REPLAY_TESTE_CONTROLADO_WIN_1MIN_2026"
+    },
+    "origem_do_parecer": {
+      "const": "PACOTE_02_FISCAL_MENSAL_HOMOLOGADO_COM_CONTROLE_DA_ORIGEM_1_MIN"
+    },
+    "nao_equivale_a": {
+      "const": "FISCAL_4_2_3_PERMANENTE_HOMOLOGADO"
+    },
+    "emitido_em_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidencia_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "origem_certificada": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origem_id",
+        "arquivo",
+        "caminho_relativo_biblioteca",
+        "sha256_origem",
+        "ativo_fisico",
+        "familia_ativo",
+        "fractal",
+        "schema_origem",
+        "periodo_certificado",
+        "cobertura_origem",
+        "contrato_temporal",
+        "contrato_temporal_versao",
+        "timezone_origem",
+        "convencao_timestamp"
+      ],
+      "properties": {
+        "origem_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "arquivo": {
+          "type": "string",
+          "pattern": "^WIN_1min_2026_2026\\.csv$"
+        },
+        "caminho_relativo_biblioteca": {
+          "type": "string",
+          "pattern": "^001_1_MIN/win/WIN_1min_2026_2026\\.csv$"
+        },
+        "sha256_origem": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "ativo_fisico": {
+          "const": "WINFUT"
+        },
+        "familia_ativo": {
+          "const": "WIN"
+        },
+        "fractal": {
+          "const": "1_MIN"
+        },
+        "schema_origem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "versao"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "versao": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "periodo_certificado": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inicio",
+            "fim"
+          ],
+          "properties": {
+            "inicio": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "fim": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "cobertura_origem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inicio_disponivel",
+            "fim_disponivel"
+          ],
+          "properties": {
+            "inicio_disponivel": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "fim_disponivel": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "contrato_temporal": {
+          "const": "TRIN_WIN_1MIN_2026"
+        },
+        "contrato_temporal_versao": {
+          "const": "1.0.0"
+        },
+        "timezone_origem": {
+          "const": "America/Sao_Paulo"
+        },
+        "convencao_timestamp": {
+          "const": "ABERTURA_CANDLE"
+        }
+      }
+    },
+    "decisao": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decisao_fiscal",
+        "motivo_bloqueio",
+        "ordens_pendentes",
+        "criticidade",
+        "detalhes"
+      ],
+      "properties": {
+        "decisao_fiscal": {
+          "enum": [
+            "APROVADO",
+            "REPROVADO"
+          ]
+        },
+        "motivo_bloqueio": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ordens_pendentes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "criticidade": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "detalhes": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "decisao_fiscal": {
+                "const": "APROVADO"
+              }
+            },
+            "required": [
+              "decisao_fiscal"
+            ]
+          },
+          "then": {
+            "properties": {
+              "motivo_bloqueio": {
+                "const": null
+              },
+              "ordens_pendentes": {
+                "maxItems": 0
+              },
+              "criticidade": {
+                "enum": [
+                  null,
+                  "INFORMATIVA"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "motivo_bloqueio": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

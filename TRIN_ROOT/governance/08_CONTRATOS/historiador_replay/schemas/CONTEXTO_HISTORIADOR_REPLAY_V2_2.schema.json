@@ -1,0 +1,464 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trin://schemas/ContextoHistoriadorReplayV2_2",
+  "title": "ContextoHistoriadorReplayV2_2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contrato_contexto",
+    "versao",
+    "solicitacao_id",
+    "origem_id",
+    "origem_caminho",
+    "origem_hash",
+    "schema_origem",
+    "ativo_fisico",
+    "familia_ativo",
+    "fractal",
+    "periodo_solicitado",
+    "cobertura_origem",
+    "cobertura_periodo_solicitado",
+    "politica_cobertura",
+    "uso_como_periodo_completo",
+    "consumo_operacional",
+    "tamanho_janela",
+    "decisao_fiscal",
+    "certificado_id",
+    "contrato_temporal",
+    "contrato_temporal_versao",
+    "timestamp_evento",
+    "timezone_origem",
+    "convencao_timestamp",
+    "cursor",
+    "ordinal_evento",
+    "total_eventos",
+    "sessao",
+    "evento_atual",
+    "janela_anterior",
+    "estado_replay",
+    "fim",
+    "proximo_cursor",
+    "token_retomada",
+    "timestamp_execucao_utc"
+  ],
+  "properties": {
+    "contrato_contexto": {
+      "const": "ContextoHistoriadorReplayV2_2"
+    },
+    "versao": {
+      "const": "2.2.0"
+    },
+    "solicitacao_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origem_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origem_caminho": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origem_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "schema_origem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "versao"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "versao": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ativo_fisico": {
+      "const": "WINFUT"
+    },
+    "familia_ativo": {
+      "const": "WIN"
+    },
+    "fractal": {
+      "const": "1_MIN"
+    },
+    "periodo_solicitado": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inicio",
+        "fim"
+      ],
+      "properties": {
+        "inicio": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fim": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "cobertura_origem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inicio_disponivel",
+        "fim_disponivel"
+      ],
+      "properties": {
+        "inicio_disponivel": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fim_disponivel": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "cobertura_periodo_solicitado": {
+      "enum": [
+        "INTEGRAL",
+        "PARCIAL_BORDA_INICIO",
+        "PARCIAL_BORDA_FIM"
+      ]
+    },
+    "politica_cobertura": {
+      "enum": [
+        "EXIGIR_INTEGRAL",
+        "PERMITIR_BORDA_PARCIAL_DIAGNOSTICA"
+      ]
+    },
+    "uso_como_periodo_completo": {
+      "enum": [
+        "PERMITIDO",
+        "PROIBIDO"
+      ]
+    },
+    "consumo_operacional": {
+      "enum": [
+        "PERMITIDO",
+        "BLOQUEADO"
+      ]
+    },
+    "tamanho_janela": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "decisao_fiscal": {
+      "const": "APROVADO"
+    },
+    "certificado_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contrato_temporal": {
+      "const": "TRIN_WIN_1MIN_2026"
+    },
+    "contrato_temporal_versao": {
+      "const": "1.0.0"
+    },
+    "timestamp_evento": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "timezone_origem": {
+      "const": "America/Sao_Paulo"
+    },
+    "convencao_timestamp": {
+      "const": "ABERTURA_CANDLE"
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ordinal_evento": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "total_eventos": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "sessao": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessao_id",
+        "mudou_sessao"
+      ],
+      "properties": {
+        "sessao_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mudou_sessao": {
+          "type": "boolean"
+        }
+      }
+    },
+    "evento_atual": {
+      "$ref": "trin://schemas/EventoHistoricoProfit9ColunasV1"
+    },
+    "janela_anterior": {
+      "type": "array",
+      "items": {
+        "$ref": "trin://schemas/EventoHistoricoProfit9ColunasV1"
+      },
+      "maxItems": 10000
+    },
+    "estado_replay": {
+      "enum": [
+        "EM_CURSO",
+        "PAUSADO",
+        "CONCLUIDO",
+        "CONCLUIDO_PARCIAL"
+      ]
+    },
+    "fim": {
+      "type": "boolean"
+    },
+    "proximo_cursor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "token_retomada": {
+      "oneOf": [
+        {
+          "$ref": "trin://schemas/TokenRetomadaHistoriadorReplayV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "timestamp_execucao_utc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "const": "INTEGRAL"
+          }
+        },
+        "required": [
+          "cobertura_periodo_solicitado"
+        ]
+      },
+      "then": {
+        "properties": {
+          "uso_como_periodo_completo": {
+            "const": "PERMITIDO"
+          },
+          "consumo_operacional": {
+            "const": "PERMITIDO"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "enum": [
+              "PARCIAL_BORDA_INICIO",
+              "PARCIAL_BORDA_FIM"
+            ]
+          }
+        },
+        "required": [
+          "cobertura_periodo_solicitado"
+        ]
+      },
+      "then": {
+        "properties": {
+          "politica_cobertura": {
+            "const": "PERMITIR_BORDA_PARCIAL_DIAGNOSTICA"
+          },
+          "uso_como_periodo_completo": {
+            "const": "PROIBIDO"
+          },
+          "consumo_operacional": {
+            "const": "BLOQUEADO"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "estado_replay": {
+            "const": "EM_CURSO"
+          }
+        },
+        "required": [
+          "estado_replay"
+        ]
+      },
+      "then": {
+        "properties": {
+          "fim": {
+            "const": false
+          },
+          "proximo_cursor": {
+            "type": "string"
+          },
+          "token_retomada": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "estado_replay": {
+            "const": "PAUSADO"
+          }
+        },
+        "required": [
+          "estado_replay"
+        ]
+      },
+      "then": {
+        "properties": {
+          "fim": {
+            "const": false
+          },
+          "proximo_cursor": {
+            "type": "string"
+          },
+          "token_retomada": {
+            "$ref": "trin://schemas/TokenRetomadaHistoriadorReplayV1"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "estado_replay": {
+            "const": "CONCLUIDO"
+          }
+        },
+        "required": [
+          "estado_replay"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "const": "INTEGRAL"
+          },
+          "fim": {
+            "const": true
+          },
+          "proximo_cursor": {
+            "type": "null"
+          },
+          "token_retomada": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "estado_replay": {
+            "const": "CONCLUIDO_PARCIAL"
+          }
+        },
+        "required": [
+          "estado_replay"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "enum": [
+              "PARCIAL_BORDA_INICIO",
+              "PARCIAL_BORDA_FIM"
+            ]
+          },
+          "fim": {
+            "const": true
+          },
+          "proximo_cursor": {
+            "type": "null"
+          },
+          "token_retomada": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "const": "INTEGRAL"
+          },
+          "fim": {
+            "const": true
+          }
+        },
+        "required": [
+          "cobertura_periodo_solicitado",
+          "fim"
+        ]
+      },
+      "then": {
+        "properties": {
+          "estado_replay": {
+            "const": "CONCLUIDO"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cobertura_periodo_solicitado": {
+            "enum": [
+              "PARCIAL_BORDA_INICIO",
+              "PARCIAL_BORDA_FIM"
+            ]
+          },
+          "fim": {
+            "const": true
+          }
+        },
+        "required": [
+          "cobertura_periodo_solicitado",
+          "fim"
+        ]
+      },
+      "then": {
+        "properties": {
+          "estado_replay": {
+            "const": "CONCLUIDO_PARCIAL"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trin://schemas/EventoHistoricoProfit9ColunasV1",
+  "title": "EventoHistoricoProfit9ColunasV1",
+  "description": "Evento normalizado em memória. Preços e volumes financeiros usam string decimal canônica com ponto e sem separador de milhar.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ativo",
+    "data",
+    "hora",
+    "timestamp",
+    "abertura",
+    "maximo",
+    "minimo",
+    "ultimo",
+    "volume",
+    "volume_quantidade"
+  ],
+  "properties": {
+    "ativo": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_]+$"
+    },
+    "data": {
+      "type": "string",
+      "pattern": "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$"
+    },
+    "hora": {
+      "type": "string",
+      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "abertura": {
+      "type": "string",
+      "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?$"
+    },
+    "maximo": {
+      "type": "string",
+      "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?$"
+    },
+    "minimo": {
+      "type": "string",
+      "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?$"
+    },
+    "ultimo": {
+      "type": "string",
+      "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?$"
+    },
+    "volume": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)(\\.\\d+)?$"
+    },
+    "volume_quantidade": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)$"
+    }
+  }
+}

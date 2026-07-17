@@ -1,0 +1,6 @@
+from __future__ import annotations
+from typing import Protocol
+
+class IBernardoFonteReplaySomenteLeitura(Protocol):
+    def descrever_origem(self) -> dict: ...
+    def abrir_fonte(self, origem_id: str): ...

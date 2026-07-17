@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trin://schemas/TokenRetomadaHistoriadorReplayV1",
+  "title": "TokenRetomadaHistoriadorReplayV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "token_id",
+    "origem_hash",
+    "periodo_solicitado",
+    "politica_cobertura",
+    "tamanho_janela",
+    "proximo_ordinal",
+    "ultimo_timestamp_entregue",
+    "versao_contrato"
+  ],
+  "properties": {
+    "token_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "origem_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "periodo_solicitado": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inicio",
+        "fim"
+      ],
+      "properties": {
+        "inicio": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fim": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "politica_cobertura": {
+      "enum": [
+        "EXIGIR_INTEGRAL",
+        "PERMITIR_BORDA_PARCIAL_DIAGNOSTICA"
+      ]
+    },
+    "tamanho_janela": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "proximo_ordinal": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "ultimo_timestamp_entregue": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "versao_contrato": {
+      "const": "2.0.0"
+    }
+  }
+}
