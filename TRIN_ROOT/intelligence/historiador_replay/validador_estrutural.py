@@ -16,8 +16,20 @@ class ValidadorEstrutural:
             Draft202012Validator.check_schema(schema)
             schemas[path.name] = schema
             registry = registry.with_resource(schema["$id"], Resource.from_contents(schema))
-        if len(schemas) != 6:
-            raise ValueError(f"SCHEMAS_ESPERADOS_6_ENCONTRADOS_{len(schemas)}")
+        esperados = {
+            "CERTIFICACAO_FISCAL_REPLAY_V2_1.schema.json",
+            "CONTEXTO_HISTORIADOR_REPLAY_V2_2.schema.json",
+            "EVENTO_HISTORICO_PROFIT_9_COLUNAS_V1.schema.json",
+            "EXPERIENCIA_REPLAY_V1.schema.json",
+            "PACOTE_ENTRADA_HISTORIADOR_REPLAY_V2_1.schema.json",
+            "RESPOSTA_GATE_HISTORIADOR_REPLAY_V1_2.schema.json",
+            "TOKEN_RETOMADA_HISTORIADOR_REPLAY_V1.schema.json",
+        }
+        encontrados = set(schemas)
+        if encontrados != esperados:
+            ausentes = sorted(esperados - encontrados)
+            extras = sorted(encontrados - esperados)
+            raise ValueError(f"SCHEMAS_DIVERGENTES:ausentes={ausentes}:extras={extras}")
         self.validators = {name: Draft202012Validator(schema, registry=registry, format_checker=FormatChecker()) for name, schema in schemas.items()}
     def validar_gate(self, schema: str, valor: Any) -> None:
         try: self.validators[schema].validate(valor)
