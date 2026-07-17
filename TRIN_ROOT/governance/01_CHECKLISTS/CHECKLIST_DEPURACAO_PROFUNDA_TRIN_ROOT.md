@@ -1285,3 +1285,41 @@ resultado = PREVALIDACAO_LOCAL_APROVADA
 ```
 
 <!-- FIM_TRIN_CARTORIO_PACOTE_02_FISCAL_MENSAL_20260716 -->
+
+<!-- TRIN_CARTORIO_HOMOLOGACAO_HISTORIADOR_REPLAY_P03G_20260717 -->
+
+## Homologação do Historiador Replay — P03G
+
+- [x] Base técnica oficial: commit `5a73478d6c7a835cc773ae927f46f38358b2f6cf`.
+- [x] Execução realizada no Windows real com Python 3.14.4 em ambiente virtual controlado.
+- [x] Sete testes unitários aprovados.
+- [x] Treze provas funcionais/schema aprovadas.
+- [x] Sessenta e um testes da suíte completa aprovados.
+- [x] `ORIGEM_REPLAY` comprovada.
+- [x] `fato`, `contexto`, `hipotese` e `resultado` permanecem separados.
+- [x] Direção ausente permanece ausente.
+- [x] MFE e MAE determinísticos comprovados.
+- [x] Janela posterior reproduzível comprovada.
+- [x] Registro e consulta de experiências comprovados.
+- [x] Certificado inválido bloqueia em fail-closed.
+- [x] Fixtures controladas não foram mutadas.
+- [x] `TRIN_HISTORICO` ausente da base de homologação.
+- [x] `TRIN_ROOT` real não foi alterado pela homologação.
+- [x] Confluência não foi alimentada automaticamente.
+
+**Evidência externa:**
+
+```text
+arquivo = P03G_EVIDENCIAS_FINAL.zip
+sha256 = 21d1e2c940cba84943d44357a1aeb8e67991146c015de323ae84d954fe20826f
+```
+
+**Estado final:**
+
+```text
+HISTORIADOR_REPLAY = HOMOLOGADO
+P03G = ENCERRADO
+PROXIMA_FRENTE = CONFLUENCIA_REPLAY
+```
+
+<!-- FIM_TRIN_CARTORIO_HOMOLOGACAO_HISTORIADOR_REPLAY_P03G_20260717 -->
