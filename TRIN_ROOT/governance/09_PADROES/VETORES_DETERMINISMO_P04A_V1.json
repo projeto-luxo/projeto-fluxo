@@ -1,0 +1,107 @@
+{
+  "contrato": "VetoresDeterminismoConfluenciaReplayV1",
+  "serializacao": "RFC8785_JCS_UTF8",
+  "regra_id_confluencia": "CFR- + primeiros 32 hex maiusculos de SHA256(JCS(identity_payload))",
+  "regra_hash_resultado": "SHA256(JCS(saida_canonica_sem_hash_resultado_e_sem_metadados_de_execucao))",
+  "query": {
+    "documento": {
+      "contrato_consulta": "ConsultaConfluenciaReplayV1",
+      "versao": "1.0.0",
+      "modo_analise": "RETROSPECTIVO_SELADO",
+      "origem_id": "WINFUT_REPLAY_SELADO_001",
+      "perfil_criterio": "CRITERIO_CONFLUENCIA_REPLAY_V1",
+      "campos_comparacao": [
+        "fato.evento.ativo",
+        "contexto.regime",
+        "contexto.sessao.sessao_id"
+      ],
+      "contexto_alvo": {
+        "ativo": "WINFUT",
+        "regime": "REPLAY_CERTIFICADO_SEM_INFERENCIA_OPERACIONAL",
+        "sessao_id": "2026-01-21"
+      },
+      "particao_dados": {
+        "metodo": "CORTE_TEMPORAL_50_50_V1_PROVISORIO",
+        "percentual_calibracao": 50,
+        "percentual_prova": 50
+      },
+      "politica_universo": {
+        "usar_universo_completo": true,
+        "top_n": null,
+        "limite_seguranca": 1000,
+        "ordem": "timestamp_referencia_ordinal_referencia_experiencia_id_ASC",
+        "filtro_direcao": null
+      }
+    },
+    "json_canonico_utf8": "{\"campos_comparacao\":[\"fato.evento.ativo\",\"contexto.regime\",\"contexto.sessao.sessao_id\"],\"contexto_alvo\":{\"ativo\":\"WINFUT\",\"regime\":\"REPLAY_CERTIFICADO_SEM_INFERENCIA_OPERACIONAL\",\"sessao_id\":\"2026-01-21\"},\"contrato_consulta\":\"ConsultaConfluenciaReplayV1\",\"modo_analise\":\"RETROSPECTIVO_SELADO\",\"origem_id\":\"WINFUT_REPLAY_SELADO_001\",\"particao_dados\":{\"metodo\":\"CORTE_TEMPORAL_50_50_V1_PROVISORIO\",\"percentual_calibracao\":50,\"percentual_prova\":50},\"perfil_criterio\":\"CRITERIO_CONFLUENCIA_REPLAY_V1\",\"politica_universo\":{\"filtro_direcao\":null,\"limite_seguranca\":1000,\"ordem\":\"timestamp_referencia_ordinal_referencia_experiencia_id_ASC\",\"top_n\":null,\"usar_universo_completo\":true},\"versao\":\"1.0.0\"}",
+    "sha256": "221215fc96df7770d6feadd65c67c911c7583228d5d1111bd91784f9e11b4ee9"
+  },
+  "universo": {
+    "documento": [
+      {
+        "experiencia_id": "EXP-REPLAY-00000000000000000000000000000001",
+        "experiencia_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "timestamp_referencia": "2026-01-21T09:02:00-03:00",
+        "ordinal_referencia": 3
+      },
+      {
+        "experiencia_id": "EXP-REPLAY-00000000000000000000000000000002",
+        "experiencia_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "timestamp_referencia": "2026-01-21T09:03:00-03:00",
+        "ordinal_referencia": 4
+      }
+    ],
+    "json_canonico_utf8": "[{\"experiencia_id\":\"EXP-REPLAY-00000000000000000000000000000001\",\"experiencia_sha256\":\"1111111111111111111111111111111111111111111111111111111111111111\",\"ordinal_referencia\":3,\"timestamp_referencia\":\"2026-01-21T09:02:00-03:00\"},{\"experiencia_id\":\"EXP-REPLAY-00000000000000000000000000000002\",\"experiencia_sha256\":\"2222222222222222222222222222222222222222222222222222222222222222\",\"ordinal_referencia\":4,\"timestamp_referencia\":\"2026-01-21T09:03:00-03:00\"}]",
+    "sha256": "7eee3165dca897199e29bfa88599be44a78bafafd4f703b0b3d77d43db21042e"
+  },
+  "particao": {
+    "documento": {
+      "metodo": "CORTE_TEMPORAL_50_50_V1_PROVISORIO",
+      "ids_calibracao": [
+        "EXP-REPLAY-00000000000000000000000000000001"
+      ],
+      "ids_prova": [
+        "EXP-REPLAY-00000000000000000000000000000002"
+      ]
+    },
+    "json_canonico_utf8": "{\"ids_calibracao\":[\"EXP-REPLAY-00000000000000000000000000000001\"],\"ids_prova\":[\"EXP-REPLAY-00000000000000000000000000000002\"],\"metodo\":\"CORTE_TEMPORAL_50_50_V1_PROVISORIO\"}",
+    "sha256": "c3ec37a00f58d5444355300e2ea626bdc5d76fcd98b32fbe9da12d713cc290c7"
+  },
+  "identidade": {
+    "payload": {
+      "versao_schema": "1.0.0",
+      "versao_algoritmo": "CONFLUENCIA_REPLAY_ALGORITMO_V1",
+      "hash_consulta": "221215fc96df7770d6feadd65c67c911c7583228d5d1111bd91784f9e11b4ee9",
+      "hash_universo": "7eee3165dca897199e29bfa88599be44a78bafafd4f703b0b3d77d43db21042e",
+      "hash_particao": "c3ec37a00f58d5444355300e2ea626bdc5d76fcd98b32fbe9da12d713cc290c7",
+      "ids_incluidos": [
+        "EXP-REPLAY-00000000000000000000000000000001",
+        "EXP-REPLAY-00000000000000000000000000000002"
+      ]
+    },
+    "json_canonico_utf8": "{\"hash_consulta\":\"221215fc96df7770d6feadd65c67c911c7583228d5d1111bd91784f9e11b4ee9\",\"hash_particao\":\"c3ec37a00f58d5444355300e2ea626bdc5d76fcd98b32fbe9da12d713cc290c7\",\"hash_universo\":\"7eee3165dca897199e29bfa88599be44a78bafafd4f703b0b3d77d43db21042e\",\"ids_incluidos\":[\"EXP-REPLAY-00000000000000000000000000000001\",\"EXP-REPLAY-00000000000000000000000000000002\"],\"versao_algoritmo\":\"CONFLUENCIA_REPLAY_ALGORITMO_V1\",\"versao_schema\":\"1.0.0\"}",
+    "sha256": "9262372f2a029bee8042c9197c63ca77b0ca34c1d72978011489cfe43366c068",
+    "id_confluencia": "CFR-9262372F2A029BEE8042C9197C63CA77"
+  },
+  "resultado_minimo_para_hash": {
+    "payload_sem_hash_resultado": {
+      "versao_schema": "1.0.0",
+      "id_confluencia": "CFR-9262372F2A029BEE8042C9197C63CA77",
+      "timestamp_calculo": "2026-01-21T09:03:00-03:00",
+      "origem_tipo": "ORIGEM_REPLAY",
+      "modo": "SOMBRA",
+      "status": "COMPLETO",
+      "peso": 0,
+      "impacto_operacional": 0,
+      "hash_consulta": "221215fc96df7770d6feadd65c67c911c7583228d5d1111bd91784f9e11b4ee9",
+      "hash_universo": "7eee3165dca897199e29bfa88599be44a78bafafd4f703b0b3d77d43db21042e",
+      "hash_particao": "c3ec37a00f58d5444355300e2ea626bdc5d76fcd98b32fbe9da12d713cc290c7",
+      "ids_experiencias": [
+        "EXP-REPLAY-00000000000000000000000000000001",
+        "EXP-REPLAY-00000000000000000000000000000002"
+      ]
+    },
+    "json_canonico_utf8": "{\"hash_consulta\":\"221215fc96df7770d6feadd65c67c911c7583228d5d1111bd91784f9e11b4ee9\",\"hash_particao\":\"c3ec37a00f58d5444355300e2ea626bdc5d76fcd98b32fbe9da12d713cc290c7\",\"hash_universo\":\"7eee3165dca897199e29bfa88599be44a78bafafd4f703b0b3d77d43db21042e\",\"id_confluencia\":\"CFR-9262372F2A029BEE8042C9197C63CA77\",\"ids_experiencias\":[\"EXP-REPLAY-00000000000000000000000000000001\",\"EXP-REPLAY-00000000000000000000000000000002\"],\"impacto_operacional\":0,\"modo\":\"SOMBRA\",\"origem_tipo\":\"ORIGEM_REPLAY\",\"peso\":0,\"status\":\"COMPLETO\",\"timestamp_calculo\":\"2026-01-21T09:03:00-03:00\",\"versao_schema\":\"1.0.0\"}",
+    "sha256_esperado": "2e43001bce0629001f4001e23bd440b332868ae0d3fbf1cfce843e3f40287d33"
+  }
+}

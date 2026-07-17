@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trin://schemas/ConsultaConfluenciaReplayV1",
+  "title": "ConsultaConfluenciaReplayV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contrato_consulta",
+    "versao",
+    "modo_analise",
+    "origem_id",
+    "perfil_criterio",
+    "campos_comparacao",
+    "contexto_alvo",
+    "particao_dados",
+    "politica_universo"
+  ],
+  "properties": {
+    "contrato_consulta": {
+      "const": "ConsultaConfluenciaReplayV1"
+    },
+    "versao": {
+      "const": "1.0.0"
+    },
+    "modo_analise": {
+      "const": "RETROSPECTIVO_SELADO"
+    },
+    "origem_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Único filtro repassado à API homologada. null consulta o universo completo."
+    },
+    "perfil_criterio": {
+      "const": "CRITERIO_CONFLUENCIA_REPLAY_V1"
+    },
+    "campos_comparacao": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": "fato.evento.ativo"
+        },
+        {
+          "const": "contexto.regime"
+        },
+        {
+          "const": "contexto.sessao.sessao_id"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "contexto_alvo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ativo",
+        "regime",
+        "sessao_id"
+      ],
+      "properties": {
+        "ativo": {
+          "type": "string",
+          "minLength": 1
+        },
+        "regime": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sessao_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "particao_dados": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metodo",
+        "percentual_calibracao",
+        "percentual_prova"
+      ],
+      "properties": {
+        "metodo": {
+          "const": "CORTE_TEMPORAL_50_50_V1_PROVISORIO"
+        },
+        "percentual_calibracao": {
+          "const": 50
+        },
+        "percentual_prova": {
+          "const": 50
+        }
+      }
+    },
+    "politica_universo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "usar_universo_completo",
+        "top_n",
+        "limite_seguranca",
+        "ordem",
+        "filtro_direcao"
+      ],
+      "properties": {
+        "usar_universo_completo": {
+          "const": true
+        },
+        "top_n": {
+          "type": "null"
+        },
+        "limite_seguranca": {
+          "const": 1000
+        },
+        "ordem": {
+          "const": "timestamp_referencia_ordinal_referencia_experiencia_id_ASC"
+        },
+        "filtro_direcao": {
+          "type": "null"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1476 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trin://schemas/ConfluenciaReplayV1",
+  "title": "ConfluenciaReplayV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "versao_schema",
+    "id_confluencia",
+    "timestamp_calculo",
+    "origem_tipo",
+    "status",
+    "modo",
+    "garantia_fiscal",
+    "criterios_consulta",
+    "universo",
+    "particao_dados",
+    "quantidade_experiencias",
+    "ids_experiencias",
+    "evidencias",
+    "classificacoes_evidencia",
+    "concordancias",
+    "divergencias",
+    "estatisticas_mfe",
+    "estatisticas_mae",
+    "metricas_qualidade_hipotese",
+    "resultados_por_horario",
+    "resultados_por_volatilidade",
+    "resultados_por_contexto",
+    "confianca_diagnostica",
+    "peso",
+    "impacto_operacional",
+    "bloqueios",
+    "motivos",
+    "rastreabilidade",
+    "hash_resultado"
+  ],
+  "properties": {
+    "versao_schema": {
+      "const": "1.0.0"
+    },
+    "id_confluencia": {
+      "type": "string",
+      "pattern": "^CFR-[0-9A-F]{32}$"
+    },
+    "timestamp_calculo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Timestamp semântico determinístico: máximo timestamp_referencia incluído; null sem evidências."
+    },
+    "origem_tipo": {
+      "const": "ORIGEM_REPLAY"
+    },
+    "status": {
+      "enum": [
+        "COMPLETO",
+        "PARCIAL",
+        "SEM_EVIDENCIA",
+        "INSUFICIENTE",
+        "BLOQUEADO"
+      ]
+    },
+    "modo": {
+      "const": "SOMBRA"
+    },
+    "garantia_fiscal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modelo",
+        "fronteira_homologada",
+        "certificado_individual_exigido_na_confluencia",
+        "campos_rastreabilidade_exigidos"
+      ],
+      "properties": {
+        "modelo": {
+          "const": "HERDADA_DO_INGRESSO_HISTORIADOR_HOMOLOGADO"
+        },
+        "fronteira_homologada": {
+          "const": "RepositorioExperiencias"
+        },
+        "certificado_individual_exigido_na_confluencia": {
+          "const": false
+        },
+        "campos_rastreabilidade_exigidos": {
+          "const": [
+            "solicitacao_id",
+            "origem_id",
+            "origem_hash"
+          ]
+        }
+      }
+    },
+    "criterios_consulta": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "trin://schemas/ConsultaConfluenciaReplayV1",
+      "title": "ConsultaConfluenciaReplayV1",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contrato_consulta",
+        "versao",
+        "modo_analise",
+        "origem_id",
+        "perfil_criterio",
+        "campos_comparacao",
+        "contexto_alvo",
+        "particao_dados",
+        "politica_universo"
+      ],
+      "properties": {
+        "contrato_consulta": {
+          "const": "ConsultaConfluenciaReplayV1"
+        },
+        "versao": {
+          "const": "1.0.0"
+        },
+        "modo_analise": {
+          "const": "RETROSPECTIVO_SELADO"
+        },
+        "origem_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Único filtro repassado à API homologada. null consulta o universo completo."
+        },
+        "perfil_criterio": {
+          "const": "CRITERIO_CONFLUENCIA_REPLAY_V1"
+        },
+        "campos_comparacao": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "const": "fato.evento.ativo"
+            },
+            {
+              "const": "contexto.regime"
+            },
+            {
+              "const": "contexto.sessao.sessao_id"
+            }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "contexto_alvo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ativo",
+            "regime",
+            "sessao_id"
+          ],
+          "properties": {
+            "ativo": {
+              "type": "string",
+              "minLength": 1
+            },
+            "regime": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sessao_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1
+            }
+          }
+        },
+        "particao_dados": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "metodo",
+            "percentual_calibracao",
+            "percentual_prova"
+          ],
+          "properties": {
+            "metodo": {
+              "const": "CORTE_TEMPORAL_50_50_V1_PROVISORIO"
+            },
+            "percentual_calibracao": {
+              "const": 50
+            },
+            "percentual_prova": {
+              "const": 50
+            }
+          }
+        },
+        "politica_universo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "usar_universo_completo",
+            "top_n",
+            "limite_seguranca",
+            "ordem",
+            "filtro_direcao"
+          ],
+          "properties": {
+            "usar_universo_completo": {
+              "const": true
+            },
+            "top_n": {
+              "type": "null"
+            },
+            "limite_seguranca": {
+              "const": 1000
+            },
+            "ordem": {
+              "const": "timestamp_referencia_ordinal_referencia_experiencia_id_ASC"
+            },
+            "filtro_direcao": {
+              "type": "null"
+            }
+          }
+        }
+      }
+    },
+    "universo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quantidade_total_retornada",
+        "ids_universo_ordenados",
+        "hash_universo",
+        "ids_incluidos",
+        "excluidos",
+        "regra_top_n",
+        "filtros_permitidos",
+        "filtros_proibidos"
+      ],
+      "properties": {
+        "quantidade_total_retornada": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ids_universo_ordenados": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "hash_universo": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "ids_incluidos": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "maxItems": 1000
+        },
+        "excluidos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "experiencia_id",
+              "motivo"
+            ],
+            "properties": {
+              "experiencia_id": {
+                "type": "string"
+              },
+              "motivo": {
+                "enum": [
+                  "SCHEMA_INVALIDO",
+                  "ORIGEM_INVALIDA",
+                  "RASTREABILIDADE_INCOMPLETA",
+                  "DUPLICIDADE_EXATA",
+                  "DUPLICIDADE_CONFLITANTE",
+                  "UNIVERSO_ACIMA_LIMITE_SEGURANCA"
+                ]
+              }
+            }
+          }
+        },
+        "regra_top_n": {
+          "const": "DESABILITADO_USAR_UNIVERSO_COMPLETO"
+        },
+        "filtros_permitidos": {
+          "const": [
+            "origem_id"
+          ]
+        },
+        "filtros_proibidos": {
+          "const": [
+            "direcao",
+            "resultado",
+            "mfe_pontos",
+            "mae_pontos",
+            "desfecho",
+            "ids_escolhidos_manualmente"
+          ]
+        }
+      }
+    },
+    "particao_dados": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metodo",
+        "provisorio",
+        "ids_calibracao",
+        "ids_prova",
+        "hash_particao",
+        "intersecao"
+      ],
+      "properties": {
+        "metodo": {
+          "const": "CORTE_TEMPORAL_50_50_V1_PROVISORIO"
+        },
+        "provisorio": {
+          "const": true
+        },
+        "ids_calibracao": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "ids_prova": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "hash_particao": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "intersecao": {
+          "maxItems": 0,
+          "type": "array"
+        }
+      }
+    },
+    "quantidade_experiencias": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "ids_experiencias": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "maxItems": 1000
+    },
+    "evidencias": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "experiencia_id",
+          "experiencia_sha256",
+          "origem_tipo",
+          "origem_id",
+          "origem_hash",
+          "timestamp_referencia",
+          "ordinal_referencia",
+          "classificacao_evidencia",
+          "criterios",
+          "direcao",
+          "mfe_pontos",
+          "mae_pontos",
+          "particao"
+        ],
+        "properties": {
+          "experiencia_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "experiencia_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "origem_tipo": {
+            "const": "ORIGEM_REPLAY"
+          },
+          "origem_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "origem_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "timestamp_referencia": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ordinal_referencia": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "classificacao_evidencia": {
+            "enum": [
+              "NEUTRA",
+              "FAVORAVEL",
+              "CONTRARIA",
+              "BLOQUEADORA"
+            ]
+          },
+          "criterios": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "campo",
+                "resultado",
+                "valor_alvo",
+                "valor_experiencia"
+              ],
+              "properties": {
+                "campo": {
+                  "enum": [
+                    "fato.evento.ativo",
+                    "contexto.regime",
+                    "contexto.sessao.sessao_id"
+                  ]
+                },
+                "resultado": {
+                  "enum": [
+                    "CONCORDA",
+                    "DIVERGE",
+                    "NAO_AVALIADO"
+                  ]
+                },
+                "valor_alvo": {},
+                "valor_experiencia": {},
+                "motivo_nao_avaliado": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "direcao": {
+            "enum": [
+              "COMPRA",
+              "VENDA",
+              null
+            ]
+          },
+          "mfe_pontos": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$"
+          },
+          "mae_pontos": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$"
+          },
+          "particao": {
+            "enum": [
+              "CALIBRACAO",
+              "PROVA"
+            ]
+          },
+          "motivos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "maxItems": 1000
+    },
+    "classificacoes_evidencia": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "NEUTRA",
+        "FAVORAVEL",
+        "CONTRARIA",
+        "BLOQUEADORA"
+      ],
+      "properties": {
+        "NEUTRA": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantidade",
+            "ids"
+          ],
+          "properties": {
+            "quantidade": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        },
+        "FAVORAVEL": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantidade",
+            "ids"
+          ],
+          "properties": {
+            "quantidade": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        },
+        "CONTRARIA": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantidade",
+            "ids"
+          ],
+          "properties": {
+            "quantidade": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        },
+        "BLOQUEADORA": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantidade",
+            "ids"
+          ],
+          "properties": {
+            "quantidade": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        }
+      }
+    },
+    "concordancias": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "experiencia_id",
+          "campo",
+          "valor_alvo",
+          "valor_experiencia"
+        ],
+        "properties": {
+          "experiencia_id": {
+            "type": "string"
+          },
+          "campo": {
+            "enum": [
+              "fato.evento.ativo",
+              "contexto.regime",
+              "contexto.sessao.sessao_id"
+            ]
+          },
+          "valor_alvo": {},
+          "valor_experiencia": {}
+        }
+      }
+    },
+    "divergencias": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "experiencia_id",
+          "campo",
+          "valor_alvo",
+          "valor_experiencia"
+        ],
+        "properties": {
+          "experiencia_id": {
+            "type": "string"
+          },
+          "campo": {
+            "enum": [
+              "fato.evento.ativo",
+              "contexto.regime",
+              "contexto.sessao.sessao_id"
+            ]
+          },
+          "valor_alvo": {},
+          "valor_experiencia": {}
+        }
+      }
+    },
+    "estatisticas_mfe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quantidade",
+        "minimo",
+        "maximo",
+        "media",
+        "mediana",
+        "percentil_25",
+        "percentil_75",
+        "ids_incluidos",
+        "excluidos",
+        "outliers_removidos"
+      ],
+      "properties": {
+        "quantidade": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "minimo": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "maximo": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "media": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "mediana": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "percentil_25": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "percentil_75": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "ids_incluidos": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "maxItems": 1000
+        },
+        "excluidos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "experiencia_id",
+              "motivo"
+            ],
+            "properties": {
+              "experiencia_id": {
+                "type": "string"
+              },
+              "motivo": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "outliers_removidos": {
+          "const": 0
+        }
+      }
+    },
+    "estatisticas_mae": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quantidade",
+        "minimo",
+        "maximo",
+        "media",
+        "mediana",
+        "percentil_25",
+        "percentil_75",
+        "ids_incluidos",
+        "excluidos",
+        "outliers_removidos"
+      ],
+      "properties": {
+        "quantidade": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "minimo": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "maximo": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "media": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "mediana": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "percentil_25": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "percentil_75": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?\\d+\\.\\d{2}$"
+        },
+        "ids_incluidos": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "maxItems": 1000
+        },
+        "excluidos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "experiencia_id",
+              "motivo"
+            ],
+            "properties": {
+              "experiencia_id": {
+                "type": "string"
+              },
+              "motivo": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "outliers_removidos": {
+          "const": 0
+        }
+      }
+    },
+    "metricas_qualidade_hipotese": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "regra",
+        "ACERTO",
+        "FALSO_POSITIVO",
+        "FALSO_NEGATIVO",
+        "ACERTO_NEGATIVO",
+        "OPORTUNIDADE_PERDIDA",
+        "NAO_AVALIAVEL"
+      ],
+      "properties": {
+        "regra": {
+          "const": "MATRIZ_QUALIDADE_HIPOTESE_REPLAY_V1"
+        },
+        "ACERTO": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantidade",
+            "ids"
+          ],
+          "properties": {
+            "quantidade": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        },
+        "FALSO_POSITIVO": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantidade",
+            "ids"
+          ],
+          "properties": {
+            "quantidade": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        },
+        "FALSO_NEGATIVO": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantidade",
+            "ids"
+          ],
+          "properties": {
+            "quantidade": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        },
+        "ACERTO_NEGATIVO": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantidade",
+            "ids"
+          ],
+          "properties": {
+            "quantidade": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        },
+        "OPORTUNIDADE_PERDIDA": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantidade",
+            "ids"
+          ],
+          "properties": {
+            "quantidade": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        },
+        "NAO_AVALIAVEL": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantidade",
+            "ids"
+          ],
+          "properties": {
+            "quantidade": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        }
+      }
+    },
+    "resultados_por_horario": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "chave",
+          "quantidade",
+          "ids_experiencias",
+          "acertos",
+          "falsos_positivos",
+          "falsos_negativos",
+          "oportunidades_perdidas",
+          "nao_avaliaveis"
+        ],
+        "properties": {
+          "chave": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quantidade": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ids_experiencias": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "acertos": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "falsos_positivos": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "falsos_negativos": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "oportunidades_perdidas": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "nao_avaliaveis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "resultados_por_volatilidade": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "chave",
+          "quantidade",
+          "ids_experiencias",
+          "acertos",
+          "falsos_positivos",
+          "falsos_negativos",
+          "oportunidades_perdidas",
+          "nao_avaliaveis"
+        ],
+        "properties": {
+          "chave": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quantidade": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ids_experiencias": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "acertos": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "falsos_positivos": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "falsos_negativos": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "oportunidades_perdidas": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "nao_avaliaveis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "resultados_por_contexto": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "chave",
+          "quantidade",
+          "ids_experiencias",
+          "acertos",
+          "falsos_positivos",
+          "falsos_negativos",
+          "oportunidades_perdidas",
+          "nao_avaliaveis"
+        ],
+        "properties": {
+          "chave": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quantidade": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ids_experiencias": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "acertos": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "falsos_positivos": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "falsos_negativos": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "oportunidades_perdidas": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "nao_avaliaveis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "confianca_diagnostica": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estado",
+        "valor",
+        "formula",
+        "quantidade_comparaveis",
+        "ids_comparaveis",
+        "cobertura",
+        "nao_calibrada",
+        "faixas_classificatorias"
+      ],
+      "properties": {
+        "estado": {
+          "enum": [
+            "DESCRITIVA_NAO_CALIBRADA",
+            "NAO_CALCULAVEL",
+            "BLOQUEADA"
+          ]
+        },
+        "valor": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "formula": {
+          "const": "taxa_favoravel * cobertura"
+        },
+        "quantidade_comparaveis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "ids_comparaveis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "maxItems": 1000
+        },
+        "cobertura": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "nao_calibrada": {
+          "const": true
+        },
+        "faixas_classificatorias": {
+          "type": "null"
+        }
+      }
+    },
+    "peso": {
+      "const": 0
+    },
+    "impacto_operacional": {
+      "const": 0
+    },
+    "bloqueios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "codigo",
+          "motivo",
+          "experiencia_id"
+        ],
+        "properties": {
+          "codigo": {
+            "type": "string"
+          },
+          "motivo": {
+            "type": "string"
+          },
+          "experiencia_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "motivos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "rastreabilidade": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit_base",
+        "versao_algoritmo",
+        "serializacao_canonica",
+        "hash_consulta",
+        "hash_universo",
+        "hash_particao",
+        "hashes_experiencias",
+        "idempotencia"
+      ],
+      "properties": {
+        "commit_base": {
+          "const": "be7714c16d0031b87bebcc1ef905b4daf5bba478"
+        },
+        "versao_algoritmo": {
+          "const": "CONFLUENCIA_REPLAY_ALGORITMO_V1"
+        },
+        "serializacao_canonica": {
+          "const": "RFC8785_JCS_UTF8"
+        },
+        "hash_consulta": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "hash_universo": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "hash_particao": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "hashes_experiencias": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "uniqueItems": true
+        },
+        "idempotencia": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "estado_interno_mutado",
+            "saida_canonica_repetivel"
+          ],
+          "properties": {
+            "estado_interno_mutado": {
+              "const": false
+            },
+            "saida_canonica_repetivel": {
+              "const": true
+            }
+          }
+        }
+      }
+    },
+    "hash_resultado": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "COMPLETO"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "quantidade_experiencias": {
+            "minimum": 1
+          },
+          "bloqueios": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "SEM_EVIDENCIA"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "quantidade_experiencias": {
+            "const": 0
+          },
+          "ids_experiencias": {
+            "maxItems": 0
+          },
+          "evidencias": {
+            "maxItems": 0
+          },
+          "confianca_diagnostica": {
+            "properties": {
+              "estado": {
+                "const": "NAO_CALCULAVEL"
+              },
+              "valor": {
+                "type": "null"
+              },
+              "quantidade_comparaveis": {
+                "const": 0
+              },
+              "ids_comparaveis": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "BLOQUEADO"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "confianca_diagnostica": {
+            "properties": {
+              "estado": {
+                "const": "BLOQUEADA"
+              },
+              "valor": {
+                "type": "null"
+              }
+            }
+          },
+          "bloqueios": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "confianca_diagnostica": {
+            "properties": {
+              "quantidade_comparaveis": {
+                "const": 0
+              }
+            },
+            "required": [
+              "quantidade_comparaveis"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "confianca_diagnostica": {
+            "properties": {
+              "valor": {
+                "type": "null"
+              },
+              "estado": {
+                "enum": [
+                  "NAO_CALCULAVEL",
+                  "BLOQUEADA"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "x-trin-generated-constraints": {
+    "quantidade_experiencias": {
+      "min": 0,
+      "max": 1000
+    },
+    "quantidade_comparaveis": {
+      "min": 0,
+      "max": 1000
+    },
+    "inserir_no_inicio_de_allOf": true
+  }
+}

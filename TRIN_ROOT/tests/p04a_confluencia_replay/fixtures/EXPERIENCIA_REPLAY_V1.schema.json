@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trin://schemas/ExperienciaReplayV1",
+  "title": "ExperienciaReplayV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiencia_id", "contrato", "versao", "origem_tipo",
+    "solicitacao_id", "origem_id", "origem_hash",
+    "timestamp_referencia", "ordinal_referencia",
+    "fato", "contexto", "hipotese", "resultado"
+  ],
+  "properties": {
+    "experiencia_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "contrato": {"const": "ExperienciaReplayV1"},
+    "versao": {"const": "1.0.0"},
+    "origem_tipo": {"const": "ORIGEM_REPLAY"},
+    "solicitacao_id": {"type": "string", "minLength": 1},
+    "origem_id": {"type": "string", "minLength": 1},
+    "origem_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "timestamp_referencia": {"type": "string", "format": "date-time"},
+    "ordinal_referencia": {"type": "integer", "minimum": 1},
+    "fato": {"type": "object"},
+    "contexto": {"type": "object"},
+    "hipotese": {
+      "type": "object",
+      "required": ["direcao", "origem_direcao", "direcao_inventada"],
+      "properties": {
+        "direcao": {"enum": ["COMPRA", "VENDA", null]},
+        "origem_direcao": {"type": ["string", "null"]},
+        "direcao_inventada": {"const": false}
+      }
+    },
+    "resultado": {
+      "type": "object",
+      "required": [
+        "regra_janela_posterior", "janela_posterior_ordinais",
+        "janela_posterior_completa", "mfe_pontos", "mae_pontos",
+        "status_metricas"
+      ],
+      "properties": {
+        "regra_janela_posterior": {"type": "string", "minLength": 1},
+        "janela_posterior_ordinais": {"type": "array", "items": {"type": "integer", "minimum": 1}},
+        "janela_posterior_completa": {"type": "boolean"},
+        "mfe_pontos": {"type": ["string", "null"]},
+        "mae_pontos": {"type": ["string", "null"]},
+        "status_metricas": {"enum": ["CALCULADO", "SEM_DIRECAO", "JANELA_INCOMPLETA"]}
+      }
+    }
+  }
+}
