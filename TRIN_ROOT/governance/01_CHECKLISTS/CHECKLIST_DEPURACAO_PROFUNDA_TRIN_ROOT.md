@@ -1323,3 +1323,48 @@ PROXIMA_FRENTE = CONFLUENCIA_REPLAY
 ```
 
 <!-- FIM_TRIN_CARTORIO_HOMOLOGACAO_HISTORIADOR_REPLAY_P03G_20260717 -->
+
+<!-- TRIN_CARTORIO_HOMOLOGACAO_CONFLUENCIA_REPLAY_P04A_20260717 -->
+
+## Homologação P04A — Núcleo da Confluência Replay
+
+- [x] Arquitetura P04A V2 aprovada.
+- [x] Entrada compatível com o Historiador Replay homologado.
+- [x] `ORIGEM_REPLAY` e rastreabilidade preservadas.
+- [x] Consulta limitada ao universo elegível completo.
+- [x] Seleção por resultado, direção, IDs manuais e top-N bloqueada.
+- [x] Evidências NEUTRAS, FAVORÁVEIS, CONTRÁRIAS e BLOQUEADORAS separadas.
+- [x] Partições CALIBRAÇÃO e PROVA separadas.
+- [x] MFE e MAE agregados de forma rastreável.
+- [x] Métricas por horário, volatilidade e contexto previstas no contrato.
+- [x] Peso operacional igual a zero.
+- [x] Impacto operacional igual a zero.
+- [x] Nenhuma ordem operacional produzida.
+- [x] Historiador, memória ao vivo e Biblioteca Histórica não mutados.
+- [x] Oitenta e nove testes específicos P04A aprovados no Windows real.
+- [x] Cento e dezoito testes de regressão aprovados no Windows real.
+- [x] Trinta e quatro arquivos registrados em commit seletivo.
+- [x] Commit local e remoto sincronizados.
+- [x] Backend, frontend, Planejador e painel não integrados nesta frente.
+
+**Evidência do commit seletivo:**
+
+```text
+arquivo = P04A_COMMIT_20260717_195410_EVIDENCIAS.zip
+sha256 = 751f0cc786d537e5f527a78d4861e158026e1f2f4c12f410d0986a684be3e306
+commit = 3100aef9e543bc5d71d3bf94d9510514df286ef5
+```
+
+**Estado final:**
+
+```text
+P04A_NUCLEO_CONFLUENCIA_REPLAY = HOMOLOGADO
+P04A = ENCERRADO
+MODO = SOMBRA
+PESO = 0
+IMPACTO_OPERACIONAL = 0
+PAINEL = SEM_ALTERACAO
+PROXIMA_FRENTE = P04B_INTEGRACAO_DIAGNOSTICA_BACKEND
+```
+
+<!-- FIM_TRIN_CARTORIO_HOMOLOGACAO_CONFLUENCIA_REPLAY_P04A_20260717 -->
