@@ -27,6 +27,51 @@ from datetime import datetime
 from pathlib import Path
 from backend.replay_diagnostico import replay_reader
 
+# P05B-B — integração versionada do Planejador Sombra, aditiva e fail-closed.
+try:
+    from backend.planejador_sombra_backend import anexar_planejamento_sombra_v1
+except Exception as erro_importacao_p05b_b:
+    _P05B_B_ERRO_IMPORTACAO = (
+        f"{type(erro_importacao_p05b_b).__name__}: "
+        f"{erro_importacao_p05b_b}"
+    )
+
+    def anexar_planejamento_sombra_v1(payload, **_kwargs):
+        copia = dict(payload) if isinstance(payload, dict) else {}
+        copia["planejamento_operacional_sombra"] = {
+            "schema_version": "PlanejamentoOperacionalSombraV1",
+            "id_plano": "PO-BACKEND-IMPORT-ERRO-BLOQUEADO",
+            "modo": "SOMBRA",
+            "origem_contexto": "DESCONHECIDA",
+            "estado": "ERRO_BLOQUEADO",
+            "autorizacao": "BLOQUEADA",
+            "uso_operacional": "BLOQUEADO",
+            "motivo_bloqueio": "P05B_B_ADAPTER_NAO_IMPORTAVEL",
+            "direcao": None,
+            "entrada_inferior": None,
+            "entrada_superior": None,
+            "invalidacao": None,
+            "stop": None,
+            "parcial": None,
+            "alvo": None,
+            "ordem_corretora": None,
+            "entradas_recebidas": None,
+            "gates": [],
+            "evidencias": {"erro_importacao": _P05B_B_ERRO_IMPORTACAO},
+            "hipotese_plano": None,
+            "rastreabilidade": {
+                "identidade_snapshot": {},
+                "hash_entrada": None,
+                "versao_regra": None,
+                "look_ahead": False,
+            },
+        }
+        copia["planejamento_operacional_sombra_status"] = "ERRO_BLOQUEADO"
+        copia["planejamento_operacional_sombra_erro"] = (
+            _P05B_B_ERRO_IMPORTACAO
+        )
+        return copia
+
 # P04B — integração diagnóstica, aditiva e fail-closed.
 try:
     from backend.confluencia_replay_backend import anexar_confluencia_replay_backend
@@ -166,6 +211,9 @@ candle_engine = CandleEngine()
 aggression_engine = AggressionEngine()
 motor_confluencia = ConfluenceEngineV2()
 planejador_operacional = PlanejadorOperacional()
+planejador_operacional_sombra = PlanejadorOperacional(
+    modo_sombra_homologado=True
+)
 motor_regioes = MotorRegioes()
 agregador_regioes = AgregadorRegioesRG02B()
 
@@ -1291,6 +1339,10 @@ def gerar_payload():
             "entrada": "AGUARDAR",
             "score": 0,
         }
+        payload_fallback = anexar_planejamento_sombra_v1(
+            payload_fallback,
+            planejador=planejador_operacional_sombra,
+        )
         return _finalizar_payload_p04b(payload_fallback)
 
     anterior = historico[-2] if len(historico) >= 2 else historico[-1]
@@ -1878,6 +1930,10 @@ def gerar_payload():
     }
 
     payload = replay_reader.aplicar_payload(payload, painel_timeframe_atual)
+    payload = anexar_planejamento_sombra_v1(
+        payload,
+        planejador=planejador_operacional_sombra,
+    )
     return _finalizar_payload_p04b(payload)
 
 
