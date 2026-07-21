@@ -4,6 +4,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from core.caminhos_oficiais import BIBLIOTECA_HISTORICA
+
 
 class FiscalAdapter:
     STATUS_LIBERADOS = {
@@ -22,8 +24,7 @@ class FiscalAdapter:
     def __init__(self) -> None:
         self.root = Path(__file__).resolve().parents[1]
         self.arquivo = (
-            self.root
-            / "TRIN_HISTORICO"
+            BIBLIOTECA_HISTORICA
             / "00_CERTIFICACOES"
             / "laudo_temporal.txt"
         )

@@ -1,5 +1,7 @@
 
 from pathlib import Path
+
+from core.caminhos_oficiais import BIBLIOTECA_HISTORICA
 from datetime import datetime
 import csv
 import time
@@ -8,8 +10,7 @@ import time
 TRIN_ROOT_PATH = Path(__file__).resolve().parents[1]
 
 REPLAY_CSV_PADRAO = (
-    TRIN_ROOT_PATH
-    / "TRIN_HISTORICO"
+    BIBLIOTECA_HISTORICA
     / "001_1_MIN"
     / "win"
     / "WINFUT_F_0_1min.csv"
@@ -28,9 +29,6 @@ class ReplayDiagnostico:
         self.ultimo_candle_time = None
         self.intervalo_segundos = 1.5
         self.ultimo_emit_wall = 0.0
-        self.bucket_replay_linhas = []
-        self.bucket_replay_inicio_ts = None
-        self.bucket_replay_limite_ts = None
         self.bucket_replay_linhas = []
         self.bucket_replay_inicio_ts = None
         self.bucket_replay_limite_ts = None

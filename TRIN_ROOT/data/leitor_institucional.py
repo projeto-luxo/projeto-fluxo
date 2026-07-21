@@ -1,9 +1,17 @@
-﻿import time
+import time
 from datetime import datetime
 
-import pythoncom
-import pywintypes
-import win32com.client
+try:
+    import pythoncom
+    import pywintypes
+    import win32com.client
+except ModuleNotFoundError as erro_importacao_com:
+    pythoncom = None
+    pywintypes = None
+    win32com = None
+    ERRO_IMPORTACAO_COM = erro_importacao_com
+else:
+    ERRO_IMPORTACAO_COM = None
 
 
 ARQUIVO_ALVO = "MARCO_ZERO_INSTITUCIONAL.xlsx"
@@ -31,6 +39,16 @@ CELULAS = {
     "vwap": "N2",
 }
 
+
+
+def _exigir_com_excel():
+    if ERRO_IMPORTACAO_COM is not None:
+        raise RuntimeError(
+            "DEPENDENCIA_EXCEL_COM_INDISPONIVEL: instale pywin32 e execute "
+            "no Windows com o Excel aberto."
+        ) from ERRO_IMPORTACAO_COM
+
+
 CAMPOS_CRITICOS = [
     "ativo",
     "data",
@@ -47,6 +65,7 @@ CAMPOS_CRITICOS = [
 
 
 def _com_retry(func, tentativas=10, espera=0.08):
+    _exigir_com_excel()
     ultimo_erro = None
 
     for _ in range(tentativas):
@@ -88,7 +107,7 @@ def valor_excel_invalido(valor):
         "#DIV/0!",
         "Atributo",
         "Atributo Inválido",
-        "Atributo InvÃ¡lido",
+        "Atributo Inválido",
     ):
         return True
 
@@ -112,6 +131,7 @@ def para_numero(valor, padrao=0):
 
 
 def conectar_planilha():
+    _exigir_com_excel()
     pythoncom.CoInitialize()
 
     excel = _com_retry(lambda: win32com.client.GetActiveObject("Excel.Application"))

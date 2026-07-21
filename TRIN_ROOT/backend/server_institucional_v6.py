@@ -26,6 +26,66 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from pathlib import Path
 from backend.replay_diagnostico import replay_reader
+
+# P04B — integração diagnóstica, aditiva e fail-closed.
+try:
+    from backend.confluencia_replay_backend import anexar_confluencia_replay_backend
+except Exception as erro_importacao_p04b:
+    _P04B_ERRO_IMPORTACAO = f"{type(erro_importacao_p04b).__name__}: {erro_importacao_p04b}"
+
+    def anexar_confluencia_replay_backend(payload, **_kwargs):
+        copia = dict(payload)
+        copia["confluencia_replay"] = {
+            "contrato": "ConfluenciaReplayBackendV1",
+            "versao": "1.0.0",
+            "status": "INDISPONIVEL",
+            "modo": "SOMBRA",
+            "origem_tipo": "ORIGEM_REPLAY",
+            "gate_fiscal": {
+                "fonte": "FISCAL_TEMPORAL_LAUDO_OFICIAL",
+                "status": "DESCONHECIDO",
+                "aprovado_operacional": False,
+                "bloqueio_operacional": True,
+                "motivo": "P04B_ADAPTER_NAO_IMPORTAVEL",
+            },
+            "id_confluencia": None,
+            "hash_resultado": None,
+            "timestamp_referencia": None,
+            "quantidade_experiencias": 0,
+            "quantidade_comparaveis": 0,
+            "classificacoes": {
+                "NEUTRA": {"quantidade": 0, "ids": []},
+                "FAVORAVEL": {"quantidade": 0, "ids": []},
+                "CONTRARIA": {"quantidade": 0, "ids": []},
+                "BLOQUEADORA": {"quantidade": 0, "ids": []},
+            },
+            "metricas": {
+                "estatisticas_mfe": None,
+                "estatisticas_mae": None,
+                "qualidade_hipotese": None,
+                "resultados_por_horario": [],
+                "resultados_por_volatilidade": [],
+                "resultados_por_contexto": [],
+            },
+            "confianca_diagnostica": None,
+            "bloqueios": [{
+                "codigo": "P04B_ADAPTER_NAO_IMPORTAVEL",
+                "motivo": _P04B_ERRO_IMPORTACAO,
+            }],
+            "motivos": ["P04B_ADAPTER_NAO_IMPORTAVEL"],
+            "peso": 0,
+            "impacto_operacional": 0,
+            "operacional": False,
+        }
+        return copia
+
+
+def _finalizar_payload_p04b(payload):
+    return anexar_confluencia_replay_backend(
+        payload,
+        replay_ativo=bool(replay_reader.ativo),
+        replay_status=(replay_reader.status() if replay_reader.ativo else None),
+    )
 import asyncio
 import csv
 import json
@@ -79,6 +139,7 @@ from core.motor_regioes import (
     MotorRegioes,
 )
 from data.referencias_mercado_config import ReferenciasMercadoConfig
+from core.caminhos_oficiais import BIBLIOTECA_HISTORICA
 
 try:
     from orchestration.contrato_ativo_resolver import ContratoAtivoResolver
@@ -1193,7 +1254,7 @@ def gerar_payload():
             modo_replay=False,
         )
 
-        return {
+        payload_fallback = {
             "historico": historico,
             "engine": {},
             "vwap": candle_fallback.get("vwap", preco_atual),
@@ -1230,6 +1291,7 @@ def gerar_payload():
             "entrada": "AGUARDAR",
             "score": 0,
         }
+        return _finalizar_payload_p04b(payload_fallback)
 
     anterior = historico[-2] if len(historico) >= 2 else historico[-1]
     atual = historico[-1]
@@ -1816,7 +1878,7 @@ def gerar_payload():
     }
 
     payload = replay_reader.aplicar_payload(payload, painel_timeframe_atual)
-    return payload
+    return _finalizar_payload_p04b(payload)
 
 
 
@@ -1875,8 +1937,7 @@ async def alterar_timeframe_painel(timeframe: str):
 @app.get("/tt/raw/status")
 async def tt_raw_status():
     caminho = (
-        Path(__file__).resolve().parents[1]
-        / "TRIN_HISTORICO"
+        BIBLIOTECA_HISTORICA
         / "00_PROCESSAMENTO_TT"
         / "painel_tt_raw_status.json"
     )
@@ -1975,8 +2036,7 @@ def _ler_resumo_candle_5s(caminho):
 @app.get("/tt/5s/status")
 async def tt_5s_status():
     base = (
-        TRIN_ROOT_DIR
-        / "TRIN_HISTORICO"
+        BIBLIOTECA_HISTORICA
         / "00_PROCESSAMENTO_TT"
         / "CANDLE_5S_DIAGNOSTICO"
     )
