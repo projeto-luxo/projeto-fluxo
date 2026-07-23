@@ -5,6 +5,10 @@ import {
   connectTrinWebSocket,
   disconnectTrinWebSocket
 } from "./services/trinWebSocket";
+import {
+  criarEstadoPlanejamentoSombraInicial,
+  normalizarPlanejamentoSombraFailClosed,
+} from "./domain/planejamentoSombraFailClosed";
 
 export default function App() {
   const chartContainerRef = useRef(null);
@@ -43,6 +47,11 @@ export default function App() {
 
   const [dataInfo, setDataInfo] = useState({});
   const [wsStatus, setWsStatus] = useState("DESCONECTADO");
+  const ultimoPayloadSombraRef = useRef(null);
+  const ultimoTimestampSombraRef = useRef(null);
+  const [planejamentoSombra, setPlanejamentoSombra] = useState(
+    criarEstadoPlanejamentoSombraInicial
+  );
   const [ttRawStatus, setTtRawStatus] = useState(null);
   const [ttRawErro, setTtRawErro] = useState("");
   const [candle5sStatus, setCandle5sStatus] = useState(null);
@@ -404,6 +413,19 @@ if (absorcao) {
 
   const processarDados = useCallback((data) => {
     setWsStatus("ONLINE");
+    ultimoPayloadSombraRef.current = data;
+
+    const planejamentoNormalizado = normalizarPlanejamentoSombraFailClosed({
+      payload: data,
+      statusConexao: "ONLINE",
+      ultimoTimestampAceito: ultimoTimestampSombraRef.current,
+    });
+
+    if (planejamentoNormalizado.timestampMonotonicoAceito) {
+      ultimoTimestampSombraRef.current = planejamentoNormalizado.timestamp;
+    }
+
+    setPlanejamentoSombra(planejamentoNormalizado);
 
     let historico = ordenarPorTempo(data.historico || []);
 
@@ -1219,12 +1241,27 @@ if (temEntradaReal) {
       lineStyle: 1,
     });
 
+    const atualizarStatusConexaoPlanejamento = (status) => {
+      setWsStatus(status);
+
+      const planejamentoNormalizado = normalizarPlanejamentoSombraFailClosed({
+        payload: ultimoPayloadSombraRef.current,
+        statusConexao: status,
+        ultimoTimestampAceito: ultimoTimestampSombraRef.current,
+      });
+
+      if (planejamentoNormalizado.timestampMonotonicoAceito) {
+        ultimoTimestampSombraRef.current = planejamentoNormalizado.timestamp;
+      }
+
+      setPlanejamentoSombra(planejamentoNormalizado);
+    };
+
     socketRef.current = connectTrinWebSocket(
       (data) => {
-        setWsStatus("ONLINE");
         processarDados(data);
       },
-      setWsStatus
+      atualizarStatusConexaoPlanejamento
     );
 
     const handleResize = () => {
@@ -1904,6 +1941,8 @@ if (temEntradaReal) {
           {dataInfo.bernardoMaturidade || "N/D"}
         </div>
 
+        <PlanejamentoSombraCard planejamento={planejamentoSombra} />
+
         <div
           style={{
             border: "1px solid rgba(0,217,255,0.22)",
@@ -2532,6 +2571,42 @@ if (temEntradaReal) {
         </div>
 
       </div>
+    </div>
+  );
+}
+
+function PlanejamentoSombraCard({ planejamento }) {
+  const motivos = Array.isArray(planejamento?.motivosBloqueio)
+    ? planejamento.motivosBloqueio
+    : ["DADO_DESCONHECIDO"];
+
+  return (
+    <div
+      data-testid="planejamento-sombra-diagnostico"
+      style={{
+        border: "1px solid rgba(255,170,0,0.34)",
+        background: "rgba(255,170,0,0.06)",
+        borderRadius: 12,
+        padding: "10px 12px",
+        color: "#d7dde1",
+        fontSize: 12,
+        lineHeight: 1.55,
+        marginBottom: 12,
+      }}
+    >
+      <div style={{ color: "#ffaa00", fontWeight: "900", fontSize: 11, letterSpacing: 1, marginBottom: 6 }}>
+        SOMBRA DIAGNOSTICA
+      </div>
+      <div>Modo: <b>{planejamento?.modo || "SOMBRA"}</b></div>
+      <div>Estado: <b>{planejamento?.estado || "AUSENTE"}</b></div>
+      <div>Status backend: <b>{planejamento?.statusBackend || "AUSENTE"}</b></div>
+      <div>Autorizacao: <b>{planejamento?.autorizacao || "BLOQUEADA"}</b></div>
+      <div>Uso operacional: <b>{planejamento?.usoOperacional || "BLOQUEADO"}</b></div>
+      <div>Origem: <b>{planejamento?.origem || "DESCONHECIDA"}</b></div>
+      <div>ID do plano: <b>{planejamento?.idPlano || "NAO_INFORMADO"}</b></div>
+      <div>Motivos de bloqueio: <b>{motivos.join(" | ")}</b></div>
+      <div>Erro: <b>{planejamento?.erro || "SEM_ERRO_DECLARADO"}</b></div>
+      <div>Timestamp: <b>{planejamento?.timestamp || "AUSENTE"}</b></div>
     </div>
   );
 }
