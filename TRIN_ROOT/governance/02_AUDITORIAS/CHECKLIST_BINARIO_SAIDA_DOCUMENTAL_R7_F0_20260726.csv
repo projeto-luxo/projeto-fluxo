@@ -1,0 +1,13 @@
+﻿id;criterio;estado
+DOC-001;R6 preservado byte-exato;APROVADO
+DOC-002;R7 derivada exclusivamente do R6;APROVADO
+DOC-003;R7 possui novo nome e novo SHA;APROVADO
+DOC-004;FAB-DEF-019 a 026 registrados;APROVADO
+DOC-005;40 papéis com caminho e SHA anexados;APROVADO
+DOC-006;F0 registrada como encerrada;APROVADO
+DOC-007;Defeitos permanecem abertos;APROVADO
+DOC-008;Termo técnico emitido;APROVADO
+SAFE-001;TRIN não alterado;APROVADO
+SAFE-002;Git não executado;APROVADO
+SAFE-003;Patch não iniciado;APROVADO
+FINAL-001;Guia 3 parou e devolveu para verificação;APROVADO
